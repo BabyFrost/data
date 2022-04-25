@@ -1,0 +1,41 @@
+package com.docteurfrost.data.dto;
+
+import com.docteurfrost.data.model.Marque;
+
+public class MarqueDTO {
+	
+	private int id;
+	private String nom;
+	private String libelle;
+	
+	public MarqueDTO() { }
+	
+	public MarqueDTO( Marque marque) {
+		this.id = marque.getId();
+		this.nom = marque.getNom();
+		this.libelle = marque.getLibelle();
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public String getNom() {
+		return nom;
+	}
+
+	public void setNom(String nom) {
+		this.nom = nom;
+	}
+
+	public String getLibelle() {
+		return libelle;
+	}
+
+	public void setLibelle(String libelle) {
+		this.libelle = libelle;
+	}
+	
+	
+
+}

@@ -13,10 +13,10 @@ public class IdOptionArticle implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
-	@Column(name = "ID_ETUDIANT")
+	@Column(name = "ID_ARTICLE")
 	private int idArticle;
 	
-	@Column(name = "ID_LISTE")
+	@Column(name = "ID_OPTION")
 	private int idOption;
 	
 	public IdOptionArticle( ) { }
