@@ -37,7 +37,7 @@ public class OptionArticle {
 	public OptionArticle( ) { }
 	
 	public OptionArticle( Article article, OptionCategorie option, String valeur ) {
-		this.id = new IdOptionArticle( article.getId(), option.getId() );
+		this.id = new IdOptionArticle( article.getNom(), option.getId() );
 		this.article = article;
 		this.option = option;
 		this.valeur = valeur;

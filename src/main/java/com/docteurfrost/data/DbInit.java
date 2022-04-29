@@ -67,7 +67,7 @@ public class DbInit {
 	@PostConstruct
     private void postConstruct() {
 		
-		Conteneur conteneur = new Conteneur("Germany01");
+		Conteneur conteneur = new Conteneur( 1, "Germany01", "Allemagne", null, null, null);
         conteneurRepository.save(conteneur);
     	
         Categorie categorie = new Categorie("TV", "Televisions");

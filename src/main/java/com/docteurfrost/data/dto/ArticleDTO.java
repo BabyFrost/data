@@ -9,7 +9,7 @@ import com.docteurfrost.data.model.article.Article;
 
 public class ArticleDTO { 
 
-	private int id;
+//	private int id;
 	private String nom;
 	private String libelle;
 	private String categorie;
@@ -26,7 +26,7 @@ public class ArticleDTO {
 	public ArticleDTO() { }
 	
 	public ArticleDTO( Article article) {
-		this.id = article.getId();
+//		this.id = article.getId();
 		this.nom = article.getNom();
 		this.libelle = article.getLibelle();
 		this.categorie = article.getCategorie().getNom();
@@ -67,9 +67,9 @@ public class ArticleDTO {
 		
 	}
 
-	public int getId() {
-		return id;
-	}
+//	public int getId() {
+//		return id;
+//	}
 
 	public String getNom() {
 		return nom;

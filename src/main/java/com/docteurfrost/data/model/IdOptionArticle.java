@@ -14,14 +14,14 @@ public class IdOptionArticle implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Column(name = "ID_ARTICLE")
-	private int idArticle;
+	private String idArticle;
 	
 	@Column(name = "ID_OPTION")
 	private int idOption;
 	
 	public IdOptionArticle( ) { }
 
-	public IdOptionArticle( int idArticle, int idOption) {
+	public IdOptionArticle( String idArticle, int idOption) {
 		this.idArticle = idArticle;
 		this.idOption = idOption;
 	}

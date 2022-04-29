@@ -87,12 +87,15 @@ public class ArticleController {
 	
 	@PostMapping()
 	public ResponseEntity<String> saveArticle( @RequestBody ArticleDTO articleDTO ) {
-		String fileName = fileStorageService.storeFile( articleDTO.getFile(), articleDTO.getNom());
+		String fileDownloadUri = null;
+		if ( articleDTO.getFile() != null ) {
+			String fileName = fileStorageService.storeFile( articleDTO.getFile(), articleDTO.getNom());
 
-        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/downloadFile/")
-                .path(articleDTO.getNom()+"/"+fileName)
-                .toUriString();
+	        fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+	                .path("/downloadFile/")
+	                .path(articleDTO.getNom()+"/"+fileName)
+	                .toUriString();
+		}
 		
 		System.out.println( " Received Save Article Request" );
 		
@@ -112,7 +115,7 @@ public class ArticleController {
 			return new ResponseEntity<>( " Renseignez un conteneur valide ", HttpStatus.BAD_REQUEST );
 		}
 		
-		if ( articleRepository.findByNom( articleDTO.getNom()).isPresent() ) {
+		if ( articleRepository.findById( articleDTO.getNom()).isPresent() ) {
 			return new ResponseEntity<>( "Cet article existe deja", HttpStatus.CONFLICT );
 		}
 		
@@ -152,16 +155,9 @@ public class ArticleController {
 	@PutMapping()
 	public ResponseEntity<String> updateArticle( @RequestBody ArticleDTO articleDTO ) {
 		
-		String fileName = fileStorageService.storeFile( articleDTO.getFile(), articleDTO.getNom());
-
-        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/downloadFile/")
-                .path(articleDTO.getNom()+"/"+fileName)
-                .toUriString();
-		
 		System.out.println( " Received Update Request " );
 		
-		Optional<Article> articleTmp = articleRepository.findById( articleDTO.getId() );
+		Optional<Article> articleTmp = articleRepository.findById( articleDTO.getNom() );
 		Article article;
 		if ( articleTmp.isPresent() ) {
 			article = articleTmp.get();
@@ -187,6 +183,8 @@ public class ArticleController {
 		
 		article.setNom( articleDTO.getNom() );
 		article.setLibelle( articleDTO.getLibelle() );
+
+		
 	
 		List<OptionArticle> listOptions =  new ArrayList<>( article.getOptions() );
 		for ( int i = 0; i < listOptions.size(); i++ ) {
@@ -194,11 +192,23 @@ public class ArticleController {
 			optionArticleRepository.deleteById( optionArticle.getId() );
 		}
 		article.setOptions(null);
+		
+		if ( articleDTO.getFile() != null ) {
+			String fileName = fileStorageService.storeFile( articleDTO.getFile(), articleDTO.getNom());
+
+	        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+	                .path("/downloadFile/")
+	                .path(articleDTO.getNom()+"/"+fileName)
+	                .toUriString();
+	        
+	        article.setPhoto( fileDownloadUri );
+		}
+		
 		article.setCategorie(categorie);
 		article.setConteneur(conteneur);
 		article.setPrixAchat( articleDTO.getPrixAchat() );
 		article.setPrix( articleDTO.getPrix() );
-		article.setPhoto( fileDownloadUri );
+		
         articleRepository.save(article);
         
         String options = articleDTO.getOptions();        
@@ -236,7 +246,7 @@ public class ArticleController {
 	
 		System.out.println( " Received Delete Request " );
 		
-		Optional<Article> articleTmp = articleRepository.findById( articleDTO.getId() );
+		Optional<Article> articleTmp = articleRepository.findById( articleDTO.getNom() );
 		Article article;
 		if ( articleTmp.isPresent() ) {
 			article = articleTmp.get();
@@ -244,7 +254,7 @@ public class ArticleController {
 			return new ResponseEntity<>( " Renseignez un article existant ", HttpStatus.BAD_REQUEST );
 		}
 		
-		articleRepository.deleteById( article.getId() );
+		articleRepository.deleteById( article.getNom() );
 		
         System.out.println( " Deletes " );
         

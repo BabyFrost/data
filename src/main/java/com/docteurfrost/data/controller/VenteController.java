@@ -100,7 +100,7 @@ public class VenteController {
 			
 			Article article;
 			
-			Optional<Article> articleTmp = articleRepository.findById( articleDTO.getId() );
+			Optional<Article> articleTmp = articleRepository.findById( articleDTO.getNom() );
 			if ( articleTmp.isPresent() ) {
 				article = articleTmp.get();
 				

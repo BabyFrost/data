@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -40,15 +41,28 @@ public class ConteneurController {
 	
 	@PostMapping()
 	@ResponseBody
-	public ResponseEntity<String> saveCategory(@RequestBody ConteneurDTO conteneurDTO) {
-		if ( conteneurRepository.findByNom(conteneurDTO.getNom()).isPresent() ) {
+	public ResponseEntity<String> saveConteneury(@RequestBody ConteneurDTO conteneurDTO) {
+		if ( conteneurRepository.findById(conteneurDTO.getId()).isPresent() ) {
 			return new ResponseEntity<>( "Ce Conteneur existe deja", HttpStatus.CONFLICT );
 		}
 		
-		Conteneur conteneur = new Conteneur( conteneurDTO.getNom() );
+		Conteneur conteneur = new Conteneur( conteneurDTO.getId(), conteneurDTO.getNom(), conteneurDTO.getPays(), conteneurDTO.getDepart(), conteneurDTO.getArrivee(), conteneurDTO.getDechargement() );
 		conteneurRepository.save(conteneur);
 		
 		return new ResponseEntity<>( "Conteneur cree", HttpStatus.CREATED );
 	}
 	
+	@PutMapping()
+	@ResponseBody
+	public ResponseEntity<String> modifyConteneur(@RequestBody ConteneurDTO conteneurDTO) {
+		if ( conteneurRepository.findByNom(conteneurDTO.getNom()).isPresent() ) {
+			Conteneur conteneur = new Conteneur( conteneurDTO.getId(), conteneurDTO.getNom(), conteneurDTO.getPays(), conteneurDTO.getDepart(), conteneurDTO.getArrivee(), conteneurDTO.getDechargement() );
+			conteneurRepository.save(conteneur);
+			
+			return new ResponseEntity<>( "Conteneur cree", HttpStatus.OK );
+		} else {
+			return new ResponseEntity<>( "Ce Conteneur n'existe pas", HttpStatus.CONFLICT );
+		}
+		
+	}
 }

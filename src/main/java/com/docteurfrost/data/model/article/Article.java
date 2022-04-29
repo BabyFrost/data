@@ -2,14 +2,13 @@ package com.docteurfrost.data.model.article;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -30,11 +29,12 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 @Table(name="T_ARTICLE")
 public class Article {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="ID")
-	private int id;
+//	@Id
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
+//	@Column(name="ID")
+//	private int id;
 	
+	@Id
 	@Column(name="NOM")
 	private String nom;
 	
@@ -64,6 +64,9 @@ public class Article {
 	
 	@Column(name="PHOTO")
 	private String photo;
+	
+	@Column(name="DATE_AJOUT")
+	private Date dateAjout;
 	
 	@OneToMany(mappedBy = "article", fetch = FetchType.EAGER, cascade=CascadeType.REMOVE)
 	@JsonManagedReference(value="article_options_article")
@@ -99,6 +102,7 @@ public class Article {
 		this.prixAchat = prixAchat;
 		this.prix = prix;
 		this.photo = photo;
+		this.dateAjout = new Date();
 		
 		disparu = new Disparu( this );
 		enMagasin = new EnMagasin( this );
@@ -132,9 +136,9 @@ public class Article {
 		
 	}
 
-	public int getId() {
-		return id;
-	}
+//	public int getId() {
+//		return id;
+//	}
 
 	public String getNom() {
 		return nom;
