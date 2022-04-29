@@ -2,7 +2,6 @@ package com.docteurfrost.data.model.article;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -24,7 +23,6 @@ import com.docteurfrost.data.model.Conteneur;
 import com.docteurfrost.data.model.Marque;
 import com.docteurfrost.data.model.Operation;
 import com.docteurfrost.data.model.OptionArticle;
-import com.docteurfrost.data.model.OptionCategorie;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -64,8 +62,8 @@ public class Article {
 	@Column(name="PRIX")
 	private int prix;
 	
-	@Column(name="PHOTOS")
-	private String photos;
+	@Column(name="PHOTO")
+	private String photo;
 	
 	@OneToMany(mappedBy = "article", fetch = FetchType.EAGER, cascade=CascadeType.REMOVE)
 	@JsonManagedReference(value="article_options_article")
@@ -93,14 +91,14 @@ public class Article {
 		vendu = new Vendu( this );
 	}
 	
-	public Article( String nom, String libelle, Categorie categorie, Conteneur conteneur, int prixAchat, int prix, String photos) {
+	public Article( String nom, String libelle, Categorie categorie, Conteneur conteneur, int prixAchat, int prix, String photo) {
 		this.nom = nom;
 		this.libelle = libelle;
 		this.categorie = categorie;
 		this.conteneur = conteneur;
 		this.prixAchat = prixAchat;
 		this.prix = prix;
-		this.photos = photos;
+		this.photo = photo;
 		
 		disparu = new Disparu( this );
 		enMagasin = new EnMagasin( this );
@@ -186,12 +184,12 @@ public class Article {
 		this.prix = prix;
 	}
 
-	public String getPhotos() {
-		return photos;
+	public String getPhoto() {
+		return photo;
 	}
 
-	public void setPhotos(String photos) {
-		this.photos = photos;
+	public void setPhoto(String photo) {
+		this.photo = photo;
 	}
 
 	public Collection<OptionArticle> getOptions() {

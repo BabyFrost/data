@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.docteurfrost.data.dto.ArticleDTO;
+import com.docteurfrost.data.file.FileStorageService;
 import com.docteurfrost.data.model.Categorie;
 import com.docteurfrost.data.model.Conteneur;
 import com.docteurfrost.data.model.OptionArticle;
@@ -48,6 +50,9 @@ public class ArticleController {
 	
 	@Autowired
 	private OptionArticleRepository optionArticleRepository;
+	
+	@Autowired
+    private FileStorageService fileStorageService;
 	
 	@GetMapping()
 	@ResponseBody
@@ -82,6 +87,12 @@ public class ArticleController {
 	
 	@PostMapping()
 	public ResponseEntity<String> saveArticle( @RequestBody ArticleDTO articleDTO ) {
+		String fileName = fileStorageService.storeFile( articleDTO.getFile(), articleDTO.getNom());
+
+        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/downloadFile/")
+                .path(articleDTO.getNom()+"/"+fileName)
+                .toUriString();
 		
 		System.out.println( " Received Save Article Request" );
 		
@@ -105,7 +116,7 @@ public class ArticleController {
 			return new ResponseEntity<>( "Cet article existe deja", HttpStatus.CONFLICT );
 		}
 		
-		Article article = new Article(articleDTO.getNom(), articleDTO.getLibelle(), categorie, conteneur, articleDTO.getPrixAchat(), articleDTO.getPrix(), null );
+		Article article = new Article(articleDTO.getNom(), articleDTO.getLibelle(), categorie, conteneur, articleDTO.getPrixAchat(), articleDTO.getPrix(), fileDownloadUri );
         articleRepository.save(article);
         
         String options = articleDTO.getOptions();        
@@ -140,6 +151,13 @@ public class ArticleController {
 	
 	@PutMapping()
 	public ResponseEntity<String> updateArticle( @RequestBody ArticleDTO articleDTO ) {
+		
+		String fileName = fileStorageService.storeFile( articleDTO.getFile(), articleDTO.getNom());
+
+        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/downloadFile/")
+                .path(articleDTO.getNom()+"/"+fileName)
+                .toUriString();
 		
 		System.out.println( " Received Update Request " );
 		
@@ -176,16 +194,12 @@ public class ArticleController {
 			optionArticleRepository.deleteById( optionArticle.getId() );
 		}
 		article.setOptions(null);
-		article.setCategorie(categorie); 
-		
+		article.setCategorie(categorie);
 		article.setConteneur(conteneur);
 		article.setPrixAchat( articleDTO.getPrixAchat() );
 		article.setPrix( articleDTO.getPrix() );
-		
-		article.setPhotos( null );
-		System.out.println( " DDD " );
+		article.setPhoto( fileDownloadUri );
         articleRepository.save(article);
-        System.out.println( " EEE " );
         
         String options = articleDTO.getOptions();        
         StringSearcher searcher = new StringSearcher();

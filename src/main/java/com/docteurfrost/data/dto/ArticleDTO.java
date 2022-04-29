@@ -2,6 +2,8 @@ package com.docteurfrost.data.dto;
 
 import java.util.ArrayList;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.docteurfrost.data.model.OptionArticle;
 import com.docteurfrost.data.model.article.Article; 
 
@@ -14,9 +16,11 @@ public class ArticleDTO {
 	private String conteneur;
 	private int prixAchat;
 	private int prix;
+	private MultipartFile file;
 	private String marque;
 	private String etat;
 	private StringBuilder options;
+	private String photo;
 //	private List<OptionArticleDTO> options;
 
 	public ArticleDTO() { }
@@ -33,6 +37,7 @@ public class ArticleDTO {
 			this.marque = article.getMarque().getNom();
 		}	
 		this.etat = article.getState().toString();
+		this.photo = article.getPhoto();
 		
 		options = new StringBuilder();
 //		options.append("[");
@@ -130,20 +135,28 @@ public class ArticleDTO {
 		this.etat = etat;
 	}
 
-//	public List<OptionArticleDTO> getOptions() {
-//		return options;
-//	}
-//
-//	public void setOptions(List<OptionArticleDTO> options) {
-//		this.options = options;
-//	}
-
 	public String getOptions() {
 		return options.toString();
 	}
 
 	public void setOptions(String options) {
 		this.options = new StringBuilder(options);
+	}
+
+	public String getPhoto() {
+		return photo;
+	}
+
+	public void setPhoto(String photo) {
+		this.photo = photo;
+	}
+
+	public MultipartFile getFile() {
+		return file;
+	}
+
+	public void setFile(MultipartFile file) {
+		this.file = file;
 	}
 	
 }
