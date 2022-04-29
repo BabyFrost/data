@@ -1,6 +1,5 @@
 package com.docteurfrost.data.controller;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -8,17 +7,15 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.docteurfrost.data.dto.ArticleDTO;
 import com.docteurfrost.data.model.Categorie;
@@ -31,7 +28,6 @@ import com.docteurfrost.data.repository.CategorieRepository;
 import com.docteurfrost.data.repository.ConteneurRepository;
 import com.docteurfrost.data.repository.OptionArticleRepository;
 import com.docteurfrost.data.repository.OptionCategorieRepository;
-import com.docteurfrost.data.tools.FileUploadUtil;
 import com.docteurfrost.data.tools.StringSearcher;
 
 @RequestMapping("/articles")
@@ -85,10 +81,9 @@ public class ArticleController {
 	}
 	
 	@PostMapping()
-	public ResponseEntity<String> saveArticleDTO( @RequestBody ArticleDTO articleDTO ) {
-//	public ResponseEntity<String> saveArticleVersionDTO( @RequestBody ArticleDTO articleDTO, @RequestParam("images") MultipartFile multipartFile ) throws IOException {
+	public ResponseEntity<String> saveArticle( @RequestBody ArticleDTO articleDTO ) {
 		
-		System.out.println( " Received " );
+		System.out.println( " Received Save Article Request" );
 		
 		Optional<Categorie> categorieTmp = categorieRepository.findByNom( articleDTO.getCategorie() );
 		Categorie categorie;
@@ -110,26 +105,21 @@ public class ArticleController {
 			return new ResponseEntity<>( "Cet article existe deja", HttpStatus.CONFLICT );
 		}
 		
-//		String photos = StringUtils.cleanPath(multipartFile.getOriginalFilename());
-		
 		Article article = new Article(articleDTO.getNom(), articleDTO.getLibelle(), categorie, conteneur, articleDTO.getPrixAchat(), articleDTO.getPrix(), null );
         articleRepository.save(article);
-        
-//        String uploadDir = "article-photos/" + article.getId();  
-//        FileUploadUtil.saveFile(uploadDir, photos, multipartFile);
         
         String options = articleDTO.getOptions();        
         StringSearcher searcher = new StringSearcher();
         
-        List<Integer> keyIndexes = searcher.indexesOf( "{\"", options);
-        List<Integer> keyEndIndexes = searcher.indexesOf( "\":", options);
-        List<Integer> valueIndexes = searcher.indexesOf( ":\"", options);
-        List<Integer> valueEndIndexes = searcher.indexesOf( "\"}", options);
+        List<Integer> keyIndexes = searcher.indexesOf( "{", options);
+        List<Integer> keyEndIndexes = searcher.indexesOf( ":", options);
+        List<Integer> valueIndexes = searcher.indexesOf( ":", options);
+        List<Integer> valueEndIndexes = searcher.indexesOf( "}", options);
         
         for (int i=0; i<keyIndexes.size(); i++) {
         	
-        	String option = options.substring( keyIndexes.get(i)+2, keyEndIndexes.get(i));      	
-        	String valeur = options.substring( valueIndexes.get(i)+2, valueEndIndexes.get(i));      	
+        	String option = options.substring( keyIndexes.get(i)+1, keyEndIndexes.get(i));      	
+        	String valeur = options.substring( valueIndexes.get(i)+1, valueEndIndexes.get(i));      	
         	
         	Optional<OptionCategorie> optionCategorieTmp = optionCategorieRepository.findByNom( option );
         	OptionCategorie optionCategorie;
@@ -143,16 +133,15 @@ public class ArticleController {
         	optionArticleRepository.save(optionArticle);
         }
         
-        System.out.println( " Treated " );
+        System.out.println( " Article saved " );
         
 		return new ResponseEntity<>( "Article cree", HttpStatus.CREATED );
 	}
 	
 	@PutMapping()
-	public ResponseEntity<String> updateArticleDTO( @RequestBody ArticleDTO articleDTO ) {
-//	public ResponseEntity<String> saveArticleVersionDTO( @RequestBody ArticleDTO articleDTO, @RequestParam("images") MultipartFile multipartFile ) throws IOException {
+	public ResponseEntity<String> updateArticle( @RequestBody ArticleDTO articleDTO ) {
 		
-		System.out.println( " Received " );
+		System.out.println( " Received Update Request " );
 		
 		Optional<Article> articleTmp = articleRepository.findById( articleDTO.getId() );
 		Article article;
@@ -186,31 +175,30 @@ public class ArticleController {
 			OptionArticle optionArticle = optionArticleRepository.findById( listOptions.get(i).getId() ).get();
 			optionArticleRepository.deleteById( optionArticle.getId() );
 		}
+		article.setOptions(null);
 		article.setCategorie(categorie); 
 		
 		article.setConteneur(conteneur);
 		article.setPrixAchat( articleDTO.getPrixAchat() );
 		article.setPrix( articleDTO.getPrix() );
 		
-//		String photos = StringUtils.cleanPath(multipartFile.getOriginalFilename());
 		article.setPhotos( null );
+		System.out.println( " DDD " );
         articleRepository.save(article);
-        
-//        String uploadDir = "article-photos/" + article.getId();  
-//        FileUploadUtil.saveFile(uploadDir, photos, multipartFile);
+        System.out.println( " EEE " );
         
         String options = articleDTO.getOptions();        
         StringSearcher searcher = new StringSearcher();
         
-        List<Integer> keyIndexes = searcher.indexesOf( "{\"", options);
-        List<Integer> keyEndIndexes = searcher.indexesOf( "\":", options);
-        List<Integer> valueIndexes = searcher.indexesOf( ":\"", options);
-        List<Integer> valueEndIndexes = searcher.indexesOf( "\"}", options);
+        List<Integer> keyIndexes = searcher.indexesOf( "{", options);
+        List<Integer> keyEndIndexes = searcher.indexesOf( ":", options);
+        List<Integer> valueIndexes = searcher.indexesOf( ":", options);
+        List<Integer> valueEndIndexes = searcher.indexesOf( "}", options);
         
         for (int i=0; i<keyIndexes.size(); i++) {
         	
-        	String option = options.substring( keyIndexes.get(i)+2, keyEndIndexes.get(i));      	
-        	String valeur = options.substring( valueIndexes.get(i)+2, valueEndIndexes.get(i));      	
+        	String option = options.substring( keyIndexes.get(i)+1, keyEndIndexes.get(i));      	
+        	String valeur = options.substring( valueIndexes.get(i)+1, valueEndIndexes.get(i));      	
         	
         	Optional<OptionCategorie> optionCategorieTmp = optionCategorieRepository.findByNom( option );
         	OptionCategorie optionCategorie;
@@ -224,9 +212,29 @@ public class ArticleController {
         	optionArticleRepository.save(optionArticle);
         }
         
-        System.out.println( " Treated " );
+        System.out.println( " Article modified " );
         
 		return new ResponseEntity<>( "Article Modifie", HttpStatus.CREATED );
+	}
+	
+	@DeleteMapping()
+	public ResponseEntity<String> deleteArticle( @RequestBody ArticleDTO articleDTO ) {
+	
+		System.out.println( " Received Delete Request " );
+		
+		Optional<Article> articleTmp = articleRepository.findById( articleDTO.getId() );
+		Article article;
+		if ( articleTmp.isPresent() ) {
+			article = articleTmp.get();
+		} else {
+			return new ResponseEntity<>( " Renseignez un article existant ", HttpStatus.BAD_REQUEST );
+		}
+		
+		articleRepository.deleteById( article.getId() );
+		
+        System.out.println( " Deletes " );
+        
+		return new ResponseEntity<>( "Article Supprimee", HttpStatus.OK );
 	}
 	 
 }

@@ -71,10 +71,11 @@ public class VenteController {
 	public ResponseEntity<String> vendre(@RequestBody PanierDTO panierDTO) {
 		
 		Panier panier = new Panier( new Date() );
-		panierRepository.save( panier );
 		
 		int nombreArticles = 0;
 		int montantTotal = 0;
+		List<Article> articles = new ArrayList<>();
+		List<Vente> ventes = new ArrayList<>();
 		
 		List<ArticleDTO> articlesDTO = panierDTO.getArticles();
 		for ( int i = 0; i < articlesDTO.size(); i++) {
@@ -113,8 +114,9 @@ public class VenteController {
 
 			Vente vente = new Vente ( "Libelle", client, article, vendeur, panier );
 			article.vendre();
-			articleRepository.save(article);
-			venteRepository.save(vente);
+			
+			ventes.add(vente);
+			articles.add(article);
 			
 			nombreArticles++;
 			montantTotal += article.getPrix();
@@ -125,7 +127,10 @@ public class VenteController {
 		panier.setMontantTotal(montantTotal);
 		panierRepository.save(panier);
 		
-		return new ResponseEntity<>( "Success", HttpStatus.OK );
+		articleRepository.saveAll(articles);
+		venteRepository.saveAll(ventes);
+		
+		return new ResponseEntity<>( "Article Vendu", HttpStatus.OK );
 	}
 
 }
