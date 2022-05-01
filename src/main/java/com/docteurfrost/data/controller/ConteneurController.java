@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.docteurfrost.data.conteneur.Conteneur;
 import com.docteurfrost.data.dto.ConteneurDTO;
-import com.docteurfrost.data.model.Conteneur;
 import com.docteurfrost.data.repository.ConteneurRepository;
 
 @RequestMapping("/conteneurs")

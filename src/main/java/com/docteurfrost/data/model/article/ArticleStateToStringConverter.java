@@ -2,7 +2,7 @@ package com.docteurfrost.data.model.article;
 
 import javax.persistence.AttributeConverter;
 
-public class StateToStringConverter implements AttributeConverter<ArticleState,String> {
+public class ArticleStateToStringConverter implements AttributeConverter<ArticleState,String> {
 
 	@Override
 	public String convertToDatabaseColumn(ArticleState state) {

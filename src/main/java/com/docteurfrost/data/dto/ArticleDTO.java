@@ -13,7 +13,7 @@ public class ArticleDTO {
 	private String nom;
 	private String libelle;
 	private String categorie;
-	private String conteneur;
+	private int conteneur;
 	private int prixAchat;
 	private int prix;
 	private MultipartFile file;
@@ -30,7 +30,7 @@ public class ArticleDTO {
 		this.nom = article.getNom();
 		this.libelle = article.getLibelle();
 		this.categorie = article.getCategorie().getNom();
-		this.conteneur = article.getConteneur().getNom();
+		this.conteneur = article.getConteneur().getId();
 		this.prixAchat = article.getPrixAchat();
 		this.prix = article.getPrix();
 		if ( !(article.getMarque() == null) ) {
@@ -95,11 +95,11 @@ public class ArticleDTO {
 		this.categorie = categorie;
 	}
 
-	public String getConteneur() {
+	public int getConteneur() {
 		return conteneur;
 	}
 
-	public void setConteneur(String conteneur) {
+	public void setConteneur(int conteneur) {
 		this.conteneur = conteneur;
 	}
 

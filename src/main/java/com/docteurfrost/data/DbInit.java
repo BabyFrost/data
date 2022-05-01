@@ -10,9 +10,9 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.docteurfrost.data.conteneur.Conteneur;
 import com.docteurfrost.data.model.Categorie;
 import com.docteurfrost.data.model.Client;
-import com.docteurfrost.data.model.Conteneur;
 import com.docteurfrost.data.model.OptionArticle;
 import com.docteurfrost.data.model.OptionCategorie;
 import com.docteurfrost.data.model.Panier;
@@ -67,7 +67,7 @@ public class DbInit {
 	@PostConstruct
     private void postConstruct() {
 		
-		Conteneur conteneur = new Conteneur( 1, "Germany01", "Allemagne", null, null, null);
+		Conteneur conteneur = new Conteneur( 1, "Germany1", "Allemagne", null, null, null);
         conteneurRepository.save(conteneur);
     	
         Categorie categorie = new Categorie("TV", "Televisions");
@@ -76,16 +76,16 @@ public class DbInit {
         Categorie categorie2 = new Categorie("Telephones", "telephones");
         categorieRepository.save(categorie2);
         
-        Article article = new Article("TV01", "Tv ecran un peu fissuree en haut a droite", categorie, conteneur, 50000, 100000, null );
+        Article article = new Article("TV1", "Tv ecran un peu fissuree en haut a droite", categorie, conteneur, 50000, 100000, null );
         articleRepository.save(article);
         
-        Article article2 = new Article("TV02", "Tv propre 100 neuve", categorie, conteneur, 80000, 200000, null );
+        Article article2 = new Article("TV2", "Tv propre 100 neuve", categorie, conteneur, 80000, 200000, null );
         articleRepository.save(article2);
         
-        Article article3 = new Article("TV03", "Tv", categorie, conteneur, 42000, 70000, null );
+        Article article3 = new Article("TV3", "Tv", categorie, conteneur, 42000, 70000, null );
         articleRepository.save(article3);
         
-        Article article4 = new Article("Tel01", "Telephone neuf", categorie2, conteneur, 35000, 70000, null );
+        Article article4 = new Article("Tel1", "Telephone neuf", categorie2, conteneur, 35000, 70000, null );
         articleRepository.save(article4);
         
         OptionCategorie option = new OptionCategorie(categorie, "Telecommande", "La tele a elle une telecommande ?");

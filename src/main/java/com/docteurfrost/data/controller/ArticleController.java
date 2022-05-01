@@ -9,19 +9,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.docteurfrost.data.conteneur.Conteneur;
 import com.docteurfrost.data.dto.ArticleDTO;
 import com.docteurfrost.data.file.FileStorageService;
 import com.docteurfrost.data.model.Categorie;
-import com.docteurfrost.data.model.Conteneur;
 import com.docteurfrost.data.model.OptionArticle;
 import com.docteurfrost.data.model.OptionCategorie;
 import com.docteurfrost.data.model.article.Article;
@@ -71,8 +74,21 @@ public class ArticleController {
 		return articlesDTO;
 	}
 	
+	@GetMapping("/{nomArtcile}")
+	@ResponseBody 
+	public ArticleDTO getArticleSpecifique( @PathVariable("nomArtcile") String nomArtcile ) {
+		Optional<Article> articleTmp = articleRepository.findById(nomArtcile);
+		  
+		if ( articleTmp.isPresent() ) {
+			return new ArticleDTO( articleTmp.get() );
+		} else {
+			return null;
+		}
+	  
+	}
 	
-	@GetMapping("/{categorie}")
+	
+	@GetMapping("/categorie/{categorie}")
 	@ResponseBody 
 	public Iterable<Article> getArticlesByCategorie( @PathVariable("categorie") String nomCategorie ) {
 		Optional<Categorie> categorie = categorieRepository.findByNom(nomCategorie);
@@ -86,9 +102,15 @@ public class ArticleController {
 	}
 	
 	@PostMapping()
-	public ResponseEntity<String> saveArticle( @RequestBody ArticleDTO articleDTO ) {
+//	public ResponseEntity<String> saveArticle( @RequestBody ArticleDTO articleDTO ) {
+	public ResponseEntity<String> saveArticle( @ModelAttribute ArticleDTO articleDTO ) {
+		System.out.println("Ca entre");
+		
+//		System.out.println( articleDTO.getFile().toString() );
+		
 		String fileDownloadUri = null;
 		if ( articleDTO.getFile() != null ) {
+			System.out.println(" File n'est pas null ");
 			String fileName = fileStorageService.storeFile( articleDTO.getFile(), articleDTO.getNom());
 
 	        fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -97,17 +119,23 @@ public class ArticleController {
 	                .toUriString();
 		}
 		
+		System.out.println("Ca sort");
+		
 		System.out.println( " Received Save Article Request" );
 		
+		System.out.println("xxx");
 		Optional<Categorie> categorieTmp = categorieRepository.findByNom( articleDTO.getCategorie() );
 		Categorie categorie;
 		if ( categorieTmp.isPresent() ) {
+			System.out.println("yyy");
 			categorie = categorieTmp.get();
 		} else {
+			System.out.println(articleDTO.getCategorie());
 			return new ResponseEntity<>( " Renseignez une categorie valide ", HttpStatus.BAD_REQUEST );
 		}
 		
-		Optional<Conteneur> conteneurTmp = conteneurRepository.findByNom( articleDTO.getConteneur() );
+		System.out.println("AAA");
+		Optional<Conteneur> conteneurTmp = conteneurRepository.findById( articleDTO.getConteneur() );
 		Conteneur conteneur;
 		if ( conteneurTmp.isPresent() ) {
 			conteneur = conteneurTmp.get();
@@ -115,6 +143,7 @@ public class ArticleController {
 			return new ResponseEntity<>( " Renseignez un conteneur valide ", HttpStatus.BAD_REQUEST );
 		}
 		
+		System.out.println("BBB");
 		if ( articleRepository.findById( articleDTO.getNom()).isPresent() ) {
 			return new ResponseEntity<>( "Cet article existe deja", HttpStatus.CONFLICT );
 		}
@@ -122,7 +151,11 @@ public class ArticleController {
 		Article article = new Article(articleDTO.getNom(), articleDTO.getLibelle(), categorie, conteneur, articleDTO.getPrixAchat(), articleDTO.getPrix(), fileDownloadUri );
         articleRepository.save(article);
         
-        String options = articleDTO.getOptions();        
+        String options = articleDTO.getOptions();
+        if ( options == null ) {
+        	options = "";
+        }
+        
         StringSearcher searcher = new StringSearcher();
         
         List<Integer> keyIndexes = searcher.indexesOf( "{", options);
@@ -130,6 +163,7 @@ public class ArticleController {
         List<Integer> valueIndexes = searcher.indexesOf( ":", options);
         List<Integer> valueEndIndexes = searcher.indexesOf( "}", options);
         
+        System.out.println("CCC");
         for (int i=0; i<keyIndexes.size(); i++) {
         	
         	String option = options.substring( keyIndexes.get(i)+1, keyEndIndexes.get(i));      	
@@ -173,7 +207,7 @@ public class ArticleController {
 			return new ResponseEntity<>( " Renseignez une categorie valide ", HttpStatus.BAD_REQUEST );
 		}
 		
-		Optional<Conteneur> conteneurTmp = conteneurRepository.findByNom( articleDTO.getConteneur() );
+		Optional<Conteneur> conteneurTmp = conteneurRepository.findById( articleDTO.getConteneur() );
 		Conteneur conteneur;
 		if ( conteneurTmp.isPresent() ) {
 			conteneur = conteneurTmp.get();

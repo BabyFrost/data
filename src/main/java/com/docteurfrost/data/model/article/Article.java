@@ -17,8 +17,8 @@ import javax.persistence.PostLoad;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.docteurfrost.data.conteneur.Conteneur;
 import com.docteurfrost.data.model.Categorie;
-import com.docteurfrost.data.model.Conteneur;
 import com.docteurfrost.data.model.Marque;
 import com.docteurfrost.data.model.Operation;
 import com.docteurfrost.data.model.OptionArticle;
@@ -83,7 +83,7 @@ public class Article {
 	@Transient ArticleState vendu;
 	
 	@Column(name="ETAT")
-	@Convert(converter = StateToStringConverter.class )
+	@Convert(converter = ArticleStateToStringConverter.class )
 	private ArticleState state = enMagasin;
 	
 	public Article() { 
@@ -220,6 +220,10 @@ public class Article {
 		state.vendre();
 	}
 	
+	public ArticleState getState() {
+		return state;
+	}
+	
 	public void setState( ArticleState state ) {
 		this.state = state;
 	}
@@ -262,10 +266,6 @@ public class Article {
 
 	public void setReserve(ArticleState reserve) {
 		this.reserve = reserve;
-	}
-
-	public ArticleState getState() {
-		return state;
 	}
 
 	public ArticleState getVendu() {

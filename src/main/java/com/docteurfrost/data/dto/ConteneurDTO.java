@@ -2,7 +2,7 @@ package com.docteurfrost.data.dto;
 
 import java.util.Date;
 
-import com.docteurfrost.data.model.Conteneur;
+import com.docteurfrost.data.conteneur.Conteneur;
 
 public class ConteneurDTO {
 	
@@ -12,6 +12,7 @@ public class ConteneurDTO {
 	private Date dateDepart;
 	private Date dateArrivee;
 	private Date dateDechargement;
+	private String etat;
 	
 	public ConteneurDTO() { }
 	
@@ -22,6 +23,7 @@ public class ConteneurDTO {
 		this.dateDepart = conteneur.getDepart();
 		this.dateArrivee = conteneur.getArrivee();
 		this.dateDechargement = conteneur.getDechargement();
+		this.etat = conteneur.getState().toString();
 	}
 
 	public int getId() {
@@ -66,6 +68,14 @@ public class ConteneurDTO {
 
 	public void setDechargement(Date dechargement) {
 		this.dateDechargement = dechargement;
+	}
+
+	public String getEtat() {
+		return etat;
+	}
+
+	public void setEtat(String etat) {
+		this.etat = etat;
 	}
  
 }
