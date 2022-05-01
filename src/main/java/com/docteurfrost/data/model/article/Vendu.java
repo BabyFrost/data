@@ -35,4 +35,10 @@ public class Vendu implements ArticleState {
 		return this.getClass().getSimpleName();
 	}
 
+	@Override
+	public void decharger() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

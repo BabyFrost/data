@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import com.docteurfrost.data.conteneur.Conteneur;
 import com.docteurfrost.data.model.Categorie;
 import com.docteurfrost.data.model.Client;
+import com.docteurfrost.data.model.Marque;
 import com.docteurfrost.data.model.OptionArticle;
 import com.docteurfrost.data.model.OptionCategorie;
 import com.docteurfrost.data.model.Panier;
@@ -24,6 +25,7 @@ import com.docteurfrost.data.repository.ArticleRepository;
 import com.docteurfrost.data.repository.CategorieRepository;
 import com.docteurfrost.data.repository.ClientRepository;
 import com.docteurfrost.data.repository.ConteneurRepository;
+import com.docteurfrost.data.repository.MarqueRepository;
 import com.docteurfrost.data.repository.OptionArticleRepository;
 import com.docteurfrost.data.repository.OptionCategorieRepository;
 import com.docteurfrost.data.repository.PanierRepository;
@@ -31,7 +33,7 @@ import com.docteurfrost.data.repository.RetourRepository;
 import com.docteurfrost.data.repository.UtilisateurRepository;
 import com.docteurfrost.data.repository.VenteRepository;
 
-@Component
+//@Component
 public class DbInit {
 
 	@Autowired
@@ -39,6 +41,9 @@ public class DbInit {
 	
 	@Autowired
 	private CategorieRepository categorieRepository;
+	
+	@Autowired
+	private MarqueRepository marqueRepository;
 	
 	@Autowired
 	private ConteneurRepository conteneurRepository;
@@ -73,26 +78,31 @@ public class DbInit {
         Categorie categorie = new Categorie("TV", "Televisions");
         categorieRepository.save(categorie);
         
-        Categorie categorie2 = new Categorie("Telephones", "telephones");
+        Categorie categorie2 = new Categorie("Tel", "telephones");
         categorieRepository.save(categorie2);
         
-        Article article = new Article("TV1", "Tv ecran un peu fissuree en haut a droite", categorie, conteneur, 50000, 100000, null );
+        Marque marque = new Marque("lg", "LG");
+        marqueRepository.save(marque);
+        
+        Article article = new Article("TV1", "Tv ecran un peu fissuree en haut a droite", categorie, conteneur, marque, 50000, 100000, null, false );
+        article.decharger();
+        article.deballer();
         articleRepository.save(article);
         
-        Article article2 = new Article("TV2", "Tv propre 100 neuve", categorie, conteneur, 80000, 200000, null );
+        Article article2 = new Article("TV2", "Tv propre 100 neuve", categorie, conteneur, marque, 80000, 200000, null, true );
         articleRepository.save(article2);
         
-        Article article3 = new Article("TV3", "Tv", categorie, conteneur, 42000, 70000, null );
+        Article article3 = new Article("TV3", "Tv", categorie, conteneur, marque, 42000, 70000, null, false );
         articleRepository.save(article3);
         
-        Article article4 = new Article("Tel1", "Telephone neuf", categorie2, conteneur, 35000, 70000, null );
+        Article article4 = new Article("Tel1", "Telephone neuf", categorie2, conteneur, marque, 35000, 70000, null, false );
         articleRepository.save(article4);
         
         OptionCategorie option = new OptionCategorie(categorie, "Telecommande", "La tele a elle une telecommande ?");
         optionCategorieRepository.save(option);
         
         List<Article> articles = new ArrayList<>();
-        Optional<Categorie> opt = categorieRepository.findByNom(categorie.getNom());
+        Optional<Categorie> opt = categorieRepository.findById(categorie.getNom());
         if ( opt.isPresent() ) {
         	categorie = opt.get();
             articles = (List<Article>) categorie.getArticles();
@@ -147,20 +157,6 @@ public class DbInit {
 		articleRepository.save( article );
 		retourRepository.save(retour);
 		
-//		article = articleRepository.findById( article.getId() ).get();
-//		List<OptionArticle> listOptions =  new ArrayList<>( article.getOptions() );
-//		System.out.println( "eee "+article.getOptions().size() );
-//		for ( int i = 0; i < listOptions.size(); i++ ) {
-//			OptionArticle optionArticle = optionArticleRepository.findById( listOptions.get(i).getId() ).get();
-//			optionArticleRepository.deleteById( optionArticle.getId() );	
-//			System.out.println( "ddd" );
-//		}
-		
-//		articleRepository.deleteById(article.getId());
-//		articleRepository.save( article );
-		
-		
-        
     }
 	
 }

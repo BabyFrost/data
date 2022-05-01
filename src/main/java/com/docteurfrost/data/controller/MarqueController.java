@@ -42,7 +42,7 @@ public class MarqueController {
 	@PostMapping()
 	@ResponseBody
 	public ResponseEntity<String> saveMarque(@RequestBody MarqueDTO marqueDTO) {
-		if ( marqueRepository.findByNom(marqueDTO.getNom()).isPresent() ) {
+		if ( marqueRepository.findById(marqueDTO.getNom()).isPresent() ) {
 			return new ResponseEntity<>( "Cette Marque existe deja", HttpStatus.CONFLICT );
 		}
 		
@@ -55,8 +55,8 @@ public class MarqueController {
 	@PutMapping()
 	@ResponseBody
 	public ResponseEntity<String> updateMarque(@RequestBody MarqueDTO marqueDTO) {
-		if ( marqueRepository.findByNom(marqueDTO.getNom()).isPresent() ) {
-			Marque marque = marqueRepository.findByNom(marqueDTO.getNom()).get();
+		if ( marqueRepository.findById(marqueDTO.getNom()).isPresent() ) {
+			Marque marque = marqueRepository.findById(marqueDTO.getNom()).get();
 			marque.setNom( marqueDTO.getNom() );
 			marque.setLibelle( marqueDTO.getLibelle() );
 			marqueRepository.save(marque);

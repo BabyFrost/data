@@ -1,33 +1,35 @@
 package com.docteurfrost.data.model.article;
 
-public class EnMagasin implements ArticleState {
+public class DansConteneur implements ArticleState {
 	
 	private Article article;
 
-	public EnMagasin() { }
-	
-	public EnMagasin(Article article) {
+	public DansConteneur(Article article) {
 		this.article = article;
 	}
-	
+
 	@Override
 	public void vendre() {
-		article.setState( article.getVendu() );
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
 	public void retourner() {
+		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void avancer() {
-		article.setState( article.getReserve() );
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
 	public void deballer() {
-		article.setState( article.getEnVente() );
+		
+		
 	}
 	
 	public String toString() {
@@ -36,8 +38,7 @@ public class EnMagasin implements ArticleState {
 
 	@Override
 	public void decharger() {
-		// TODO Auto-generated method stub
-		
+		article.setState( article.getEnMagasin() );	
 	}
 
 }

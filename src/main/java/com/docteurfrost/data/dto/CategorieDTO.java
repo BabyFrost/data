@@ -8,7 +8,7 @@ import com.docteurfrost.data.model.OptionCategorie;
 
 public class CategorieDTO {
 
-	private int id;
+//	private int id;
 	private String nom;
 	private String libelle;
 	private List<OptionCategorieDTO> options;
@@ -16,7 +16,7 @@ public class CategorieDTO {
 	public CategorieDTO() { }
 
 	public CategorieDTO( Categorie categorie ) {
-		this.id = categorie.getId();
+//		this.id = categorie.getId();
 		this.nom = categorie.getNom();
 		this.libelle = categorie.getLibelle();
 		
@@ -30,9 +30,9 @@ public class CategorieDTO {
 		}
 	}
 
-	public int getId() {
-		return id;
-	}
+//	public int getId() {
+//		return id;
+//	}
 
 	public String getNom() {
 		return nom;

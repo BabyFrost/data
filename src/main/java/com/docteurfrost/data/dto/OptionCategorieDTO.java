@@ -11,14 +11,14 @@ public class OptionCategorieDTO {
 	public OptionCategorieDTO() { }
 
 	public OptionCategorieDTO( OptionCategorie optionCategorie ) {
-		this.id = optionCategorie.getId();
+//		this.id = optionCategorie.getId();
 		this.nom = optionCategorie.getNom();
 		this.libelle = optionCategorie.getLibelle();
 	}
 
-	public int getId() {
-		return id;
-	}
+//	public int getId() {
+//		return id;
+//	}
 
 	public String getNom() {
 		return nom;

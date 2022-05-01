@@ -1,6 +1,7 @@
 package com.docteurfrost.data.dto;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,7 +22,9 @@ public class ArticleDTO {
 	private String etat;
 	private StringBuilder options;
 	private String photo;
-//	private List<OptionArticleDTO> options;
+	private Date dateAjout;
+	private Date dateMiseEnVente;
+	private Boolean vip;
 
 	public ArticleDTO() { }
 	
@@ -38,9 +41,11 @@ public class ArticleDTO {
 		}	
 		this.etat = article.getState().toString();
 		this.photo = article.getPhoto();
+		this.dateAjout = article.getDateAjout();
+		this.dateMiseEnVente = article.getDateAjout();
+		this.vip = article.getVip();
 		
 		options = new StringBuilder();
-//		options.append("[");
 		ArrayList<OptionArticle> optionsArticle = new ArrayList<>( article.getOptions() );
 		OptionArticle optionArticle;
 		for ( int i=0; i<optionsArticle.size(); i++) {
@@ -53,23 +58,8 @@ public class ArticleDTO {
 		if ( options.length() > 0 ) {
 			options.deleteCharAt(options.length()-1);
 		}
-	
-//		options.append( "]" );
-		
-//		options = new ArrayList<>();
-//		OptionArticleDTO optionArticleDTO;
-//		List<OptionArticle> optionsArticle;
-//		optionsArticle =  new ArrayList<>( article.getOptions() );
-//		for ( int i=0; i < optionsArticle.size(); i++ ) {
-//			optionArticleDTO = new OptionArticleDTO( optionsArticle.get(i) );
-//			options.add(optionArticleDTO);
-//		}
 		
 	}
-
-//	public int getId() {
-//		return id;
-//	}
 
 	public String getNom() {
 		return nom;
@@ -157,6 +147,30 @@ public class ArticleDTO {
 
 	public void setFile(MultipartFile file) {
 		this.file = file;
+	}
+
+	public Date getDateAjout() {
+		return dateAjout;
+	}
+
+	public void setDateAjout(Date dateAjout) {
+		this.dateAjout = dateAjout;
+	}
+
+	public Date getDateMiseEnVente() {
+		return dateMiseEnVente;
+	}
+
+	public void setDateMiseEnVente(Date dateMiseEnVente) {
+		this.dateMiseEnVente = dateMiseEnVente;
+	}
+
+	public Boolean getVip() {
+		return vip;
+	}
+
+	public void setVip(Boolean vip) {
+		this.vip = vip;
 	}
 	
 }

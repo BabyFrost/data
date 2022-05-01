@@ -7,8 +7,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -23,11 +21,12 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 @Table(name="T_CATEGORIES")
 public class Categorie {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="ID")
-	private int id;
+//	@Id
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
+//	@Column(name="ID")
+//	private int id;
 	
+	@Id
 	@Column(name="NOM")
 	private String nom;
 	
@@ -50,20 +49,20 @@ public class Categorie {
 	public Categorie() { }
 
 	public Categorie(String nom, String libelle ) {
-		this.nom = nom;
+		this.nom = nom.toUpperCase();
 		this.libelle = libelle;
 	}
 
-	public int getId() {
-		return id;
-	}
+//	public int getId() {
+//		return id;
+//	}
 
 	public String getNom() {
 		return nom;
 	}
 
 	public void setNom(String nom) {
-		this.nom = nom;
+		this.nom = nom.toUpperCase();
 	}
 
 	public String getLibelle() {

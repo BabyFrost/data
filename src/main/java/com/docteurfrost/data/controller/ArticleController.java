@@ -15,22 +15,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.docteurfrost.data.conteneur.Conteneur;
 import com.docteurfrost.data.dto.ArticleDTO;
 import com.docteurfrost.data.file.FileStorageService;
 import com.docteurfrost.data.model.Categorie;
+import com.docteurfrost.data.model.Marque;
 import com.docteurfrost.data.model.OptionArticle;
 import com.docteurfrost.data.model.OptionCategorie;
 import com.docteurfrost.data.model.article.Article;
 import com.docteurfrost.data.repository.ArticleRepository;
 import com.docteurfrost.data.repository.CategorieRepository;
 import com.docteurfrost.data.repository.ConteneurRepository;
+import com.docteurfrost.data.repository.MarqueRepository;
 import com.docteurfrost.data.repository.OptionArticleRepository;
 import com.docteurfrost.data.repository.OptionCategorieRepository;
 import com.docteurfrost.data.tools.StringSearcher;
@@ -55,6 +55,9 @@ public class ArticleController {
 	private OptionArticleRepository optionArticleRepository;
 	
 	@Autowired
+	private MarqueRepository marqueRepository;
+	
+	@Autowired
     private FileStorageService fileStorageService;
 	
 	@GetMapping()
@@ -68,8 +71,6 @@ public class ArticleController {
 		for (int i=0; i<articles.size(); i++) {
 			articlesDTO.add( new ArticleDTO( articles.get(i) ) );
 		}
-		
-		System.out.println( articlesDTO.get(0).getOptions() );
 		
 		return articlesDTO;
 	}
@@ -91,7 +92,7 @@ public class ArticleController {
 	@GetMapping("/categorie/{categorie}")
 	@ResponseBody 
 	public Iterable<Article> getArticlesByCategorie( @PathVariable("categorie") String nomCategorie ) {
-		Optional<Categorie> categorie = categorieRepository.findByNom(nomCategorie);
+		Optional<Categorie> categorie = categorieRepository.findById(nomCategorie);
 		  
 		if ( categorie.isPresent() ) {
 			return articleRepository.findAllByCategorie( categorie.get() );
@@ -105,8 +106,6 @@ public class ArticleController {
 //	public ResponseEntity<String> saveArticle( @RequestBody ArticleDTO articleDTO ) {
 	public ResponseEntity<String> saveArticle( @ModelAttribute ArticleDTO articleDTO ) {
 		System.out.println("Ca entre");
-		
-//		System.out.println( articleDTO.getFile().toString() );
 		
 		String fileDownloadUri = null;
 		if ( articleDTO.getFile() != null ) {
@@ -124,7 +123,7 @@ public class ArticleController {
 		System.out.println( " Received Save Article Request" );
 		
 		System.out.println("xxx");
-		Optional<Categorie> categorieTmp = categorieRepository.findByNom( articleDTO.getCategorie() );
+		Optional<Categorie> categorieTmp = categorieRepository.findById( articleDTO.getCategorie() );
 		Categorie categorie;
 		if ( categorieTmp.isPresent() ) {
 			System.out.println("yyy");
@@ -143,12 +142,22 @@ public class ArticleController {
 			return new ResponseEntity<>( " Renseignez un conteneur valide ", HttpStatus.BAD_REQUEST );
 		}
 		
+		System.out.println( articleDTO.getMarque() );
+		
+		Optional<Marque> marqueTmp = marqueRepository.findById( articleDTO.getMarque() );
+		Marque marque;
+		if ( marqueTmp.isPresent() ) {
+			marque = marqueTmp.get();
+		} else {
+			return new ResponseEntity<>( " Renseignez une marque valide ", HttpStatus.BAD_REQUEST );
+		}
+		
 		System.out.println("BBB");
 		if ( articleRepository.findById( articleDTO.getNom()).isPresent() ) {
 			return new ResponseEntity<>( "Cet article existe deja", HttpStatus.CONFLICT );
 		}
 		
-		Article article = new Article(articleDTO.getNom(), articleDTO.getLibelle(), categorie, conteneur, articleDTO.getPrixAchat(), articleDTO.getPrix(), fileDownloadUri );
+		Article article = new Article(articleDTO.getNom(), articleDTO.getLibelle(), categorie, conteneur, marque, articleDTO.getPrixAchat(), articleDTO.getPrix(), fileDownloadUri, false );
         articleRepository.save(article);
         
         String options = articleDTO.getOptions();
@@ -169,7 +178,7 @@ public class ArticleController {
         	String option = options.substring( keyIndexes.get(i)+1, keyEndIndexes.get(i));      	
         	String valeur = options.substring( valueIndexes.get(i)+1, valueEndIndexes.get(i));      	
         	
-        	Optional<OptionCategorie> optionCategorieTmp = optionCategorieRepository.findByNom( option );
+        	Optional<OptionCategorie> optionCategorieTmp = optionCategorieRepository.findById( option );
         	OptionCategorie optionCategorie;
     		if ( optionCategorieTmp.isPresent() ) {
     			optionCategorie = optionCategorieTmp.get();
@@ -199,7 +208,7 @@ public class ArticleController {
 			return new ResponseEntity<>( " Renseignez un article existant ", HttpStatus.BAD_REQUEST );
 		}
 		
-		Optional<Categorie> categorieTmp = categorieRepository.findByNom( articleDTO.getCategorie() );
+		Optional<Categorie> categorieTmp = categorieRepository.findById( articleDTO.getCategorie() );
 		Categorie categorie;
 		if ( categorieTmp.isPresent() ) {
 			categorie = categorieTmp.get();
@@ -213,6 +222,14 @@ public class ArticleController {
 			conteneur = conteneurTmp.get();
 		} else {
 			return new ResponseEntity<>( " Renseignez un conteneur valide ", HttpStatus.BAD_REQUEST );
+		}
+		
+		Optional<Marque> marqueTmp = marqueRepository.findById( articleDTO.getMarque() );
+		Marque marque;
+		if ( marqueTmp.isPresent() ) {
+			marque = marqueTmp.get();
+		} else {
+			return new ResponseEntity<>( " Renseignez une marque valide ", HttpStatus.BAD_REQUEST );
 		}
 		
 		article.setNom( articleDTO.getNom() );
@@ -240,6 +257,7 @@ public class ArticleController {
 		
 		article.setCategorie(categorie);
 		article.setConteneur(conteneur);
+		article.setMarque(marque);
 		article.setPrixAchat( articleDTO.getPrixAchat() );
 		article.setPrix( articleDTO.getPrix() );
 		
@@ -258,7 +276,7 @@ public class ArticleController {
         	String option = options.substring( keyIndexes.get(i)+1, keyEndIndexes.get(i));      	
         	String valeur = options.substring( valueIndexes.get(i)+1, valueEndIndexes.get(i));      	
         	
-        	Optional<OptionCategorie> optionCategorieTmp = optionCategorieRepository.findByNom( option );
+        	Optional<OptionCategorie> optionCategorieTmp = optionCategorieRepository.findById( option );
         	OptionCategorie optionCategorie;
     		if ( optionCategorieTmp.isPresent() ) {
     			optionCategorie = optionCategorieTmp.get();
@@ -275,12 +293,12 @@ public class ArticleController {
 		return new ResponseEntity<>( "Article Modifie", HttpStatus.CREATED );
 	}
 	
-	@DeleteMapping()
-	public ResponseEntity<String> deleteArticle( @RequestBody ArticleDTO articleDTO ) {
+	@DeleteMapping("/{nomArticle}")
+	public ResponseEntity<String> deleteArticle( @PathVariable("nomArticle") String nomArticle ) {
 	
-		System.out.println( " Received Delete Request " );
+		System.out.println( " Received Delete Request" );
 		
-		Optional<Article> articleTmp = articleRepository.findById( articleDTO.getNom() );
+		Optional<Article> articleTmp = articleRepository.findById( nomArticle );
 		Article article;
 		if ( articleTmp.isPresent() ) {
 			article = articleTmp.get();
@@ -290,7 +308,7 @@ public class ArticleController {
 		
 		articleRepository.deleteById( article.getNom() );
 		
-        System.out.println( " Deletes " );
+        System.out.println( " Deleted " );
         
 		return new ResponseEntity<>( "Article Supprimee", HttpStatus.OK );
 	}

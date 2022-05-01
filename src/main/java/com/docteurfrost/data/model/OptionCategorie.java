@@ -21,11 +21,12 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 @Table(name="T_OPTIONS_CATEGORIE")
 public class OptionCategorie {
 	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="ID")
-	private int id;
+//	@Id
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
+//	@Column(name="ID")
+//	private int id;
 	
+	@Id
 	@Column(name="NOM")
 	private String nom;
 	
@@ -49,9 +50,9 @@ public class OptionCategorie {
 		this.libelle = libelle;
 	}
 
-	public int getId() {
-		return id;
-	}
+//	public int getId() {
+//		return id;
+//	}
 
 	public Categorie getCategorie() {
 		return categorie;
@@ -66,7 +67,7 @@ public class OptionCategorie {
 	}
 
 	public void setNom(String nom) {
-		this.nom = nom;
+		this.nom = nom.toUpperCase();
 	}
 
 	public String getLibelle() {

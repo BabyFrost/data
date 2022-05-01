@@ -6,8 +6,6 @@ import java.util.Collection;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -19,11 +17,12 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 @Table(name="T_MARQUES")
 public class Marque {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="ID")
-	private int id;
+//	@Id
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
+//	@Column(name="ID")
+//	private int id;
 	
+	@Id
 	@Column(name="NOM")
 	private String nom;
 	
@@ -41,20 +40,20 @@ public class Marque {
 	public Marque() { }
 	
 	public Marque( String nom, String libelle) {
-		this.nom = nom;
+		this.nom = nom.toUpperCase();
 		this.libelle = libelle;
 	}
 
-	public int getId() {
-		return id;
-	}
+//	public int getId() {
+//		return id;
+//	}
 
 	public String getNom() {
 		return nom;
 	}
 
 	public void setNom(String nom) {
-		this.nom = nom;
+		this.nom = nom.toUpperCase();
 	}
 
 	public String getLibelle() {

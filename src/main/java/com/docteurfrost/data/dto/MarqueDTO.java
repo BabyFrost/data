@@ -4,21 +4,21 @@ import com.docteurfrost.data.model.Marque;
 
 public class MarqueDTO {
 	
-	private int id;
+//	private int id;
 	private String nom;
 	private String libelle;
 	
 	public MarqueDTO() { }
 	
 	public MarqueDTO( Marque marque) {
-		this.id = marque.getId();
+//		this.id = marque.getId();
 		this.nom = marque.getNom();
 		this.libelle = marque.getLibelle();
 	}
 
-	public int getId() {
-		return id;
-	}
+//	public int getId() {
+//		return id;
+//	}
 
 	public String getNom() {
 		return nom;

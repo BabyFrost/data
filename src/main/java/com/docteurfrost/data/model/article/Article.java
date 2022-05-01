@@ -68,6 +68,12 @@ public class Article {
 	@Column(name="DATE_AJOUT")
 	private Date dateAjout;
 	
+	@Column(name="DATE_MISE_EN_VENTE")
+	private Date dateMiseEnVente;
+	
+	@Column(name="VIP")
+	private Boolean vip;
+	
 	@OneToMany(mappedBy = "article", fetch = FetchType.EAGER, cascade=CascadeType.REMOVE)
 	@JsonManagedReference(value="article_options_article")
 	private Collection<OptionArticle> options = new ArrayList<>();
@@ -81,10 +87,11 @@ public class Article {
 	@Transient ArticleState enVente;
 	@Transient ArticleState reserve;
 	@Transient ArticleState vendu;
+	@Transient ArticleState dansConteneur;
 	
 	@Column(name="ETAT")
 	@Convert(converter = ArticleStateToStringConverter.class )
-	private ArticleState state = enMagasin;
+	private ArticleState state = dansConteneur;
 	
 	public Article() { 
 		disparu = new Disparu( this );
@@ -92,25 +99,30 @@ public class Article {
 		enVente = new EnVente( this );
 		reserve = new Reserve( this );	
 		vendu = new Vendu( this );
+		dansConteneur = new DansConteneur( this );
 	}
 	
-	public Article( String nom, String libelle, Categorie categorie, Conteneur conteneur, int prixAchat, int prix, String photo) {
-		this.nom = nom;
+	public Article( String nom, String libelle, Categorie categorie, Conteneur conteneur, Marque marque, int prixAchat, int prix, String photo, boolean vip) {
+		this.nom = nom.toUpperCase();
 		this.libelle = libelle;
 		this.categorie = categorie;
 		this.conteneur = conteneur;
+		this.marque = marque;
 		this.prixAchat = prixAchat;
 		this.prix = prix;
 		this.photo = photo;
 		this.dateAjout = new Date();
+		this.dateMiseEnVente = null;
+		this.vip = vip;
 		
 		disparu = new Disparu( this );
 		enMagasin = new EnMagasin( this );
 		enVente = new EnVente( this );
 		reserve = new Reserve( this );
 		vendu = new Vendu( this );
+		dansConteneur = new DansConteneur( this );
 		
-		state = enMagasin;	
+		state = dansConteneur;	
 	}
 	
 	@PostLoad
@@ -132,6 +144,9 @@ public class Article {
 			case "Vendu":
 				this.state = vendu;
 				break;
+			case "DansConteneur":
+				this.state = dansConteneur;
+				break;
 		}
 		
 	}
@@ -145,7 +160,7 @@ public class Article {
 	}
 
 	public void setNom(String nom) {
-		this.nom = nom;
+		this.nom = nom.toUpperCase();
 	}
 
 	public String getLibelle() {
@@ -196,6 +211,22 @@ public class Article {
 		this.photo = photo;
 	}
 
+	public Date getDateAjout() {
+		return dateAjout;
+	}
+
+	public void setDateAjout(Date dateAjout) {
+		this.dateAjout = dateAjout;
+	}
+
+	public Date getDateMiseEnVente() {
+		return dateMiseEnVente;
+	}
+
+	public void setDateMiseEnVente(Date dateMiseEnVente) {
+		this.dateMiseEnVente = dateMiseEnVente;
+	}
+
 	public Collection<OptionArticle> getOptions() {
 		return options;
 	}
@@ -210,6 +241,10 @@ public class Article {
 	
 	public void deballer() {
 		state.deballer();
+	}
+	
+	public void decharger() {
+		state.decharger();
 	}
 	
 	public void retourner() {
@@ -274,6 +309,22 @@ public class Article {
 
 	public void setVendu(ArticleState vendu) {
 		this.vendu = vendu;
+	}
+
+	public ArticleState getDansConteneur() {
+		return dansConteneur;
+	}
+
+	public void setDansConteneur(ArticleState dansConteneur) {
+		this.dansConteneur = dansConteneur;
+	}
+
+	public Boolean getVip() {
+		return vip;
+	}
+
+	public void setVip(Boolean vip) {
+		this.vip = vip;
 	}
 
 }

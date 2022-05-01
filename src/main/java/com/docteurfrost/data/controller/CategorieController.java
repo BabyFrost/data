@@ -42,7 +42,7 @@ public class CategorieController {
 	@PostMapping()
 	@ResponseBody
 	public ResponseEntity<String> saveCategory(@RequestBody CategorieDTO categorieDTO) {
-		if ( categorieRepository.findByNom(categorieDTO.getNom()).isPresent() ) {
+		if ( categorieRepository.findById(categorieDTO.getNom()).isPresent() ) {
 			return new ResponseEntity<>( "Cet Categorie existe deja", HttpStatus.CONFLICT );
 		}
 		

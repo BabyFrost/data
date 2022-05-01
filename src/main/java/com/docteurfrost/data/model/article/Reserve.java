@@ -32,4 +32,10 @@ public class Reserve implements ArticleState {
 		return this.getClass().getSimpleName();
 	}
 
+	@Override
+	public void decharger() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

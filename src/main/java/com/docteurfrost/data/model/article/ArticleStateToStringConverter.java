@@ -25,6 +25,8 @@ public class ArticleStateToStringConverter implements AttributeConverter<Article
 				return new Reserve(null);
 			case "Vendu":
 				return new Vendu(null);
+			case "DansConteneur":
+				return new DansConteneur(null);
 		}
 		
 		return null;

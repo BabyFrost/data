@@ -17,11 +17,11 @@ public class IdOptionArticle implements Serializable {
 	private String idArticle;
 	
 	@Column(name = "ID_OPTION")
-	private int idOption;
+	private String idOption;
 	
 	public IdOptionArticle( ) { }
 
-	public IdOptionArticle( String idArticle, int idOption) {
+	public IdOptionArticle( String idArticle, String idOption) {
 		this.idArticle = idArticle;
 		this.idOption = idOption;
 	}
