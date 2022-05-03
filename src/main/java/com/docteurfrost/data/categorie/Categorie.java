@@ -1,4 +1,4 @@
-package com.docteurfrost.data.model;
+package com.docteurfrost.data.categorie;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.docteurfrost.data.model.Marque;
 import com.docteurfrost.data.model.article.Article;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -20,11 +21,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 @Entity
 @Table(name="T_CATEGORIES")
 public class Categorie {
-
-//	@Id
-//	@GeneratedValue(strategy = GenerationType.IDENTITY)
-//	@Column(name="ID")
-//	private int id;
 	
 	@Id
 	@Column(name="NOM")
@@ -52,10 +48,6 @@ public class Categorie {
 		this.nom = nom.toUpperCase();
 		this.libelle = libelle;
 	}
-
-//	public int getId() {
-//		return id;
-//	}
 
 	public String getNom() {
 		return nom;

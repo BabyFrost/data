@@ -1,4 +1,4 @@
-package com.docteurfrost.data.model;
+package com.docteurfrost.data.categorie;
 
 import java.io.Serializable;
 
@@ -7,11 +7,10 @@ import javax.persistence.Embeddable;
 
 import lombok.Data;
 
+@SuppressWarnings("serial")
 @Data
 @Embeddable
 public class IdOptionArticle implements Serializable {
-	
-	private static final long serialVersionUID = 1L;
 
 	@Column(name = "ID_ARTICLE")
 	private String idArticle;

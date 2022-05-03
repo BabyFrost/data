@@ -1,4 +1,4 @@
-package com.docteurfrost.data.model;
+package com.docteurfrost.data.categorie;
 
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;

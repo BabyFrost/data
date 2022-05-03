@@ -17,29 +17,24 @@ import javax.persistence.PostLoad;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.docteurfrost.data.categorie.Categorie;
+import com.docteurfrost.data.categorie.OptionArticle;
 import com.docteurfrost.data.conteneur.Conteneur;
-import com.docteurfrost.data.model.Categorie;
 import com.docteurfrost.data.model.Marque;
 import com.docteurfrost.data.model.Operation;
-import com.docteurfrost.data.model.OptionArticle;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name="T_ARTICLE")
 public class Article {
-
-//	@Id
-//	@GeneratedValue(strategy = GenerationType.IDENTITY)
-//	@Column(name="ID")
-//	private int id;
 	
 	@Id
 	@Column(name="NOM")
 	private String nom;
 	
-	@Column(name="LIBELLE")
-	private String libelle;
+	@Column(name="OBSERVATION")
+	private String observation;
 	
 	@ManyToOne
 	@JsonBackReference(value="article_categorie")
@@ -59,14 +54,27 @@ public class Article {
 	@Column(name="PRIX_ACHAT")
 	private int prixAchat;
 	
+	@Column(name="PRIX_LIQUIDATION")
+	private int prixLiquidation;
+	
+	@Column(name="PRIX_ESTIMATIF")
+	private int prixEstimatif;
+	
 	@Column(name="PRIX")
 	private int prix;
 	
 	@Column(name="PHOTO")
 	private String photo;
 	
+	@Column(name="ETAT")
+	private String etat;
+	
+	@Column(name="DATE_ACHAT")
+	private Date dateAchat;
+	
+//	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="DATE_AJOUT")
-	private Date dateAjout;
+	private Date dateSaisie;
 	
 	@Column(name="DATE_MISE_EN_VENTE")
 	private Date dateMiseEnVente;
@@ -89,7 +97,7 @@ public class Article {
 	@Transient ArticleState vendu;
 	@Transient ArticleState dansConteneur;
 	
-	@Column(name="ETAT")
+	@Column(name="STATUS")
 	@Convert(converter = ArticleStateToStringConverter.class )
 	private ArticleState state = dansConteneur;
 	
@@ -102,18 +110,23 @@ public class Article {
 		dansConteneur = new DansConteneur( this );
 	}
 	
-	public Article( String nom, String libelle, Categorie categorie, Conteneur conteneur, Marque marque, int prixAchat, int prix, String photo, boolean vip) {
+	public Article( String nom, String observation, Categorie categorie, Conteneur conteneur, Marque marque, int prixAchat, int prixLiquidation, int prixEstimatif, int prix, String photo, boolean vip, Date dateAchat) {
 		this.nom = nom.toUpperCase();
-		this.libelle = libelle;
+		this.observation = observation;
 		this.categorie = categorie;
 		this.conteneur = conteneur;
 		this.marque = marque;
 		this.prixAchat = prixAchat;
+		this.prixLiquidation =prixLiquidation;
+		this.prixEstimatif = prixEstimatif;
 		this.prix = prix;
 		this.photo = photo;
-		this.dateAjout = new Date();
+		this.dateAchat = dateAchat;
+		this.dateSaisie = new Date();
 		this.dateMiseEnVente = null;
 		this.vip = vip;
+		
+		System.out.println( this.dateSaisie );
 		
 		disparu = new Disparu( this );
 		enMagasin = new EnMagasin( this );
@@ -151,10 +164,6 @@ public class Article {
 		
 	}
 
-//	public int getId() {
-//		return id;
-//	}
-
 	public String getNom() {
 		return nom;
 	}
@@ -163,12 +172,12 @@ public class Article {
 		this.nom = nom.toUpperCase();
 	}
 
-	public String getLibelle() {
-		return libelle;
+	public String getObservation() {
+		return observation;
 	}
 
-	public void setLibelle(String libelle) {
-		this.libelle = libelle;
+	public void setObservation(String observation) {
+		this.observation = observation;
 	}
 	
 	public Categorie getCategorie() {
@@ -211,12 +220,12 @@ public class Article {
 		this.photo = photo;
 	}
 
-	public Date getDateAjout() {
-		return dateAjout;
+	public Date getDateSaisie() {
+		return dateSaisie;
 	}
 
-	public void setDateAjout(Date dateAjout) {
-		this.dateAjout = dateAjout;
+	public void setDateSaisie(Date dateSaisie) {
+		this.dateSaisie = dateSaisie;
 	}
 
 	public Date getDateMiseEnVente() {
@@ -325,6 +334,38 @@ public class Article {
 
 	public void setVip(Boolean vip) {
 		this.vip = vip;
+	}
+
+	public int getPrixLiquidation() {
+		return prixLiquidation;
+	}
+
+	public void setPrixLiquidation(int prixLiquidation) {
+		this.prixLiquidation = prixLiquidation;
+	}
+
+	public int getPrixEstimatif() {
+		return prixEstimatif;
+	}
+
+	public void setPrixEstimatif(int prixEstimatif) {
+		this.prixEstimatif = prixEstimatif;
+	}
+
+	public String getEtat() {
+		return etat;
+	}
+
+	public void setEtat(String etat) {
+		this.etat = etat;
+	}
+
+	public Date getDateAchat() {
+		return dateAchat;
+	}
+
+	public void setDateAchat(Date dateAchat) {
+		this.dateAchat = dateAchat;
 	}
 
 }

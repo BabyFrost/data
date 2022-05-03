@@ -5,45 +5,49 @@ import java.util.Date;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.docteurfrost.data.model.OptionArticle;
+import com.docteurfrost.data.categorie.OptionArticle;
 import com.docteurfrost.data.model.article.Article; 
 
 public class ArticleDTO { 
 
-//	private int id;
 	private String nom;
-	private String libelle;
+	private String observation;
 	private String categorie;
 	private int conteneur;
+	private String marque;
 	private int prixAchat;
+	private int prixLiquidation;
+	private int prixEstimatif;
 	private int prix;
 	private MultipartFile file;
-	private String marque;
-	private String etat;
+	private String status;
 	private StringBuilder options;
 	private String photo;
-	private Date dateAjout;
+	private Date dateAchat;
+	private Date dateSaisie;
 	private Date dateMiseEnVente;
 	private Boolean vip;
+	private String etat;
 
 	public ArticleDTO() { }
 	
 	public ArticleDTO( Article article) {
-//		this.id = article.getId();
 		this.nom = article.getNom();
-		this.libelle = article.getLibelle();
+		this.observation = article.getObservation();
 		this.categorie = article.getCategorie().getNom();
 		this.conteneur = article.getConteneur().getId();
 		this.prixAchat = article.getPrixAchat();
+		this.prixLiquidation = article.getPrixLiquidation();
+		this.prixEstimatif = article.getPrixEstimatif();
 		this.prix = article.getPrix();
-		if ( !(article.getMarque() == null) ) {
-			this.marque = article.getMarque().getNom();
-		}	
-		this.etat = article.getState().toString();
+		this.marque = article.getMarque().getNom();
+		this.status = article.getState().toString();
 		this.photo = article.getPhoto();
-		this.dateAjout = article.getDateAjout();
-		this.dateMiseEnVente = article.getDateAjout();
+		this.dateAchat = article.getDateAchat();
+		this.dateSaisie = article.getDateSaisie();
+		this.dateMiseEnVente = article.getDateSaisie();
 		this.vip = article.getVip();
+		this.etat = article.getEtat();
 		
 		options = new StringBuilder();
 		ArrayList<OptionArticle> optionsArticle = new ArrayList<>( article.getOptions() );
@@ -69,14 +73,14 @@ public class ArticleDTO {
 		this.nom = nom;
 	}
 
-	public String getLibelle() {
-		return libelle;
-	}
-
-	public void setLibelle(String libelle) {
-		this.libelle = libelle;
+	public String getObservation() {
+		return observation;
 	}
 	
+	public void setObservation(String observation) {
+		this.observation = observation;
+	}
+
 	public String getCategorie() {
 		return categorie;
 	}
@@ -117,12 +121,12 @@ public class ArticleDTO {
 		this.marque = marque;
 	}
 
-	public String getEtat() {
-		return etat;
+	public String getStatus() {
+		return status;
 	}
 
-	public void setEtat(String etat) {
-		this.etat = etat;
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 	public String getOptions() {
@@ -149,12 +153,12 @@ public class ArticleDTO {
 		this.file = file;
 	}
 
-	public Date getDateAjout() {
-		return dateAjout;
+	public Date getDateSaisie() {
+		return dateSaisie;
 	}
 
-	public void setDateAjout(Date dateAjout) {
-		this.dateAjout = dateAjout;
+	public void setDateSaisie(Date dateSaisie) {
+		this.dateSaisie = dateSaisie;
 	}
 
 	public Date getDateMiseEnVente() {
@@ -171,6 +175,38 @@ public class ArticleDTO {
 
 	public void setVip(Boolean vip) {
 		this.vip = vip;
+	}
+
+	public int getPrixLiquidation() {
+		return prixLiquidation;
+	}
+
+	public void setPrixLiquidation(int prixLiquidation) {
+		this.prixLiquidation = prixLiquidation;
+	}
+
+	public int getPrixEstimatif() {
+		return prixEstimatif;
+	}
+
+	public void setPrixEstimatif(int prixEstimatif) {
+		this.prixEstimatif = prixEstimatif;
+	}
+
+	public String getEtat() {
+		return etat;
+	}
+
+	public void setEtat(String etat) {
+		this.etat = etat;
+	}
+
+	public Date getDateAchat() {
+		return dateAchat;
+	}
+
+	public void setDateAchat(Date dateAchat) {
+		this.dateAchat = dateAchat;
 	}
 	
 }

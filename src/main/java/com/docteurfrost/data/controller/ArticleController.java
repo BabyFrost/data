@@ -19,13 +19,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.docteurfrost.data.categorie.Categorie;
+import com.docteurfrost.data.categorie.OptionArticle;
+import com.docteurfrost.data.categorie.OptionCategorie;
 import com.docteurfrost.data.conteneur.Conteneur;
 import com.docteurfrost.data.dto.ArticleDTO;
 import com.docteurfrost.data.file.FileStorageService;
-import com.docteurfrost.data.model.Categorie;
 import com.docteurfrost.data.model.Marque;
-import com.docteurfrost.data.model.OptionArticle;
-import com.docteurfrost.data.model.OptionCategorie;
 import com.docteurfrost.data.model.article.Article;
 import com.docteurfrost.data.repository.ArticleRepository;
 import com.docteurfrost.data.repository.CategorieRepository;
@@ -103,8 +103,8 @@ public class ArticleController {
 	}
 	
 	@PostMapping()
-//	public ResponseEntity<String> saveArticle( @RequestBody ArticleDTO articleDTO ) {
-	public ResponseEntity<String> saveArticle( @ModelAttribute ArticleDTO articleDTO ) {
+	public ResponseEntity<String> saveArticle( @RequestBody ArticleDTO articleDTO ) {
+//	public ResponseEntity<String> saveArticle( @ModelAttribute ArticleDTO articleDTO ) {
 		System.out.println("Ca entre");
 		
 		String fileDownloadUri = null;
@@ -123,7 +123,9 @@ public class ArticleController {
 		System.out.println( " Received Save Article Request" );
 		
 		System.out.println("xxx");
+		System.out.println(articleDTO.getCategorie());
 		Optional<Categorie> categorieTmp = categorieRepository.findById( articleDTO.getCategorie() );
+		System.out.println("xyxy");
 		Categorie categorie;
 		if ( categorieTmp.isPresent() ) {
 			System.out.println("yyy");
@@ -153,13 +155,18 @@ public class ArticleController {
 		}
 		
 		System.out.println("BBB");
-		if ( articleRepository.findById( articleDTO.getNom()).isPresent() ) {
+		if ( articleRepository.findById( articleDTO.getNom() ).isPresent() ) {
 			return new ResponseEntity<>( "Cet article existe deja", HttpStatus.CONFLICT );
 		}
 		
-		Article article = new Article(articleDTO.getNom(), articleDTO.getLibelle(), categorie, conteneur, marque, articleDTO.getPrixAchat(), articleDTO.getPrix(), fileDownloadUri, false );
-        articleRepository.save(article);
-        
+		System.out.println("VIP OR NOT");
+		if ( articleDTO.getVip() == null ) {
+			return new ResponseEntity<>( "Renseignez vip", HttpStatus.BAD_REQUEST );
+		}
+		
+		Article article = new Article(articleDTO.getNom(), articleDTO.getObservation(), categorie, conteneur, marque, articleDTO.getPrixAchat(), 0, 0, articleDTO.getPrix(), fileDownloadUri, articleDTO.getVip(), null );   
+        articleRepository.save( article );
+		
         String options = articleDTO.getOptions();
         if ( options == null ) {
         	options = "";
@@ -178,7 +185,9 @@ public class ArticleController {
         	String option = options.substring( keyIndexes.get(i)+1, keyEndIndexes.get(i));      	
         	String valeur = options.substring( valueIndexes.get(i)+1, valueEndIndexes.get(i));      	
         	
-        	Optional<OptionCategorie> optionCategorieTmp = optionCategorieRepository.findById( option );
+        	//CONSTRUIRE L'ID ET ENSUITE FAIRE FIND BY ID
+        	System.out.println( article.getCategorie().getNom()+"_"+option );
+        	Optional<OptionCategorie> optionCategorieTmp = optionCategorieRepository.findById( option+"_"+article.getCategorie().getNom() );
         	OptionCategorie optionCategorie;
     		if ( optionCategorieTmp.isPresent() ) {
     			optionCategorie = optionCategorieTmp.get();
@@ -232,9 +241,7 @@ public class ArticleController {
 			return new ResponseEntity<>( " Renseignez une marque valide ", HttpStatus.BAD_REQUEST );
 		}
 		
-		article.setNom( articleDTO.getNom() );
-		article.setLibelle( articleDTO.getLibelle() );
-
+//		article.setNom( articleDTO.getNom() );
 		
 	
 		List<OptionArticle> listOptions =  new ArrayList<>( article.getOptions() );
@@ -255,11 +262,16 @@ public class ArticleController {
 	        article.setPhoto( fileDownloadUri );
 		}
 		
+		article.setObservation( articleDTO.getObservation() );
 		article.setCategorie(categorie);
 		article.setConteneur(conteneur);
 		article.setMarque(marque);
 		article.setPrixAchat( articleDTO.getPrixAchat() );
+		article.setPrixLiquidation( articleDTO.getPrixLiquidation() );
+		article.setPrixEstimatif( articleDTO.getPrixEstimatif() );
 		article.setPrix( articleDTO.getPrix() );
+		article.setVip( articleDTO.getVip() );
+		article.setDateAchat( articleDTO.getDateAchat() );
 		
         articleRepository.save(article);
         
@@ -276,7 +288,8 @@ public class ArticleController {
         	String option = options.substring( keyIndexes.get(i)+1, keyEndIndexes.get(i));      	
         	String valeur = options.substring( valueIndexes.get(i)+1, valueEndIndexes.get(i));      	
         	
-        	Optional<OptionCategorie> optionCategorieTmp = optionCategorieRepository.findById( option );
+        	//CONSTRUIRE L'ID ET ENSUITE FAIRE FIND BY ID
+        	Optional<OptionCategorie> optionCategorieTmp = optionCategorieRepository.findById( option+"_"+article.getCategorie().getNom() );
         	OptionCategorie optionCategorie;
     		if ( optionCategorieTmp.isPresent() ) {
     			optionCategorie = optionCategorieTmp.get();

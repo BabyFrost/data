@@ -3,8 +3,8 @@ package com.docteurfrost.data.dto;
 import java.util.List;
 import java.util.ArrayList;
 
-import com.docteurfrost.data.model.Categorie;
-import com.docteurfrost.data.model.OptionCategorie;
+import com.docteurfrost.data.categorie.Categorie;
+import com.docteurfrost.data.categorie.OptionCategorie;
 
 public class CategorieDTO {
 

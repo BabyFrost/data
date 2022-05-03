@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.docteurfrost.data.categorie.Categorie;
 import com.docteurfrost.data.model.article.Article;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 

@@ -1,16 +1,16 @@
-package com.docteurfrost.data.model;
+package com.docteurfrost.data.categorie;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -21,12 +21,10 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 @Table(name="T_OPTIONS_CATEGORIE")
 public class OptionCategorie {
 	
-//	@Id
-//	@GeneratedValue(strategy = GenerationType.IDENTITY)
-//	@Column(name="ID")
-//	private int id;
-	
 	@Id
+	@Column(name="ID")
+	private String id;
+	
 	@Column(name="NOM")
 	private String nom;
 	
@@ -38,21 +36,30 @@ public class OptionCategorie {
 	@Column(name="LIBELLE")
 	private String libelle;
 	
+	@Column(name="NUMERIQUE")
+	private Boolean numerique;
+	
 	@OneToMany(mappedBy = "option", cascade=CascadeType.REMOVE)
 	@JsonManagedReference(value="article_options_categorie")
 	private Set<OptionArticle> options = new HashSet<>();
 	
+	@OneToMany(mappedBy = "option", cascade=CascadeType.REMOVE)
+	@JsonManagedReference(value="valeur_option")
+	private Set<ValeurOption> valeurs = new HashSet<>();
+	
 	public OptionCategorie() { }
 
-	public OptionCategorie(Categorie categorie, String nom, String libelle) {
+	public OptionCategorie(Categorie categorie, String nom, String libelle, Boolean numerique) {
+		this.id = nom+"_"+categorie.getNom();
 		this.categorie = categorie;
 		this.nom = nom;
 		this.libelle = libelle;
+		this.numerique = numerique;
 	}
 
-//	public int getId() {
-//		return id;
-//	}
+	public String getId() {
+		return id;
+	}
 
 	public Categorie getCategorie() {
 		return categorie;
@@ -76,6 +83,22 @@ public class OptionCategorie {
 
 	public void setLibelle(String libelle) {
 		this.libelle = libelle;
-	}	
+	}
+
+	public Boolean getNumerique() {
+		return numerique;
+	}
+
+	public void setNumerique(Boolean numerique) {
+		this.numerique = numerique;
+	}
+
+	public Set<ValeurOption> getValeurs() {
+		return valeurs;
+	}
+
+	public void setValeurs(Set<ValeurOption> valeurs) {
+		this.valeurs = valeurs;
+	}
 	
 }

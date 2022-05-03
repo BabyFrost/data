@@ -1,10 +1,10 @@
 package com.docteurfrost.data.dto;
 
-import com.docteurfrost.data.model.OptionCategorie;
+import com.docteurfrost.data.categorie.OptionCategorie;
 
 public class OptionCategorieDTO {
 
-	private int id;
+//	private int id;
 	private String nom;
 	private String libelle;
 	

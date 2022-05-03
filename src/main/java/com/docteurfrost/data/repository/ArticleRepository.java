@@ -3,7 +3,7 @@ package com.docteurfrost.data.repository;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import com.docteurfrost.data.model.Categorie;
+import com.docteurfrost.data.categorie.Categorie;
 import com.docteurfrost.data.model.article.Article;
 
 @Repository
