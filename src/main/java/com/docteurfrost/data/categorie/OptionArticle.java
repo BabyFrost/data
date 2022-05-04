@@ -40,7 +40,7 @@ public class OptionArticle {
 		this.id = new IdOptionArticle( article.getNom(), option.getNom() );
 		this.article = article;
 		this.option = option;
-		this.valeur = valeur;
+		this.valeur = valeur.toUpperCase();
 	}
 
 	public IdOptionArticle getId() {
@@ -68,7 +68,7 @@ public class OptionArticle {
 	}
 
 	public void setValeur(String valeur) {
-		this.valeur = valeur;
+		this.valeur = valeur.toUpperCase();
 	}
 	
 }

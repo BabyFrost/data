@@ -1,5 +1,6 @@
 package com.docteurfrost.data.controller;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +23,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.docteurfrost.data.categorie.Categorie;
 import com.docteurfrost.data.categorie.OptionArticle;
 import com.docteurfrost.data.categorie.OptionCategorie;
+import com.docteurfrost.data.categorie.ValeurOption;
 import com.docteurfrost.data.conteneur.Conteneur;
 import com.docteurfrost.data.dto.ArticleDTO;
 import com.docteurfrost.data.file.FileStorageService;
@@ -33,6 +35,7 @@ import com.docteurfrost.data.repository.ConteneurRepository;
 import com.docteurfrost.data.repository.MarqueRepository;
 import com.docteurfrost.data.repository.OptionArticleRepository;
 import com.docteurfrost.data.repository.OptionCategorieRepository;
+import com.docteurfrost.data.tools.DateStringConverter;
 import com.docteurfrost.data.tools.StringSearcher;
 
 @RequestMapping("/articles")
@@ -77,8 +80,8 @@ public class ArticleController {
 	
 	@GetMapping("/{nomArtcile}")
 	@ResponseBody 
-	public ArticleDTO getArticleSpecifique( @PathVariable("nomArtcile") String nomArtcile ) {
-		Optional<Article> articleTmp = articleRepository.findById(nomArtcile);
+	public ArticleDTO getArticleSpecifique( @PathVariable("nomArtcile") String nomArticle ) {
+		Optional<Article> articleTmp = articleRepository.findById(nomArticle);
 		  
 		if ( articleTmp.isPresent() ) {
 			return new ArticleDTO( articleTmp.get() );
@@ -103,8 +106,8 @@ public class ArticleController {
 	}
 	
 	@PostMapping()
-	public ResponseEntity<String> saveArticle( @RequestBody ArticleDTO articleDTO ) {
-//	public ResponseEntity<String> saveArticle( @ModelAttribute ArticleDTO articleDTO ) {
+//	public ResponseEntity<String> saveArticle( @RequestBody ArticleDTO articleDTO ) {
+	public ResponseEntity<String> saveArticle( @ModelAttribute ArticleDTO articleDTO ) throws ParseException {
 		System.out.println("Ca entre");
 		
 		String fileDownloadUri = null;
@@ -159,13 +162,8 @@ public class ArticleController {
 			return new ResponseEntity<>( "Cet article existe deja", HttpStatus.CONFLICT );
 		}
 		
-		System.out.println("VIP OR NOT");
-		if ( articleDTO.getVip() == null ) {
-			return new ResponseEntity<>( "Renseignez vip", HttpStatus.BAD_REQUEST );
-		}
-		
-		Article article = new Article(articleDTO.getNom(), articleDTO.getObservation(), categorie, conteneur, marque, articleDTO.getPrixAchat(), 0, 0, articleDTO.getPrix(), fileDownloadUri, articleDTO.getVip(), null );   
-        articleRepository.save( article );
+		System.out.println( "Before Insert : "+DateStringConverter.stringToDate( articleDTO.getDateAchat() ) );
+		Article article = new Article(articleDTO.getNom(), articleDTO.getObservation(), null, categorie, conteneur, marque, articleDTO.getPrixAchat(), 0, 0, articleDTO.getPrix(), fileDownloadUri, DateStringConverter.stringToDate( articleDTO.getDateAchat() ) );   
 		
         String options = articleDTO.getOptions();
         if ( options == null ) {
@@ -180,32 +178,55 @@ public class ArticleController {
         List<Integer> valueEndIndexes = searcher.indexesOf( "}", options);
         
         System.out.println("CCC");
+        List<OptionArticle> listOptions = new ArrayList<>();
         for (int i=0; i<keyIndexes.size(); i++) {
         	
         	String option = options.substring( keyIndexes.get(i)+1, keyEndIndexes.get(i));      	
-        	String valeur = options.substring( valueIndexes.get(i)+1, valueEndIndexes.get(i));      	
+        	String valeur = options.substring( valueIndexes.get(i)+1, valueEndIndexes.get(i)).toUpperCase();      	
         	
-        	//CONSTRUIRE L'ID ET ENSUITE FAIRE FIND BY ID
-        	System.out.println( article.getCategorie().getNom()+"_"+option );
-        	Optional<OptionCategorie> optionCategorieTmp = optionCategorieRepository.findById( option+"_"+article.getCategorie().getNom() );
+        	System.out.println( option+"_"+article.getCategorie().getNom().toUpperCase() );
+        	Optional<OptionCategorie> optionCategorieTmp = optionCategorieRepository.findById( option+"_"+article.getCategorie().getNom().toUpperCase() );
         	OptionCategorie optionCategorie;
     		if ( optionCategorieTmp.isPresent() ) {
     			optionCategorie = optionCategorieTmp.get();
+    			
+    			List<ValeurOption> objetValeursPossible = new ArrayList<>();
+    			optionCategorie.getValeurs().forEach(objetValeursPossible::add);
+    			
+    			List<String> valeursPossible = new ArrayList<>();
+    			for (int y=0; y<objetValeursPossible.size(); y++) {
+    				valeursPossible.add( objetValeursPossible.get(y).getValeur() );
+    			}
+    			if ( optionCategorie.getIsFree() == false ) {
+    				System.out.println("Size = "+valeursPossible.size() );
+    				System.out.println("Val = "+valeursPossible.get(0) );
+    				System.out.println("Val = "+valeursPossible.get(1) );
+    				System.out.println("Celui ci est conditionee");
+    				if ( !valeursPossible.contains(valeur) ) {
+    					System.out.println(valeur);
+    					System.out.println( !valeursPossible.contains(valeur) );
+        				return new ResponseEntity<>( "Valeur d'option invalide", HttpStatus.BAD_REQUEST );
+        			}
+    			}
+    			
     		} else {
     			return new ResponseEntity<>( "Renseignez une Option valide", HttpStatus.BAD_REQUEST );
     		}	
         	
         	OptionArticle optionArticle = new OptionArticle( article, optionCategorie, valeur);
-        	optionArticleRepository.save(optionArticle);
+        	listOptions.add(optionArticle);
+        	
         }
         
+        articleRepository.save( article );
+        optionArticleRepository.saveAll(listOptions);
         System.out.println( " Article saved " );
         
 		return new ResponseEntity<>( "Article cree", HttpStatus.CREATED );
 	}
 	
 	@PutMapping()
-	public ResponseEntity<String> updateArticle( @RequestBody ArticleDTO articleDTO ) {
+	public ResponseEntity<String> updateArticle( @RequestBody ArticleDTO articleDTO ) throws ParseException {
 		
 		System.out.println( " Received Update Request " );
 		
@@ -240,9 +261,6 @@ public class ArticleController {
 		} else {
 			return new ResponseEntity<>( " Renseignez une marque valide ", HttpStatus.BAD_REQUEST );
 		}
-		
-//		article.setNom( articleDTO.getNom() );
-		
 	
 		List<OptionArticle> listOptions =  new ArrayList<>( article.getOptions() );
 		for ( int i = 0; i < listOptions.size(); i++ ) {
@@ -263,6 +281,7 @@ public class ArticleController {
 		}
 		
 		article.setObservation( articleDTO.getObservation() );
+		article.setNumeroDeSerie( articleDTO.getNumeroDeSerie() );
 		article.setCategorie(categorie);
 		article.setConteneur(conteneur);
 		article.setMarque(marque);
@@ -270,10 +289,7 @@ public class ArticleController {
 		article.setPrixLiquidation( articleDTO.getPrixLiquidation() );
 		article.setPrixEstimatif( articleDTO.getPrixEstimatif() );
 		article.setPrix( articleDTO.getPrix() );
-		article.setVip( articleDTO.getVip() );
-		article.setDateAchat( articleDTO.getDateAchat() );
-		
-        articleRepository.save(article);
+		article.setDateAchat( DateStringConverter.stringToDate( articleDTO.getDateAchat() ) );
         
         String options = articleDTO.getOptions();        
         StringSearcher searcher = new StringSearcher();
@@ -283,12 +299,12 @@ public class ArticleController {
         List<Integer> valueIndexes = searcher.indexesOf( ":", options);
         List<Integer> valueEndIndexes = searcher.indexesOf( "}", options);
         
+        listOptions = new ArrayList<>();
         for (int i=0; i<keyIndexes.size(); i++) {
         	
         	String option = options.substring( keyIndexes.get(i)+1, keyEndIndexes.get(i));      	
-        	String valeur = options.substring( valueIndexes.get(i)+1, valueEndIndexes.get(i));      	
+        	String valeur = options.substring( valueIndexes.get(i)+1, valueEndIndexes.get(i)).toUpperCase();      	
         	
-        	//CONSTRUIRE L'ID ET ENSUITE FAIRE FIND BY ID
         	Optional<OptionCategorie> optionCategorieTmp = optionCategorieRepository.findById( option+"_"+article.getCategorie().getNom() );
         	OptionCategorie optionCategorie;
     		if ( optionCategorieTmp.isPresent() ) {
@@ -298,9 +314,12 @@ public class ArticleController {
     		}	
         	
         	OptionArticle optionArticle = new OptionArticle( article, optionCategorie, valeur);
-        	optionArticleRepository.save(optionArticle);
+        	listOptions.add(optionArticle);
+        	
         }
         
+        articleRepository.save(article);
+        optionArticleRepository.saveAll(listOptions);
         System.out.println( " Article modified " );
         
 		return new ResponseEntity<>( "Article Modifie", HttpStatus.CREATED );

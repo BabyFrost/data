@@ -15,6 +15,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.PostLoad;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import com.docteurfrost.data.categorie.Categorie;
@@ -35,6 +37,9 @@ public class Article {
 	
 	@Column(name="OBSERVATION")
 	private String observation;
+	
+	@Column(name="NUMERO_DE_SERIE")
+	private String numeroDeSerie;
 	
 	@ManyToOne
 	@JsonBackReference(value="article_categorie")
@@ -69,18 +74,15 @@ public class Article {
 	@Column(name="ETAT")
 	private String etat;
 	
+	@Temporal(TemporalType.DATE)
 	@Column(name="DATE_ACHAT")
 	private Date dateAchat;
 	
-//	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="DATE_AJOUT")
 	private Date dateSaisie;
 	
 	@Column(name="DATE_MISE_EN_VENTE")
 	private Date dateMiseEnVente;
-	
-	@Column(name="VIP")
-	private Boolean vip;
 	
 	@OneToMany(mappedBy = "article", fetch = FetchType.EAGER, cascade=CascadeType.REMOVE)
 	@JsonManagedReference(value="article_options_article")
@@ -110,9 +112,10 @@ public class Article {
 		dansConteneur = new DansConteneur( this );
 	}
 	
-	public Article( String nom, String observation, Categorie categorie, Conteneur conteneur, Marque marque, int prixAchat, int prixLiquidation, int prixEstimatif, int prix, String photo, boolean vip, Date dateAchat) {
+	public Article( String nom, String observation, String numeroDeSerie, Categorie categorie, Conteneur conteneur, Marque marque, int prixAchat, int prixLiquidation, int prixEstimatif, int prix, String photo, Date dateAchat) {
 		this.nom = nom.toUpperCase();
 		this.observation = observation;
+		this.numeroDeSerie = numeroDeSerie;
 		this.categorie = categorie;
 		this.conteneur = conteneur;
 		this.marque = marque;
@@ -124,7 +127,6 @@ public class Article {
 		this.dateAchat = dateAchat;
 		this.dateSaisie = new Date();
 		this.dateMiseEnVente = null;
-		this.vip = vip;
 		
 		System.out.println( this.dateSaisie );
 		
@@ -180,6 +182,14 @@ public class Article {
 		this.observation = observation;
 	}
 	
+	public String getNumeroDeSerie() {
+		return numeroDeSerie;
+	}
+
+	public void setNumeroDeSerie(String numeroDeSerie) {
+		this.numeroDeSerie = numeroDeSerie;
+	}
+
 	public Categorie getCategorie() {
 		return categorie;
 	}
@@ -326,14 +336,6 @@ public class Article {
 
 	public void setDansConteneur(ArticleState dansConteneur) {
 		this.dansConteneur = dansConteneur;
-	}
-
-	public Boolean getVip() {
-		return vip;
-	}
-
-	public void setVip(Boolean vip) {
-		this.vip = vip;
 	}
 
 	public int getPrixLiquidation() {

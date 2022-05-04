@@ -5,12 +5,10 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -36,8 +34,14 @@ public class OptionCategorie {
 	@Column(name="LIBELLE")
 	private String libelle;
 	
-	@Column(name="NUMERIQUE")
-	private Boolean numerique;
+	@Column(name="IS_NUMERIQUE")
+	private Boolean isNumerique;
+	
+	@Column(name="IS_FREE")
+	private Boolean isFree;
+	
+	@Column(name="IS_BOOLEAN")
+	private Boolean isBoolean;
 	
 	@OneToMany(mappedBy = "option", cascade=CascadeType.REMOVE)
 	@JsonManagedReference(value="article_options_categorie")
@@ -49,12 +53,14 @@ public class OptionCategorie {
 	
 	public OptionCategorie() { }
 
-	public OptionCategorie(Categorie categorie, String nom, String libelle, Boolean numerique) {
-		this.id = nom+"_"+categorie.getNom();
+	public OptionCategorie(Categorie categorie, String nom, String libelle, Boolean isNumerique, Boolean isFree, Boolean isBoolean) {
 		this.categorie = categorie;
-		this.nom = nom;
+		this.nom = nom.toUpperCase();
+		this.id = this.nom.toUpperCase()+"_"+this.categorie.getNom();
 		this.libelle = libelle;
-		this.numerique = numerique;
+		this.isNumerique = isNumerique;
+		this.isFree = isFree;
+		this.isBoolean = isBoolean;
 	}
 
 	public String getId() {
@@ -85,12 +91,28 @@ public class OptionCategorie {
 		this.libelle = libelle;
 	}
 
-	public Boolean getNumerique() {
-		return numerique;
+	public Boolean getIsNumerique() {
+		return isNumerique;
 	}
 
-	public void setNumerique(Boolean numerique) {
-		this.numerique = numerique;
+	public void setIsNumerique(Boolean isNumerique) {
+		this.isNumerique = isNumerique;
+	}
+
+	public Boolean getIsFree() {
+		return isFree;
+	}
+
+	public void setIsFree(Boolean isFree) {
+		this.isFree = isFree;
+	}
+
+	public Boolean getIsBoolean() {
+		return isBoolean;
+	}
+
+	public void setIsBoolean(Boolean isBoolean) {
+		this.isBoolean = isBoolean;
 	}
 
 	public Set<ValeurOption> getValeurs() {
@@ -99,6 +121,14 @@ public class OptionCategorie {
 
 	public void setValeurs(Set<ValeurOption> valeurs) {
 		this.valeurs = valeurs;
+	}
+
+	public Set<OptionArticle> getOptions() {
+		return options;
+	}
+
+	public void setOptions(Set<OptionArticle> options) {
+		this.options = options;
 	}
 	
 }

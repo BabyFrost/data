@@ -1,17 +1,18 @@
 package com.docteurfrost.data.dto;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import org.springframework.web.multipart.MultipartFile;
 
 import com.docteurfrost.data.categorie.OptionArticle;
-import com.docteurfrost.data.model.article.Article; 
+import com.docteurfrost.data.model.article.Article;
+import com.docteurfrost.data.tools.DateStringConverter; 
 
 public class ArticleDTO { 
 
 	private String nom;
 	private String observation;
+	private String numeroDeSerie;
 	private String categorie;
 	private int conteneur;
 	private String marque;
@@ -23,10 +24,10 @@ public class ArticleDTO {
 	private String status;
 	private StringBuilder options;
 	private String photo;
-	private Date dateAchat;
-	private Date dateSaisie;
-	private Date dateMiseEnVente;
-	private Boolean vip;
+	private String dateAchat;
+	private String dateSaisie;
+	private String dateMiseEnVente;
+//	private Boolean vip;
 	private String etat;
 
 	public ArticleDTO() { }
@@ -34,6 +35,7 @@ public class ArticleDTO {
 	public ArticleDTO( Article article) {
 		this.nom = article.getNom();
 		this.observation = article.getObservation();
+		this.numeroDeSerie = article.getNumeroDeSerie();
 		this.categorie = article.getCategorie().getNom();
 		this.conteneur = article.getConteneur().getId();
 		this.prixAchat = article.getPrixAchat();
@@ -43,10 +45,10 @@ public class ArticleDTO {
 		this.marque = article.getMarque().getNom();
 		this.status = article.getState().toString();
 		this.photo = article.getPhoto();
-		this.dateAchat = article.getDateAchat();
-		this.dateSaisie = article.getDateSaisie();
-		this.dateMiseEnVente = article.getDateSaisie();
-		this.vip = article.getVip();
+		this.dateAchat = DateStringConverter.dateToString( article.getDateAchat() );
+		this.dateSaisie = DateStringConverter.dateToString( article.getDateSaisie() ) ;
+		this.dateMiseEnVente = DateStringConverter.dateToString( article.getDateSaisie() );
+//		this.vip = article.getVip();
 		this.etat = article.getEtat();
 		
 		options = new StringBuilder();
@@ -79,6 +81,14 @@ public class ArticleDTO {
 	
 	public void setObservation(String observation) {
 		this.observation = observation;
+	}
+
+	public String getNumeroDeSerie() {
+		return numeroDeSerie;
+	}
+
+	public void setNumeroDeSerie(String numeroDeSerie) {
+		this.numeroDeSerie = numeroDeSerie;
 	}
 
 	public String getCategorie() {
@@ -153,29 +163,29 @@ public class ArticleDTO {
 		this.file = file;
 	}
 
-	public Date getDateSaisie() {
+	public String getDateSaisie() {
 		return dateSaisie;
 	}
 
-	public void setDateSaisie(Date dateSaisie) {
+	public void setDateSaisie(String dateSaisie) {
 		this.dateSaisie = dateSaisie;
 	}
 
-	public Date getDateMiseEnVente() {
+	public String getDateMiseEnVente() {
 		return dateMiseEnVente;
 	}
 
-	public void setDateMiseEnVente(Date dateMiseEnVente) {
+	public void setDateMiseEnVente(String dateMiseEnVente) {
 		this.dateMiseEnVente = dateMiseEnVente;
 	}
 
-	public Boolean getVip() {
-		return vip;
-	}
-
-	public void setVip(Boolean vip) {
-		this.vip = vip;
-	}
+//	public Boolean getVip() {
+//		return vip;
+//	}
+//
+//	public void setVip(Boolean vip) {
+//		this.vip = vip;
+//	}
 
 	public int getPrixLiquidation() {
 		return prixLiquidation;
@@ -201,11 +211,11 @@ public class ArticleDTO {
 		this.etat = etat;
 	}
 
-	public Date getDateAchat() {
+	public String getDateAchat() {
 		return dateAchat;
 	}
 
-	public void setDateAchat(Date dateAchat) {
+	public void setDateAchat(String dateAchat) {
 		this.dateAchat = dateAchat;
 	}
 	
