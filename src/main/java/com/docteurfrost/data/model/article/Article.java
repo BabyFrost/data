@@ -22,6 +22,7 @@ import javax.persistence.Transient;
 import com.docteurfrost.data.categorie.Categorie;
 import com.docteurfrost.data.categorie.OptionArticle;
 import com.docteurfrost.data.conteneur.Conteneur;
+import com.docteurfrost.data.conteneur.Decharge;
 import com.docteurfrost.data.model.Marque;
 import com.docteurfrost.data.model.Operation;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -32,6 +33,9 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 public class Article {
 	
 	@Id
+	@Column(name="ID")
+	private String id;
+	
 	@Column(name="NOM")
 	private String nom;
 	
@@ -112,8 +116,9 @@ public class Article {
 		dansConteneur = new DansConteneur( this );
 	}
 	
-	public Article( String nom, String observation, String numeroDeSerie, Categorie categorie, Conteneur conteneur, Marque marque, int prixAchat, int prixLiquidation, int prixEstimatif, int prix, String photo, Date dateAchat) {
+	public Article( String nom, String observation, String numeroDeSerie, Categorie categorie, Conteneur conteneur, Marque marque, int prixAchat, int prixLiquidation, int prixEstimatif, int prix, String photo, Date dateAchat, String etat) {
 		this.nom = nom.toUpperCase();
+		this.id = this.nom+"_"+conteneur.getId();
 		this.observation = observation;
 		this.numeroDeSerie = numeroDeSerie;
 		this.categorie = categorie;
@@ -127,8 +132,7 @@ public class Article {
 		this.dateAchat = dateAchat;
 		this.dateSaisie = new Date();
 		this.dateMiseEnVente = null;
-		
-		System.out.println( this.dateSaisie );
+		this.etat = etat.toUpperCase();
 		
 		disparu = new Disparu( this );
 		enMagasin = new EnMagasin( this );
@@ -137,7 +141,12 @@ public class Article {
 		vendu = new Vendu( this );
 		dansConteneur = new DansConteneur( this );
 		
-		state = dansConteneur;	
+		if ( conteneur.getState() instanceof Decharge ) {
+			state = enMagasin;
+		} else {
+			state = dansConteneur;
+		}
+		
 	}
 	
 	@PostLoad
@@ -164,6 +173,14 @@ public class Article {
 				break;
 		}
 		
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public String getNom() {
@@ -355,11 +372,11 @@ public class Article {
 	}
 
 	public String getEtat() {
-		return etat;
+		return etat.toUpperCase();
 	}
 
 	public void setEtat(String etat) {
-		this.etat = etat;
+		this.etat = etat.toUpperCase();
 	}
 
 	public Date getDateAchat() {

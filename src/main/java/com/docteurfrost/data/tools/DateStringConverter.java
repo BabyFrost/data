@@ -8,11 +8,20 @@ public class DateStringConverter {
 	private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yyyy");
 	
 	public static Date stringToDate(String date) throws ParseException {
-		System.out.println( "Date Converted : "+simpleDateFormat.parse(date) );
+		
+		if (date == null ) {
+			return null;
+		}
+		
 		return simpleDateFormat.parse(date);
 	}
 	
 	public static String dateToString( Date date ) {
+		
+		if (date == null ) {
+			return null;
+		}
+		
 		return simpleDateFormat.format( date );
 	}
 

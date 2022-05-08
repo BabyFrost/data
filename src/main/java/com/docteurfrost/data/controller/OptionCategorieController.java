@@ -81,10 +81,13 @@ public class OptionCategorieController {
 			optionCategorieRepository.save( optionCategorie );
 			valeurOptionRepository.save( valeurOption0 );
 			valeurOptionRepository.save( valeurOption1 );
+			return new ResponseEntity<>( "Option cree", HttpStatus.CREATED );
+		} else {
+			
+			optionCategorieRepository.save( optionCategorie );
+			return new ResponseEntity<>( "Option cree", HttpStatus.CREATED );
+			
 		}
-		
-		
-		
-		return new ResponseEntity<>( "Option cree", HttpStatus.CREATED );
+
 	}
 }

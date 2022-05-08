@@ -12,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.PostLoad;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import com.docteurfrost.data.model.article.Article;
@@ -32,16 +34,19 @@ public class Conteneur {
 	@Column(name="PAYS")
 	private String pays;
 	
+	@Temporal(TemporalType.DATE)
 	@Column(name="DEPART")
-	private Date depart;
+	private Date dateDepart;
 	
+	@Temporal(TemporalType.DATE)
 	@Column(name="ARRIVEE")
-	private Date arrivee;
+	private Date dateArrivee;
 	
+	@Temporal(TemporalType.DATE)
 	@Column(name="DECHARGEMENT")
-	private Date dechargement;
+	private Date dateDechargement;
 	
-	@OneToMany(mappedBy = "conteneur", cascade=CascadeType.REMOVE)
+	@OneToMany(mappedBy = "conteneur", cascade=CascadeType.ALL)
 	@JsonManagedReference(value="conteneur_article")
 	private Collection<Article> articles = new ArrayList<>();
 	
@@ -61,13 +66,13 @@ public class Conteneur {
 		enRoute = new EnRoute( this );
 	}
 	
-	public Conteneur( int id, String nom, String pays, Date depart, Date arrivee, Date dechargement) {
+	public Conteneur( int id, String nom, String pays, Date dateDepart, Date dateArrivee, Date dateDechargement) {
 		this.id = id;
 		this.nom = nom;
 		this.pays = pays;
-		this.depart = depart;
-		this.arrivee = arrivee;
-		this.dechargement = dechargement;
+		this.dateDepart = dateDepart;
+		this.dateArrivee = dateArrivee;
+		this.dateDechargement = dateDechargement;
 		
 		arrive = new Arrive( this );
 		chargement = new Chargement( this );
@@ -125,28 +130,28 @@ public class Conteneur {
 		this.pays = pays;
 	}
 
-	public Date getDepart() {
-		return depart;
+	public Date getDateDepart() {
+		return dateDepart;
 	}
 
-	public void setDepart(Date depart) {
-		this.depart = depart;
+	public void setDateDepart(Date dateDepart) {
+		this.dateDepart = dateDepart;
 	}
 
-	public Date getArrivee() {
-		return arrivee;
+	public Date getDateArrivee() {
+		return dateArrivee;
 	}
 
-	public void setArrivee(Date arrivee) {
-		this.arrivee = arrivee;
+	public void setDateArrivee(Date dateArrivee) {
+		this.dateArrivee = dateArrivee;
 	}
 
-	public Date getDechargement() {
-		return dechargement;
+	public Date getDateDechargement() {
+		return dateDechargement;
 	}
 
-	public void setDechargement(Date dechargement) {
-		this.dechargement = dechargement;
+	public void setDateDechargement(Date dateDechargement) {
+		this.dateDechargement = dateDechargement;
 	}
 
 	public ConteneurState getState() {

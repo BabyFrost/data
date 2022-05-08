@@ -78,27 +78,24 @@ public class ArticleController {
 		return articlesDTO;
 	}
 	
-	@GetMapping("/{nomArtcile}")
+	@GetMapping("/{idArtcile}")
 	@ResponseBody 
-	public ArticleDTO getArticleSpecifique( @PathVariable("nomArtcile") String nomArticle ) {
-		Optional<Article> articleTmp = articleRepository.findById(nomArticle);
-		  
+	public ArticleDTO getArticleSpecifique( @PathVariable("idArtcile") String idArticle ) {
+		Optional<Article> articleTmp = articleRepository.findById(idArticle);
 		if ( articleTmp.isPresent() ) {
 			return new ArticleDTO( articleTmp.get() );
 		} else {
 			return null;
-		}
-	  
+		} 
 	}
 	
 	
 	@GetMapping("/categorie/{categorie}")
 	@ResponseBody 
 	public Iterable<Article> getArticlesByCategorie( @PathVariable("categorie") String nomCategorie ) {
-		Optional<Categorie> categorie = categorieRepository.findById(nomCategorie);
-		  
-		if ( categorie.isPresent() ) {
-			return articleRepository.findAllByCategorie( categorie.get() );
+		Optional<Categorie> categorieTmp = categorieRepository.findById(nomCategorie);  
+		if ( categorieTmp.isPresent() ) {
+			return articleRepository.findAllByCategorie( categorieTmp.get() );
 		} else {
 			return null;
 		}
@@ -158,12 +155,12 @@ public class ArticleController {
 		}
 		
 		System.out.println("BBB");
-		if ( articleRepository.findById( articleDTO.getNom() ).isPresent() ) {
+		if ( articleRepository.findById( articleDTO.getNom()+"_"+articleDTO.getConteneur() ).isPresent() ) {
 			return new ResponseEntity<>( "Cet article existe deja", HttpStatus.CONFLICT );
 		}
 		
 		System.out.println( "Before Insert : "+DateStringConverter.stringToDate( articleDTO.getDateAchat() ) );
-		Article article = new Article(articleDTO.getNom(), articleDTO.getObservation(), null, categorie, conteneur, marque, articleDTO.getPrixAchat(), 0, 0, articleDTO.getPrix(), fileDownloadUri, DateStringConverter.stringToDate( articleDTO.getDateAchat() ) );   
+		Article article = new Article(articleDTO.getNom(), articleDTO.getObservation(), null, categorie, conteneur, marque, articleDTO.getPrixAchat(), 0, 0, articleDTO.getPrix(), fileDownloadUri, DateStringConverter.stringToDate( articleDTO.getDateAchat() ), articleDTO.getEtat() );   
 		
         String options = articleDTO.getOptions();
         if ( options == null ) {
@@ -230,7 +227,7 @@ public class ArticleController {
 		
 		System.out.println( " Received Update Request " );
 		
-		Optional<Article> articleTmp = articleRepository.findById( articleDTO.getNom() );
+		Optional<Article> articleTmp = articleRepository.findById( articleDTO.getNom()+"_"+articleDTO.getConteneur() );
 		Article article;
 		if ( articleTmp.isPresent() ) {
 			article = articleTmp.get();
@@ -290,6 +287,7 @@ public class ArticleController {
 		article.setPrixEstimatif( articleDTO.getPrixEstimatif() );
 		article.setPrix( articleDTO.getPrix() );
 		article.setDateAchat( DateStringConverter.stringToDate( articleDTO.getDateAchat() ) );
+		article.setEtat( articleDTO.getEtat() );
         
         String options = articleDTO.getOptions();        
         StringSearcher searcher = new StringSearcher();
@@ -325,12 +323,12 @@ public class ArticleController {
 		return new ResponseEntity<>( "Article Modifie", HttpStatus.CREATED );
 	}
 	
-	@DeleteMapping("/{nomArticle}")
-	public ResponseEntity<String> deleteArticle( @PathVariable("nomArticle") String nomArticle ) {
+	@DeleteMapping("/{idArticle}")
+	public ResponseEntity<String> deleteArticle( @PathVariable("idArticle") String idArticle ) {
 	
 		System.out.println( " Received Delete Request" );
 		
-		Optional<Article> articleTmp = articleRepository.findById( nomArticle );
+		Optional<Article> articleTmp = articleRepository.findById( idArticle );
 		Article article;
 		if ( articleTmp.isPresent() ) {
 			article = articleTmp.get();
@@ -338,7 +336,7 @@ public class ArticleController {
 			return new ResponseEntity<>( " Renseignez un article existant ", HttpStatus.BAD_REQUEST );
 		}
 		
-		articleRepository.deleteById( article.getNom() );
+		articleRepository.deleteById( article.getNom()+"_"+article.getConteneur().getId() );
 		
         System.out.println( " Deleted " );
         

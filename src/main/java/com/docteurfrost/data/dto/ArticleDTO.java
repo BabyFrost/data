@@ -10,6 +10,7 @@ import com.docteurfrost.data.tools.DateStringConverter;
 
 public class ArticleDTO { 
 
+	private String id;
 	private String nom;
 	private String observation;
 	private String numeroDeSerie;
@@ -30,14 +31,17 @@ public class ArticleDTO {
 //	private Boolean vip;
 	private String etat;
 
-	public ArticleDTO() { }
+	public ArticleDTO() {
+		this.id = this.nom+"_"+this.conteneur;
+	}
 	
 	public ArticleDTO( Article article) {
-		this.nom = article.getNom();
+		this.nom = article.getNom().toUpperCase();
 		this.observation = article.getObservation();
 		this.numeroDeSerie = article.getNumeroDeSerie();
 		this.categorie = article.getCategorie().getNom();
 		this.conteneur = article.getConteneur().getId();
+		this.id = this.nom+"_"+this.conteneur;
 		this.prixAchat = article.getPrixAchat();
 		this.prixLiquidation = article.getPrixLiquidation();
 		this.prixEstimatif = article.getPrixEstimatif();
@@ -67,8 +71,16 @@ public class ArticleDTO {
 		
 	}
 
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
 	public String getNom() {
-		return nom;
+		return nom.toUpperCase();
 	}
 
 	public void setNom(String nom) {

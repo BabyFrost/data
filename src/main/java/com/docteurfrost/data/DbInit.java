@@ -35,7 +35,7 @@ import com.docteurfrost.data.repository.UtilisateurRepository;
 import com.docteurfrost.data.repository.ValeurOptionRepository;
 import com.docteurfrost.data.repository.VenteRepository;
 
-@Component
+//@Component
 public class DbInit {
 
 	@Autowired
@@ -89,21 +89,21 @@ public class DbInit {
         Marque marque = new Marque("lg", "LG");
         marqueRepository.save(marque);
         
-        Article article = new Article("TV1", "Tv ecran un peu fissuree en haut a droite", null, categorie, conteneur, marque, 50000, 0, 0, 100000, null, new Date() );
+        Article article = new Article("TV1", "Tv ecran un peu fissuree en haut a droite", null, categorie, conteneur, marque, 50000, 0, 0, 100000, null, new Date(), "BON" );
         article.decharger();
         article.deballer();
         articleRepository.save(article);
         
-        Article article2 = new Article("TV2", "Tv propre 100 neuve", null, categorie, conteneur, marque, 80000, 0, 0, 200000, null, new Date() );
+        Article article2 = new Article("TV2", "Tv propre 100 neuve", null, categorie, conteneur, marque, 80000, 0, 0, 200000, null, new Date(), "BON" );
         articleRepository.save(article2);
         
-        Article article3 = new Article("TV3", "Tv", null, categorie, conteneur, marque, 42000, 0, 0, 70000, null, new Date() );
+        Article article3 = new Article("TV3", "Tv", null, categorie, conteneur, marque, 42000, 0, 0, 70000, null, new Date(), "BON" );
         articleRepository.save(article3);
         
-        Article article4 = new Article("Tel1", "Telephone neuf", null, categorie2, conteneur, marque, 35000, 0, 0, 70000, null, new Date() );
+        Article article4 = new Article("Tel1", "Telephone neuf", null, categorie2, conteneur, marque, 35000, 0, 0, 70000, null, new Date(), "BON" );
         articleRepository.save(article4);
         
-        OptionCategorie option = new OptionCategorie(categorie, "Telecommande", "La tele a elle une telecommande ?", false, false, false);
+        OptionCategorie option = new OptionCategorie(categorie, "Telecommande", "La tele a elle une telecommande ?", false, false, true);
         optionCategorieRepository.save(option);
         
         ValeurOption val = new ValeurOption( "OUI", option);
@@ -124,7 +124,7 @@ public class DbInit {
         	optionArticleRepository.save(optionArticle);
         }
         
-        OptionCategorie option2 = new OptionCategorie(categorie, "Satellite", "Est-ce une TV Satelitte ?", false, false, false);
+        OptionCategorie option2 = new OptionCategorie(categorie, "Satellite", "Est-ce une TV Satelitte ?", false, false, true);
         optionCategorieRepository.save(option2);
         
         val = new ValeurOption( "OUI", option2);
@@ -138,7 +138,7 @@ public class DbInit {
         	optionArticleRepository.save(optionArticle);
         }
         
-        OptionCategorie option3 = new OptionCategorie(categorie, "Pieds", "La tele a elle ses pieds ?", false, false, false);
+        OptionCategorie option3 = new OptionCategorie(categorie, "Pieds", "La tele a elle ses pieds ?", false, false, true);
         optionCategorieRepository.save(option3);
         
         val = new ValeurOption( "OUI", option3);
@@ -211,7 +211,7 @@ public class DbInit {
         valXXX = new ValeurOption( "NON", optionXXX);
         valeurOptionRepository.save(valXXX);
         
-        optionXXX = new OptionCategorie(categorie, "TECHNOLOGIE", "TECHNO DE LA TV ?", false, false, true);
+        optionXXX = new OptionCategorie(categorie, "TECHNOLOGIE", "TECHNO DE LA TV ?", false, false, false);
         optionCategorieRepository.save(optionXXX);
         valXXX = new ValeurOption( "LED", optionXXX);
         valeurOptionRepository.save(valXXX);
