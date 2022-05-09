@@ -35,7 +35,8 @@ import com.docteurfrost.data.repository.UtilisateurRepository;
 import com.docteurfrost.data.repository.ValeurOptionRepository;
 import com.docteurfrost.data.repository.VenteRepository;
 
-//@Component
+@Component
+//@Profile("dev")
 public class DbInit {
 
 	@Autowired

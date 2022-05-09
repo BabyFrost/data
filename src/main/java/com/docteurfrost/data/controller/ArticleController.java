@@ -11,11 +11,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -29,6 +31,8 @@ import com.docteurfrost.data.dto.ArticleDTO;
 import com.docteurfrost.data.file.FileStorageService;
 import com.docteurfrost.data.model.Marque;
 import com.docteurfrost.data.model.article.Article;
+import com.docteurfrost.data.model.article.DansConteneur;
+import com.docteurfrost.data.model.article.EnMagasin;
 import com.docteurfrost.data.repository.ArticleRepository;
 import com.docteurfrost.data.repository.CategorieRepository;
 import com.docteurfrost.data.repository.ConteneurRepository;
@@ -341,6 +345,51 @@ public class ArticleController {
         System.out.println( " Deleted " );
         
 		return new ResponseEntity<>( "Article Supprimee", HttpStatus.OK );
+	}
+	
+	@PatchMapping("/mise_en_vente")
+	@ResponseBody
+	public ResponseEntity<String> miseEnVenteArticles( @RequestBody List<ArticleDTO> articlesDTO, @RequestParam String date ) throws ParseException {
+		
+		for (int i = 0; i<articlesDTO.size(); i++) {
+			
+			Article article;
+			Optional<Article> articleTmp = articleRepository.findById( articlesDTO.get(i).getId() );  
+			if ( articleTmp.isPresent() ) {
+				
+				article = articleTmp.get();
+				if ( article.getDateMiseEnVente() == null ) {
+					
+					article.setDateMiseEnVente( DateStringConverter.stringToDate( date ) );
+					
+					if ( article.getState() instanceof DansConteneur ) {
+						
+						return new ResponseEntity<>( "Article encore dans le conteneur "+article.getId(), HttpStatus.BAD_REQUEST );
+						
+					} else if ( !( article.getState() instanceof EnMagasin ) ) {
+						
+						return new ResponseEntity<>( "l'article n'est plus en Magasin", HttpStatus.BAD_REQUEST );
+						
+					}
+					
+					if ( article.getDateMiseEnVente().before( article.getDateSaisie() ) ) {
+						return new ResponseEntity<>( "Date < Date Depart", HttpStatus.BAD_REQUEST );
+					}
+					
+					article.getState().deballer();
+					articleRepository.save( article );
+//					return new ResponseEntity<>( "Status Modifie", HttpStatus.OK );
+				} else {
+					return new ResponseEntity<>( "Article deja Mis En Vente", HttpStatus.ALREADY_REPORTED );
+				}
+				
+			} else {
+				return new ResponseEntity<>( "Article inexistant", HttpStatus.CONFLICT );
+			}
+			
+		}
+		
+		return new ResponseEntity<>( "Tous les Status Modifie", HttpStatus.OK );
 	}
 	 
 }
