@@ -7,6 +7,9 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -30,7 +33,8 @@ public class Marque {
 	@Column(name="LIBELLE")
 	private String libelle;
 	
-	@OneToMany(mappedBy = "marque", cascade=CascadeType.REMOVE)
+	@ManyToMany
+	@JoinTable( name = "T_MARQUE_CATEGORIE", joinColumns = @JoinColumn(name = "MARQUE"), inverseJoinColumns = @JoinColumn(name = "CATEGORIE"))
 	@JsonManagedReference(value="categories_de_la_marque")
 	private Collection<Categorie> categories = new ArrayList<>();
 	

@@ -5,12 +5,14 @@ import java.util.ArrayList;
 
 import com.docteurfrost.data.categorie.Categorie;
 import com.docteurfrost.data.categorie.OptionCategorie;
+import com.docteurfrost.data.model.Marque;
 
 public class CategorieDTO {
 	
 	private String nom;
 	private String libelle;
 	private List<OptionCategorieDTO> options;
+	private List<MarqueDTO> marques;
 	
 	public CategorieDTO() { }
 
@@ -19,13 +21,19 @@ public class CategorieDTO {
 		this.libelle = categorie.getLibelle();
 		
 		options = new ArrayList<>();
-		OptionCategorieDTO optionCategorieDTO;
 		List<OptionCategorie> optionsCategorie;
 		optionsCategorie =  new ArrayList<>( categorie.getOptions() );
 		for ( int i=0; i < optionsCategorie.size(); i++ ) {
-			optionCategorieDTO = new OptionCategorieDTO( optionsCategorie.get(i) );
-			options.add(optionCategorieDTO);
+			options.add( new OptionCategorieDTO( optionsCategorie.get(i) ) );
 		}
+		
+		marques = new ArrayList<>();
+		List<Marque> marquesCategorie;
+		marquesCategorie =  new ArrayList<>( categorie.getMarques() );
+		for ( int i=0; i < marquesCategorie.size(); i++ ) {
+			marques.add( new MarqueDTO( marquesCategorie.get(i) ) );
+		}
+		
 	}
 
 	public String getNom() {
@@ -50,6 +58,18 @@ public class CategorieDTO {
 
 	public void setOptionsCategorieDTO(List<OptionCategorieDTO> options) {
 		this.options = options;
+	}
+
+	public void setOptions(List<OptionCategorieDTO> options) {
+		this.options = options;
+	}
+
+	public List<MarqueDTO> getMarques() {
+		return marques;
+	}
+
+	public void setMarques(List<MarqueDTO> marques) {
+		this.marques = marques;
 	}
 	
 }

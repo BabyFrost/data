@@ -8,8 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -29,10 +28,9 @@ public class Categorie {
 	@Column(name="LIBELLE")
 	private String libelle;
 	
-	@ManyToOne
+	@ManyToMany(mappedBy="categories")
 	@JsonBackReference(value="categories_de_la_marque")
-	@JoinColumn(name="MARQUE")
-	private Marque marque;
+	Collection<Marque> marques = new ArrayList<>();
 	
 	@OneToMany(mappedBy = "categorie", cascade=CascadeType.REMOVE, fetch=FetchType.EAGER )
 	@JsonManagedReference(value="article_categorie")
@@ -80,13 +78,13 @@ public class Categorie {
 	public void setOptions(Collection<OptionCategorie> options) {
 		this.options = options;
 	}
-	
-	public Marque getMarque() {
-		return marque;
+
+	public Collection<Marque> getMarques() {
+		return marques;
 	}
 
-	public void setMarque(Marque marque) {
-		this.marque = marque;
+	public void setMarques(Collection<Marque> marques) {
+		this.marques = marques;
 	}
 	
 }
