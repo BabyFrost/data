@@ -2,6 +2,8 @@ package com.docteurfrost.data.dto;
 
 import java.util.ArrayList;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import com.docteurfrost.data.categorie.OptionArticle;
@@ -11,11 +13,19 @@ import com.docteurfrost.data.tools.DateStringConverter;
 public class ArticleDTO { 
 
 	private String id;
+	
+	@NotNull
 	private String nom;
 	private String observation;
 	private String numeroDeSerie;
+	
+	@NotNull
 	private String categorie;
+	
+	@NotNull
 	private int conteneur;
+	
+	@NotNull
 	private String marque;
 	private int prixAchat;
 	private int prixLiquidation;
@@ -28,20 +38,19 @@ public class ArticleDTO {
 	private String dateAchat;
 	private String dateSaisie;
 	private String dateMiseEnVente;
-//	private Boolean vip;
+	
+	@NotNull
 	private String etat;
 
-	public ArticleDTO() {
-		this.id = this.nom+"_"+this.conteneur;
-	}
+	public ArticleDTO() { }
 	
 	public ArticleDTO( Article article) {
+		this.id = article.getId();
 		this.nom = article.getNom().toUpperCase();
 		this.observation = article.getObservation();
 		this.numeroDeSerie = article.getNumeroDeSerie();
 		this.categorie = article.getCategorie().getNom();
 		this.conteneur = article.getConteneur().getId();
-		this.id = this.nom+"_"+this.conteneur;
 		this.prixAchat = article.getPrixAchat();
 		this.prixLiquidation = article.getPrixLiquidation();
 		this.prixEstimatif = article.getPrixEstimatif();
@@ -52,7 +61,6 @@ public class ArticleDTO {
 		this.dateAchat = DateStringConverter.dateToString( article.getDateAchat() );
 		this.dateSaisie = DateStringConverter.dateToString( article.getDateSaisie() ) ;
 		this.dateMiseEnVente = DateStringConverter.dateToString( article.getDateSaisie() );
-//		this.vip = article.getVip();
 		this.etat = article.getEtat();
 		
 		options = new StringBuilder();
@@ -80,11 +88,11 @@ public class ArticleDTO {
 	}
 
 	public String getNom() {
-		return nom.toUpperCase();
+		return nom;
 	}
 
 	public void setNom(String nom) {
-		this.nom = nom;
+		this.nom = nom.toUpperCase();
 	}
 
 	public String getObservation() {
@@ -152,7 +160,13 @@ public class ArticleDTO {
 	}
 
 	public String getOptions() {
-		return options.toString();
+		
+		if ( this.options == null ) {
+			return null;
+		} else {
+			return options.toString();	
+		}
+		
 	}
 
 	public void setOptions(String options) {
@@ -190,14 +204,6 @@ public class ArticleDTO {
 	public void setDateMiseEnVente(String dateMiseEnVente) {
 		this.dateMiseEnVente = dateMiseEnVente;
 	}
-
-//	public Boolean getVip() {
-//		return vip;
-//	}
-//
-//	public void setVip(Boolean vip) {
-//		this.vip = vip;
-//	}
 
 	public int getPrixLiquidation() {
 		return prixLiquidation;

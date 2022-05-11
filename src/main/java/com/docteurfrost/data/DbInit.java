@@ -8,6 +8,7 @@ import java.util.Optional;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.docteurfrost.data.categorie.Categorie;
@@ -36,7 +37,7 @@ import com.docteurfrost.data.repository.ValeurOptionRepository;
 import com.docteurfrost.data.repository.VenteRepository;
 
 @Component
-//@Profile("dev")
+@Profile("dev")
 public class DbInit {
 
 	@Autowired

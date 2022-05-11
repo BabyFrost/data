@@ -372,7 +372,7 @@ public class Article {
 	}
 
 	public String getEtat() {
-		return etat.toUpperCase();
+		return etat;
 	}
 
 	public void setEtat(String etat) {

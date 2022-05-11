@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +17,6 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -108,7 +109,7 @@ public class ArticleController {
 	
 	@PostMapping()
 //	public ResponseEntity<String> saveArticle( @RequestBody ArticleDTO articleDTO ) {
-	public ResponseEntity<String> saveArticle( @ModelAttribute ArticleDTO articleDTO ) throws ParseException {
+	public ResponseEntity<String> saveArticle( @Valid @ModelAttribute ArticleDTO articleDTO ) throws ParseException {
 		System.out.println("Ca entre");
 		
 		String fileDownloadUri = null;
@@ -128,8 +129,10 @@ public class ArticleController {
 		
 		System.out.println("xxx");
 		System.out.println(articleDTO.getCategorie());
+		if ( articleDTO.getCategorie() == null ) {
+			return new ResponseEntity<>( " Renseignez une Categorie ", HttpStatus.BAD_REQUEST );
+		}
 		Optional<Categorie> categorieTmp = categorieRepository.findById( articleDTO.getCategorie() );
-		System.out.println("xyxy");
 		Categorie categorie;
 		if ( categorieTmp.isPresent() ) {
 			System.out.println("yyy");
@@ -149,7 +152,9 @@ public class ArticleController {
 		}
 		
 		System.out.println( articleDTO.getMarque() );
-		
+		if ( articleDTO.getMarque() == null ) {
+			return new ResponseEntity<>( " Renseignez une Marque ", HttpStatus.BAD_REQUEST );
+		}
 		Optional<Marque> marqueTmp = marqueRepository.findById( articleDTO.getMarque() );
 		Marque marque;
 		if ( marqueTmp.isPresent() ) {
@@ -159,11 +164,18 @@ public class ArticleController {
 		}
 		
 		System.out.println("BBB");
+		if ( articleDTO.getNom() == null  ) {
+			return new ResponseEntity<>( " Renseignez le nom de l'article ", HttpStatus.BAD_REQUEST );
+		}
+		
 		if ( articleRepository.findById( articleDTO.getNom()+"_"+articleDTO.getConteneur() ).isPresent() ) {
 			return new ResponseEntity<>( "Cet article existe deja", HttpStatus.CONFLICT );
 		}
 		
 		System.out.println( "Before Insert : "+DateStringConverter.stringToDate( articleDTO.getDateAchat() ) );
+		if ( articleDTO.getEtat() == null  ) {
+			return new ResponseEntity<>( " Renseignez etat de l'article ", HttpStatus.BAD_REQUEST );
+		}
 		Article article = new Article(articleDTO.getNom(), articleDTO.getObservation(), null, categorie, conteneur, marque, articleDTO.getPrixAchat(), 0, 0, articleDTO.getPrix(), fileDownloadUri, DateStringConverter.stringToDate( articleDTO.getDateAchat() ), articleDTO.getEtat() );   
 		
         String options = articleDTO.getOptions();
@@ -227,11 +239,12 @@ public class ArticleController {
 	}
 	
 	@PutMapping()
-	public ResponseEntity<String> updateArticle( @RequestBody ArticleDTO articleDTO ) throws ParseException {
+//	public ResponseEntity<String> updateArticle( @RequestBody ArticleDTO articleDTO ) throws ParseException {
+	public ResponseEntity<String> updateArticle( @ModelAttribute ArticleDTO articleDTO ) throws ParseException {
 		
 		System.out.println( " Received Update Request " );
 		
-		Optional<Article> articleTmp = articleRepository.findById( articleDTO.getNom()+"_"+articleDTO.getConteneur() );
+		Optional<Article> articleTmp = articleRepository.findById( articleDTO.getId() );
 		Article article;
 		if ( articleTmp.isPresent() ) {
 			article = articleTmp.get();
@@ -239,6 +252,7 @@ public class ArticleController {
 			return new ResponseEntity<>( " Renseignez un article existant ", HttpStatus.BAD_REQUEST );
 		}
 		
+		System.out.println( " AAA " );
 		Optional<Categorie> categorieTmp = categorieRepository.findById( articleDTO.getCategorie() );
 		Categorie categorie;
 		if ( categorieTmp.isPresent() ) {
@@ -247,6 +261,7 @@ public class ArticleController {
 			return new ResponseEntity<>( " Renseignez une categorie valide ", HttpStatus.BAD_REQUEST );
 		}
 		
+		System.out.println( " BBB " );
 		Optional<Conteneur> conteneurTmp = conteneurRepository.findById( articleDTO.getConteneur() );
 		Conteneur conteneur;
 		if ( conteneurTmp.isPresent() ) {
@@ -255,6 +270,7 @@ public class ArticleController {
 			return new ResponseEntity<>( " Renseignez un conteneur valide ", HttpStatus.BAD_REQUEST );
 		}
 		
+		System.out.println( " CCC " );
 		Optional<Marque> marqueTmp = marqueRepository.findById( articleDTO.getMarque() );
 		Marque marque;
 		if ( marqueTmp.isPresent() ) {
@@ -263,6 +279,7 @@ public class ArticleController {
 			return new ResponseEntity<>( " Renseignez une marque valide ", HttpStatus.BAD_REQUEST );
 		}
 	
+		System.out.println( " DDD " );
 		List<OptionArticle> listOptions =  new ArrayList<>( article.getOptions() );
 		for ( int i = 0; i < listOptions.size(); i++ ) {
 			OptionArticle optionArticle = optionArticleRepository.findById( listOptions.get(i).getId() ).get();
@@ -270,16 +287,7 @@ public class ArticleController {
 		}
 		article.setOptions(null);
 		
-		if ( articleDTO.getFile() != null ) {
-			String fileName = fileStorageService.storeFile( articleDTO.getFile(), articleDTO.getNom());
-
-	        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-	                .path("/downloadFile/")
-	                .path(articleDTO.getNom()+"/"+fileName)
-	                .toUriString();
-	        
-	        article.setPhoto( fileDownloadUri );
-		}
+		
 		
 		article.setObservation( articleDTO.getObservation() );
 		article.setNumeroDeSerie( articleDTO.getNumeroDeSerie() );
@@ -301,6 +309,7 @@ public class ArticleController {
         List<Integer> valueIndexes = searcher.indexesOf( ":", options);
         List<Integer> valueEndIndexes = searcher.indexesOf( "}", options);
         
+        System.out.println( " EEE " );
         listOptions = new ArrayList<>();
         for (int i=0; i<keyIndexes.size(); i++) {
         	
@@ -312,7 +321,7 @@ public class ArticleController {
     		if ( optionCategorieTmp.isPresent() ) {
     			optionCategorie = optionCategorieTmp.get();
     		} else {
-    			return new ResponseEntity<>( "Renseignez une Option valide", HttpStatus.BAD_REQUEST );
+    			return new ResponseEntity<>( "Renseignez une Option valide" , HttpStatus.BAD_REQUEST );
     		}	
         	
         	OptionArticle optionArticle = new OptionArticle( article, optionCategorie, valeur);
@@ -320,11 +329,23 @@ public class ArticleController {
         	
         }
         
+        System.out.println( " FFF " );
+        if ( articleDTO.getFile() != null ) {
+			String fileName = fileStorageService.storeFile( articleDTO.getFile(), articleDTO.getNom());
+
+	        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+	                .path("/downloadFile/")
+	                .path(articleDTO.getNom()+"/"+fileName)
+	                .toUriString();
+	        
+	        article.setPhoto( fileDownloadUri );
+		}
+        
         articleRepository.save(article);
         optionArticleRepository.saveAll(listOptions);
         System.out.println( " Article modified " );
         
-		return new ResponseEntity<>( "Article Modifie", HttpStatus.CREATED );
+		return new ResponseEntity<>( "Article Modifie" , HttpStatus.CREATED );
 	}
 	
 	@DeleteMapping("/{idArticle}")
@@ -349,7 +370,8 @@ public class ArticleController {
 	
 	@PatchMapping("/mise_en_vente")
 	@ResponseBody
-	public ResponseEntity<String> miseEnVenteArticles( @RequestBody List<ArticleDTO> articlesDTO, @RequestParam String date ) throws ParseException {
+//	public ResponseEntity<String> miseEnVenteArticles( @RequestBody List<ArticleDTO> articlesDTO, @RequestParam String date ) throws ParseException {
+	public ResponseEntity<String> updateArticle( @ModelAttribute List<ArticleDTO> articlesDTO, @RequestParam String date ) throws ParseException {
 		
 		for (int i = 0; i<articlesDTO.size(); i++) {
 			
@@ -390,6 +412,12 @@ public class ArticleController {
 		}
 		
 		return new ResponseEntity<>( "Tous les Status Modifie", HttpStatus.OK );
+	}
+	
+	@PostMapping("/validate/validateArticle")
+//	ResponseEntity<String> validateBody(@Valid @RequestBody Car car) {
+	ResponseEntity<String> validateBody(@Valid @ModelAttribute ArticleDTO articleDTO) {
+		return ResponseEntity.ok("valid");
 	}
 	 
 }
