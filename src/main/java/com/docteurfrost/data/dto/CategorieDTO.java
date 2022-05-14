@@ -35,6 +35,7 @@ public class CategorieDTO {
 			options.add( new OptionCategorieShortDTO( optionsCategorie.get(i) ) );
 		}
 		
+		
 		marques = new ArrayList<>();
 		List<Marque> marquesCategorie;
 		marquesCategorie =  new ArrayList<>( categorie.getMarques() );
