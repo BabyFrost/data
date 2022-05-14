@@ -11,7 +11,7 @@ public class CategorieDTO {
 	
 	private String nom;
 	private String libelle;
-	private List<OptionCategorieDTO> options;
+	private List<OptionCategorieShortDTO> options;
 	private List<MarqueDTO> marques;
 	
 	public CategorieDTO() { }
@@ -20,11 +20,19 @@ public class CategorieDTO {
 		this.nom = categorie.getNom();
 		this.libelle = categorie.getLibelle();
 		
+		/*
+		 * options = new ArrayList<>(); List<OptionCategorie> optionsCategorie;
+		 * optionsCategorie = new ArrayList<>( categorie.getOptions() ); for ( int i=0;
+		 * i < optionsCategorie.size(); i++ ) { //options.add( new OptionCategorieDTO(
+		 * optionsCategorie.get(i) ) ); options.add( new OptionCategorieDTO(
+		 * optionsCategorie.get(i) ) ); }
+		 */
+		
 		options = new ArrayList<>();
 		List<OptionCategorie> optionsCategorie;
 		optionsCategorie =  new ArrayList<>( categorie.getOptions() );
 		for ( int i=0; i < optionsCategorie.size(); i++ ) {
-			options.add( new OptionCategorieDTO( optionsCategorie.get(i) ) );
+			options.add( new OptionCategorieShortDTO( optionsCategorie.get(i) ) );
 		}
 		
 		marques = new ArrayList<>();
@@ -52,15 +60,11 @@ public class CategorieDTO {
 		this.libelle = libelle;
 	}
 
-	public List<OptionCategorieDTO> getOptions() {
+	public List<OptionCategorieShortDTO> getOptions() {
 		return options;
 	}
 
-	public void setOptionsCategorieDTO(List<OptionCategorieDTO> options) {
-		this.options = options;
-	}
-
-	public void setOptions(List<OptionCategorieDTO> options) {
+	public void setOptions(List<OptionCategorieShortDTO> options) {
 		this.options = options;
 	}
 

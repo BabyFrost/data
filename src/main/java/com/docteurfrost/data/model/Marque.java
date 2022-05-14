@@ -20,11 +20,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 @Entity
 @Table(name="T_MARQUES")
 public class Marque {
-
-//	@Id
-//	@GeneratedValue(strategy = GenerationType.IDENTITY)
-//	@Column(name="ID")
-//	private int id;
 	
 	@Id
 	@Column(name="NOM")
@@ -33,8 +28,8 @@ public class Marque {
 	@Column(name="LIBELLE")
 	private String libelle;
 	
-	@ManyToMany
-	@JoinTable( name = "T_MARQUE_CATEGORIE", joinColumns = @JoinColumn(name = "MARQUE"), inverseJoinColumns = @JoinColumn(name = "CATEGORIE"))
+	@ManyToMany(  cascade=CascadeType.REMOVE )
+	@JoinTable( name = "T_MARQUE_CATEGORIE", joinColumns = @JoinColumn(name = "MARQUE"), inverseJoinColumns = @JoinColumn(name = "CATEGORIE") )
 	@JsonManagedReference(value="categories_de_la_marque")
 	private Collection<Categorie> categories = new ArrayList<>();
 	
@@ -48,10 +43,6 @@ public class Marque {
 		this.nom = nom.toUpperCase();
 		this.libelle = libelle;
 	}
-
-//	public int getId() {
-//		return id;
-//	}
 
 	public String getNom() {
 		return nom;
