@@ -11,7 +11,7 @@ public class OptionCategorieShortDTO {
 	private Boolean isNumerique;
 	private Boolean isFree;
 	private Boolean isBoolean;
-	private List<ValeurOptionDTO> valeurs;
+	private List<ValeurOptionShortDTO> valeurs;
 	
 	public OptionCategorieShortDTO() { }
 
@@ -22,11 +22,11 @@ public class OptionCategorieShortDTO {
 		this.isBoolean = optionCategorie.getIsBoolean();
 		
 		valeurs = new ArrayList<>();
-		ValeurOptionDTO valeurOptionDTO;
+		ValeurOptionShortDTO valeurOptionDTO;
 		List<ValeurOption> valeurOption;
 		valeurOption =  new ArrayList<>( optionCategorie.getValeurs() );
 		for ( int i=0; i < valeurOption.size(); i++ ) {
-			valeurOptionDTO = new ValeurOptionDTO( valeurOption.get(i) );
+			valeurOptionDTO = new ValeurOptionShortDTO( valeurOption.get(i) );
 			valeurs.add(valeurOptionDTO);
 		}
 		
@@ -64,11 +64,11 @@ public class OptionCategorieShortDTO {
 		this.isBoolean = isBoolean;
 	}
 
-	public List<ValeurOptionDTO> getValeurs() {
+	public List<ValeurOptionShortDTO> getValeurs() {
 		return valeurs;
 	}
 
-	public void setValeurs(List<ValeurOptionDTO> valeurs) {
+	public void setValeurs(List<ValeurOptionShortDTO> valeurs) {
 		this.valeurs = valeurs;
 	}
 	
