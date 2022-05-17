@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -70,17 +71,88 @@ public class ArticleController {
 	
 	@GetMapping()
 	@ResponseBody
-	public Iterable<ArticleDTO> getAllArticlesDTO( ) {
+	public Iterable<ArticleDTO> getAllArticlesDTO( @RequestParam(required = false) String conteneur, @RequestParam(required = false) String categorie ) {
 		
-		List<Article> articles = new ArrayList<>();
-		articleRepository.findAll().forEach(articles::add);
-		
-		List<ArticleDTO> articlesDTO = new ArrayList<>();
-		for (int i=0; i<articles.size(); i++) {
-			articlesDTO.add( new ArticleDTO( articles.get(i) ) );
+		if ( categorie == null && conteneur == null ) {
+			
+			List<Article> articles = new ArrayList<>();
+			articleRepository.findAll().forEach(articles::add);
+			
+			List<ArticleDTO> articlesDTO = new ArrayList<>();
+			for (int i=0; i<articles.size(); i++) {
+				articlesDTO.add( new ArticleDTO( articles.get(i) ) );
+			}
+			
+			return articlesDTO;
+			
+		} else if ( categorie == null ) {
+			
+			if ( !( conteneur.matches("[0-9]+") ) ) {
+				return null;
+			}
+			
+			Optional<Conteneur> conteneurTmp = conteneurRepository.findById( Integer.valueOf(conteneur) );
+			if ( conteneurTmp.isPresent() ) {
+				
+				List<Article> articles = new ArrayList<>();
+				articleRepository.findAllByConteneur( conteneurTmp.get() ).forEach( articles::add );
+				
+				List<ArticleDTO> articlesDTO = new ArrayList<>();
+				for (int i=0; i<articles.size(); i++) {
+					articlesDTO.add( new ArticleDTO( articles.get(i) ) );
+				}
+				
+				return articlesDTO;
+			}
+				
+			
+			
+		} else if ( conteneur == null ) {
+			
+			Optional<Categorie> categorieTmp = categorieRepository.findById( categorie );
+			if ( categorieTmp.isPresent() ) {
+				
+				List<Article> articles = new ArrayList<>();
+				articleRepository.findAllByCategorie( categorieTmp.get() ).forEach( articles::add );
+				
+				List<ArticleDTO> articlesDTO = new ArrayList<>();
+				for (int i=0; i<articles.size(); i++) {
+					articlesDTO.add( new ArticleDTO( articles.get(i) ) );
+				}
+				
+				return articlesDTO;
+			} 
+			
+		} else {
+			
+			Optional<Categorie> categorieTmp = categorieRepository.findById( categorie );
+			if ( categorieTmp.isPresent() ) {
+				
+				Optional<Conteneur> conteneurTmp = conteneurRepository.findById( Integer.valueOf(conteneur) );
+				if ( conteneurTmp.isPresent() ) {
+					
+					if ( !( conteneur.matches("[0-9]+") ) ) {
+						return null;
+					}
+					
+					List<Article> articles = new ArrayList<>();
+					articleRepository.findAllByCategorieAndConteneur( categorieTmp.get(), conteneurTmp.get() ).forEach( articles::add );
+					
+					List<ArticleDTO> articlesDTO = new ArrayList<>();
+					for (int i=0; i<articles.size(); i++) {
+						articlesDTO.add( new ArticleDTO( articles.get(i) ) );
+					}
+					
+					return articlesDTO;
+				}
+				
+			}
+			
 		}
+		 
 		
-		return articlesDTO;
+		return null;
+		
 	}
 	
 	@GetMapping("/{idArtcile}")
@@ -92,19 +164,6 @@ public class ArticleController {
 		} else {
 			return null;
 		} 
-	}
-	
-	
-	@GetMapping("/categorie/{categorie}")
-	@ResponseBody 
-	public Iterable<Article> getArticlesByCategorie( @PathVariable("categorie") String nomCategorie ) {
-		Optional<Categorie> categorieTmp = categorieRepository.findById(nomCategorie);  
-		if ( categorieTmp.isPresent() ) {
-			return articleRepository.findAllByCategorie( categorieTmp.get() );
-		} else {
-			return null;
-		}
-	  
 	}
 	
 	@PostMapping()
@@ -166,6 +225,16 @@ public class ArticleController {
 		System.out.println("BBB");
 		if ( articleDTO.getNom() == null  ) {
 			return new ResponseEntity<>( " Renseignez le nom de l'article ", HttpStatus.BAD_REQUEST );
+		}
+		
+		System.out.println("CCC");
+		if ( articleDTO.getPrixAchat() == 0  ) {
+			return new ResponseEntity<>( " Renseignez prix Achat", HttpStatus.BAD_REQUEST );
+		}
+		
+		System.out.println("DDD");
+		if ( articleDTO.getPrix() == 0  ) {
+			return new ResponseEntity<>( " Renseignez prix Achat", HttpStatus.BAD_REQUEST );
 		}
 		
 		if ( articleRepository.findById( articleDTO.getNom()+"_"+articleDTO.getConteneur() ).isPresent() ) {
@@ -287,6 +356,15 @@ public class ArticleController {
 		}
 		article.setOptions(null);
 		
+		System.out.println("EEE");
+		if ( articleDTO.getPrixAchat() == 0  ) {
+			return new ResponseEntity<>( " Renseignez prix Achat", HttpStatus.BAD_REQUEST );
+		}
+		
+		System.out.println("FFF");
+		if ( articleDTO.getPrix() == 0  ) {
+			return new ResponseEntity<>( " Renseignez prix Achat", HttpStatus.BAD_REQUEST );
+		}
 		
 		
 		article.setObservation( articleDTO.getObservation() );
@@ -370,8 +448,8 @@ public class ArticleController {
 	
 	@PatchMapping("/mise_en_vente")
 	@ResponseBody
-//	public ResponseEntity<String> miseEnVenteArticles( @RequestBody List<ArticleDTO> articlesDTO, @RequestParam String date ) throws ParseException {
-	public ResponseEntity<String> updateArticle( @ModelAttribute List<ArticleDTO> articlesDTO, @RequestParam String date ) throws ParseException {
+	public ResponseEntity<String> miseEnVenteArticles( @RequestBody List<ArticleDTO> articlesDTO, @RequestParam String date ) throws ParseException {
+//	public ResponseEntity<String> updateArticle( @ModelAttribute List<ArticleDTO> articlesDTO, @RequestParam String date ) throws ParseException {
 		
 		for (int i = 0; i<articlesDTO.size(); i++) {
 			

@@ -53,7 +53,7 @@ public class ConteneurController {
 		
 		System.out.println("Inside the post");
 		
-		if ( conteneurRepository.findById(conteneurDTO.getId()).isPresent() ) {
+		if ( conteneurRepository.findById( conteneurDTO.getId() ).isPresent() ) {
 			return new ResponseEntity<>( "Ce Conteneur existe deja", HttpStatus.CONFLICT );
 		}
 		
@@ -67,7 +67,7 @@ public class ConteneurController {
 	@ResponseBody
 	public ResponseEntity<String> modifyConteneur(@RequestBody ConteneurDTO conteneurDTO) throws ParseException {
 		
-		Optional<Conteneur> conteneurTmp = conteneurRepository.findByNom( conteneurDTO.getNom() );
+		Optional<Conteneur> conteneurTmp = conteneurRepository.findById( conteneurDTO.getId() );
 		if ( conteneurTmp.isPresent() ) {
 			Conteneur conteneur = conteneurTmp.get();
 			conteneur.setNom( conteneurDTO.getNom() );

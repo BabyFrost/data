@@ -14,6 +14,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -51,6 +52,10 @@ public class Utilisateur {
 	@Column(name="MOT_DE_PASSE")
 	private String password;
 	
+	@Pattern(regexp="[F,M]{1}")
+	@Column(name="SEXE")
+	private String sexe;
+	
 	@OneToMany(mappedBy = "vendeur", cascade=CascadeType.REMOVE)
 	@JsonManagedReference(value="operations_utilisateur")
 	private Collection<Operation> operations = new ArrayList<>();
@@ -58,7 +63,7 @@ public class Utilisateur {
 	public Utilisateur() { }
 
 	public Utilisateur( String nom, String prenom, Date dateDeNaissance, int numeroCNI, String email,
-			int telephone, String login, String password) {
+			int telephone, String login, String password, String sexe) {
 		this.nom = nom;
 		this.prenom = prenom;
 		this.dateDeNaissance = dateDeNaissance;
@@ -67,6 +72,7 @@ public class Utilisateur {
 		this.telephone = telephone;
 		this.login = login;
 		this.password = password;
+		this.sexe = sexe;
 	}
 
 	public int getId() {
@@ -135,6 +141,14 @@ public class Utilisateur {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getSexe() {
+		return sexe;
+	}
+
+	public void setSexe(String sexe) {
+		this.sexe = sexe;
 	}
 
 }

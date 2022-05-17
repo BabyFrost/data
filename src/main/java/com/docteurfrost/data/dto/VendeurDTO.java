@@ -13,6 +13,7 @@ public class VendeurDTO {
 	private int numeroCNI;
 	private String email;
 	private int telephone;
+	private String sexe;
 
 	public VendeurDTO() { }
 
@@ -24,6 +25,7 @@ public class VendeurDTO {
 		this.numeroCNI = utilisateur.getNumeroCNI();
 		this.email = utilisateur.getEmail();
 		this.telephone = utilisateur.getTelephone();
+		this.sexe = utilisateur.getSexe();
 	}
 
 	public int getId() {
@@ -80,6 +82,14 @@ public class VendeurDTO {
 
 	public void setTelephone(int telephone) {
 		this.telephone = telephone;
+	}
+
+	public String getSexe() {
+		return sexe;
+	}
+
+	public void setSexe(String sexe) {
+		this.sexe = sexe;
 	}
 
 }

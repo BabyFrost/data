@@ -82,11 +82,11 @@ public class VenteController {
 			ArticleDTO articleDTO = articlesDTO.get(i);
 			
 			Client client;
-			Optional<Client> clientTmp = clientRepository.findById( panierDTO.getClient().getId() );
+			Optional<Client> clientTmp = clientRepository.findById( panierDTO.getClient().getTelephone() );
 			if ( clientTmp.isPresent() ) {
 				client = clientTmp.get();
 			} else {
-				return new ResponseEntity<>( " Ce client n'existe pas ", HttpStatus.BAD_REQUEST );
+				return new ResponseEntity<>( "Ce client n'existe pas ", HttpStatus.BAD_REQUEST );
 			}
 			
 			Utilisateur vendeur;
@@ -94,7 +94,7 @@ public class VenteController {
 			if ( vendeurTmp.isPresent() ) {
 				vendeur = vendeurTmp.get();
 			} else {
-				return new ResponseEntity<>( " Ce Vendeur n'existe pas ", HttpStatus.BAD_REQUEST );
+				return new ResponseEntity<>( "Ce Vendeur n'existe pas ", HttpStatus.BAD_REQUEST );
 			}
 			
 			
@@ -105,11 +105,11 @@ public class VenteController {
 				article = articleTmp.get();
 				
 				if ( !(article.getState() instanceof EnVente) ) {
-					return new ResponseEntity<>( " Cette article n'est pas a vendre ", HttpStatus.BAD_REQUEST );
+					return new ResponseEntity<>( "Cette article n'est pas a vendre ", HttpStatus.BAD_REQUEST );
 				}
 				
 			} else {
-				return new ResponseEntity<>( " Renseignez un article valide ", HttpStatus.BAD_REQUEST );
+				return new ResponseEntity<>( "Renseignez un article valide ", HttpStatus.BAD_REQUEST );
 			}
 
 			Vente vente = new Vente ( "Libelle", client, article, vendeur, panier );

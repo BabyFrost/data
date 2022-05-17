@@ -7,24 +7,19 @@ import java.util.Date;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name="T_CLIENTS")
 public class Client {
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="ID")
-	private int id;
 	
 	@Column(name="NOM")
 	private String nom;
@@ -32,7 +27,7 @@ public class Client {
 	@Column(name="PRENOM")
 	private String prenom;
 	
-	@Column(name="DATE_DE_NAISSANCE")
+	@Column(name="DATE_NAISSANCE")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date dateDeNaissance;
 	
@@ -42,8 +37,19 @@ public class Client {
 	@Column(name="EMAIL")
 	private String email;
 	
+	@Id
+	@NotNull
+	@Pattern(regexp="[6]{1}[5,7,8,9]{1}[\\d]{7}")
 	@Column(name="TELEPHONE")
-	private int telephone;
+	private String telephone;
+	
+	@Pattern(regexp="[F,M]{1}")
+	@Column(name="SEXE")
+	private String sexe;
+	
+	@Column(name="DATE_CREATION")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date dateCreation;
 	
 	@OneToMany(mappedBy = "client", cascade=CascadeType.REMOVE)
 	@JsonManagedReference(value="operations_client")
@@ -51,17 +57,15 @@ public class Client {
 	
 	public Client() { }
 
-	public Client( String nom, String prenom, Date dateDeNaissance, int numeroCNI, String email, int telephone ) {
+	public Client( String nom, String prenom, Date dateDeNaissance, int numeroCNI, String email, String telephone, String sexe ) {
 		this.nom = nom;
 		this.prenom = prenom;
 		this.dateDeNaissance = dateDeNaissance;
 		this.numeroCNI = numeroCNI;
 		this.email = email;
 		this.telephone = telephone;
-	}
-
-	public int getId() {
-		return id;
+		this.sexe = sexe;
+		this.dateCreation = new Date();
 	}
 
 	public String getNom() {
@@ -104,12 +108,28 @@ public class Client {
 		this.email = email;
 	}
 
-	public int getTelephone() {
+	public String getTelephone() {
 		return telephone;
 	}
 
-	public void setTelephone(int telephone) {
+	public void setTelephone(String telephone) {
 		this.telephone = telephone;
+	}
+
+	public String getSexe() {
+		return sexe;
+	}
+
+	public void setSexe(String sexe) {
+		this.sexe = sexe;
+	}
+
+	public Date getDateCreation() {
+		return dateCreation;
+	}
+
+	public void setDateCreation(Date dateCreation) {
+		this.dateCreation = dateCreation;
 	}
 	
 }

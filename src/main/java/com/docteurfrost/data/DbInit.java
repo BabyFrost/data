@@ -162,12 +162,11 @@ public class DbInit {
         	optionArticleRepository.save(optionArticle);
         }
         
-        Utilisateur utilisateur = new Utilisateur ( "Voufack", "Harold", new Date(), 7280193, "haroldvoufack@gmail.com", 699147539, "login", "password" );
+        Utilisateur utilisateur = new Utilisateur ( "Voufack", "Harold", new Date(), 96874, "haroldvoufack@gmail.com", 699147539, "login", "password", "M" );
         utilisateurRepository.save(utilisateur);
         
-        Client client = new Client ( "Nana", "Arthur", new Date(), 1973561, "nanaarthur@gmail.com", 651460743 );
+        Client client = new Client ( "Nana", "Arthur", new Date(), 54789, "nanaarthur@gmail.com", "651460743", "M" );
         clientRepository.save(client);
-        
         
         Panier panier = new Panier( new Date() );
 		panierRepository.save( panier );
