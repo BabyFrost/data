@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.docteurfrost.data.exception.FileStorageException;
+import com.docteurfrost.data.exception.MyFileNotFoundException;
+
 @Service
 public class FileStorageService {
 

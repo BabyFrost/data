@@ -89,6 +89,7 @@ public class VenteController {
 				return new ResponseEntity<>( "Ce client n'existe pas ", HttpStatus.BAD_REQUEST );
 			}
 			
+			System.out.println("sfsdgsdg");
 			Utilisateur vendeur;
 			Optional<Utilisateur> vendeurTmp = utilisateurRepository.findById( panierDTO.getVendeur().getId() );
 			if ( vendeurTmp.isPresent() ) {
@@ -98,6 +99,7 @@ public class VenteController {
 			}
 			
 			
+			System.out.println("AAAAA");
 			Article article;
 			
 			Optional<Article> articleTmp = articleRepository.findById( articleDTO.getNom() );
@@ -112,6 +114,7 @@ public class VenteController {
 				return new ResponseEntity<>( "Renseignez un article valide ", HttpStatus.BAD_REQUEST );
 			}
 
+			System.out.println("BBBB");
 			Vente vente = new Vente ( "Libelle", client, article, vendeur, panier );
 			article.vendre();
 			
