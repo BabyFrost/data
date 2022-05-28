@@ -33,8 +33,13 @@ import com.docteurfrost.data.dto.ArticleDTO;
 import com.docteurfrost.data.file.FileStorageService;
 import com.docteurfrost.data.model.Marque;
 import com.docteurfrost.data.model.article.Article;
+import com.docteurfrost.data.model.article.ArticleState;
 import com.docteurfrost.data.model.article.DansConteneur;
+import com.docteurfrost.data.model.article.Disparu;
 import com.docteurfrost.data.model.article.EnMagasin;
+import com.docteurfrost.data.model.article.EnVente;
+import com.docteurfrost.data.model.article.Reserve;
+import com.docteurfrost.data.model.article.Vendu;
 import com.docteurfrost.data.repository.ArticleRepository;
 import com.docteurfrost.data.repository.CategorieRepository;
 import com.docteurfrost.data.repository.ConteneurRepository;
@@ -71,9 +76,11 @@ public class ArticleController {
 	
 	@GetMapping()
 	@ResponseBody
-	public Iterable<ArticleDTO> getAllArticlesDTO( @RequestParam(required = false) String conteneur, @RequestParam(required = false) String categorie ) {
+	public Iterable<ArticleDTO> getAllArticlesDTO( @RequestParam(required = false) String conteneur, @RequestParam(required = false) String categorie, @RequestParam(required = false) String status ) {
 		
-		if ( categorie == null && conteneur == null ) {
+		if ( categorie == null && conteneur == null && status == null ) {
+			
+			System.out.println(" categorie == null && conteneur == null && status == null ");
 			
 			List<Article> articles = new ArrayList<>();
 			articleRepository.findAll().forEach(articles::add);
@@ -85,7 +92,9 @@ public class ArticleController {
 			
 			return articlesDTO;
 			
-		} else if ( categorie == null ) {
+		} else if ( categorie == null && status == null ) {
+			
+			System.out.println(" categorie == null && status == null ");
 			
 			if ( !( conteneur.matches("[0-9]+") ) ) {
 				return null;
@@ -107,7 +116,9 @@ public class ArticleController {
 				
 			
 			
-		} else if ( conteneur == null ) {
+		} else if ( conteneur == null && status == null ) {
+			
+			System.out.println(" conteneur == null && status == null ");
 			
 			Optional<Categorie> categorieTmp = categorieRepository.findById( categorie );
 			if ( categorieTmp.isPresent() ) {
@@ -123,7 +134,49 @@ public class ArticleController {
 				return articlesDTO;
 			} 
 			
+		} else if ( categorie == null && conteneur == null ) {
+			
+			System.out.println(" categorie == null && conteneur == null");
+			
+			ArticleState state = null;
+			
+			System.out.println( status.toLowerCase() );
+			switch( status.toLowerCase() ) {
+				case "disparu":
+					state = new Disparu(null);
+					break;
+				case "enmagasin":
+					state = new EnMagasin(null);
+					break;
+				case "envente":
+					state = new EnVente(null);
+					break;
+				case "reserve":
+					state = new Reserve(null);
+					break;
+				case "vendu":
+					state = new Vendu(null);
+					break;
+				case "dansconteneur":
+					state = new DansConteneur(null);
+					break;
+			}
+			
+			System.out.println( state.toString() );
+			
+			List<Article> articles = new ArrayList<>();
+			articleRepository.findAllByState( state ).forEach(articles::add);
+			
+			List<ArticleDTO> articlesDTO = new ArrayList<>();
+			for (int i=0; i<articles.size(); i++) {
+				articlesDTO.add( new ArticleDTO( articles.get(i) ) );
+			}
+			
+			return articlesDTO;
+			
 		} else {
+			
+			System.out.println(" ELSE ");
 			
 			Optional<Categorie> categorieTmp = categorieRepository.findById( categorie );
 			if ( categorieTmp.isPresent() ) {
