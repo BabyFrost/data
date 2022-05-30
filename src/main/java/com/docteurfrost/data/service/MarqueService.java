@@ -20,7 +20,14 @@ public class MarqueService {
 	@Autowired
 	private MarqueRepository marqueRepository;
 	
-	public List<MarqueDTO> getAllContainers( ) {
+	public List<Marque> getAllContainers( ) {
+		List<Marque> marques = new ArrayList<>();
+		marqueRepository.findAll().forEach(marques::add);
+		
+		return marques;
+	}
+	
+	public List<MarqueDTO> getAllContainersDTO( ) {
 		List<Marque> marques = new ArrayList<>();
 		marqueRepository.findAll().forEach(marques::add);
 		
@@ -48,7 +55,7 @@ public class MarqueService {
 		return new ResponseEntity<>( "Marque cree", HttpStatus.CREATED );
 	}
 	
-	public ResponseEntity<String> updateMarque( MarqueDTO marqueDTO) {
+	public ResponseEntity<String> updateMarqueDTO( MarqueDTO marqueDTO) {
 		if ( marqueRepository.findById(marqueDTO.getNom()).isPresent() ) {
 			Marque marque = marqueRepository.findById(marqueDTO.getNom()).get();
 			marque.setNom( marqueDTO.getNom() );

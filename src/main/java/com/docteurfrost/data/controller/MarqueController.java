@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.docteurfrost.data.categorie.Categorie;
 import com.docteurfrost.data.dto.CategorieDTO;
 import com.docteurfrost.data.dto.MarqueDTO;
+import com.docteurfrost.data.model.Marque;
 import com.docteurfrost.data.service.CategorieService;
 import com.docteurfrost.data.service.MarqueService;
 
@@ -33,31 +34,32 @@ public class MarqueController {
 	
 	@GetMapping()
 	@ResponseBody
-	public List<MarqueDTO> getAllContainers( ) {
+	public List<MarqueDTO> getAllContainersDTO( ) {	
 		
-		return marqueService.getAllContainers();
+		List<Marque> marques = marqueService.getAllContainers();
+		List<MarqueDTO> marquesDTO = new ArrayList<>();
+		for (int i=0; i<marques.size(); i++) {
+			marquesDTO.add( new MarqueDTO( marques.get(i) ) );
+		}
 		
+		return marquesDTO;
 	}
 	
 	@PostMapping()
 	@ResponseBody
-	public ResponseEntity<String> saveMarque(@RequestBody MarqueDTO marqueDTO) {
-		
+	public ResponseEntity<String> saveMarqueDTO(@RequestBody MarqueDTO marqueDTO) {
 		return marqueService.saveMarqueDTO(marqueDTO);
-		
 	}
 	
 	@PutMapping()
 	@ResponseBody
-	public ResponseEntity<String> updateMarque(@RequestBody MarqueDTO marqueDTO) {
-		
-		return marqueService.updateMarque(marqueDTO);
-		
+	public ResponseEntity<String> updateMarqueDTO(@RequestBody MarqueDTO marqueDTO) {		
+		return marqueService.updateMarqueDTO(marqueDTO);
 	}
 	
 	@PatchMapping("/categorie/{idMarque}")
 	@ResponseBody
-	public ResponseEntity<String> updateMarque( @PathVariable("idMarque") String idMarque, @RequestBody List<CategorieDTO> categoriesDTO ) {
+	public ResponseEntity<String> addCategoriesMarque( @PathVariable("idMarque") String idMarque, @RequestBody List<CategorieDTO> categoriesDTO ) {
 		
 		List<Categorie> categories = new ArrayList<>();
 		for (int i = 0; i<categoriesDTO.size(); i++) {		

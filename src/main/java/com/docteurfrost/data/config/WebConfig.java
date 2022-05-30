@@ -1,4 +1,4 @@
-package com.docteurfrost.data;
+package com.docteurfrost.data.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
