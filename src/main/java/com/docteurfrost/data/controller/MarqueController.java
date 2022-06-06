@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.docteurfrost.data.categorie.Categorie;
 import com.docteurfrost.data.dto.CategorieDTO;
 import com.docteurfrost.data.dto.MarqueDTO;
+import com.docteurfrost.data.exception.ResourceNotFoundException;
 import com.docteurfrost.data.model.Marque;
 import com.docteurfrost.data.service.CategorieService;
 import com.docteurfrost.data.service.MarqueService;
@@ -59,11 +60,11 @@ public class MarqueController {
 	
 	@PatchMapping("/categorie/{idMarque}")
 	@ResponseBody
-	public ResponseEntity<String> addCategoriesMarque( @PathVariable("idMarque") String idMarque, @RequestBody List<CategorieDTO> categoriesDTO ) {
+	public ResponseEntity<String> addCategoriesMarque( @PathVariable("idMarque") String idMarque, @RequestBody List<CategorieDTO> categoriesDTO ) throws ResourceNotFoundException {
 		
 		List<Categorie> categories = new ArrayList<>();
 		for (int i = 0; i<categoriesDTO.size(); i++) {		
-			Categorie categorie = categorieService.findCategorie( categoriesDTO.get(i).getNom() );	
+			Categorie categorie = categorieService.getCategorieById( categoriesDTO.get(i).getNom() );	
 			categories.add(categorie);
 		}
 		

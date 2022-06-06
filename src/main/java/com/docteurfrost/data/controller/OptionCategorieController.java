@@ -1,10 +1,9 @@
 package com.docteurfrost.data.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +15,8 @@ import com.docteurfrost.data.categorie.Categorie;
 import com.docteurfrost.data.categorie.OptionCategorie;
 import com.docteurfrost.data.categorie.ValeurOption;
 import com.docteurfrost.data.dto.OptionCategorieDTO;
+import com.docteurfrost.data.exception.ResourceConflictException;
+import com.docteurfrost.data.exception.ResourceNotFoundException;
 import com.docteurfrost.data.service.CategorieService;
 import com.docteurfrost.data.service.OptionCategorieService;
 import com.docteurfrost.data.service.ValeurOptionService;
@@ -35,17 +36,24 @@ public class OptionCategorieController {
 	
 	@GetMapping()
 	@ResponseBody
-	public List<OptionCategorieDTO> getAllOptionsDTO( ) {
-		return optionCategorieService.getAllOptionsCategorieDTO();
+	public List<OptionCategorieDTO> getAllOptionCategorieDTO( ) throws ResourceNotFoundException {
+		
+		List<OptionCategorie> optionsCategorie = optionCategorieService.getAllOptionCategorie();
+		List<OptionCategorieDTO> optionsCategorieDTO = new ArrayList<>();
+		for (int i=0; i<optionsCategorie.size(); i++) {
+			optionsCategorieDTO.add( new OptionCategorieDTO( optionsCategorie.get(i) ) );
+		}
+		
+		return optionsCategorieDTO;
 	}
 	
 	@PostMapping()
 	@ResponseBody
-	public ResponseEntity<String> saveCategory(@RequestBody OptionCategorieDTO optionCategorieDTO) {
+	public OptionCategorie createOptionCategoryDTO(@RequestBody OptionCategorieDTO optionCategorieDTO) throws ResourceConflictException, ResourceNotFoundException {
 		
-		Categorie categorie = categorieService.findCategorie( optionCategorieDTO.getCategorie() );
-		OptionCategorie optionCategorie = optionCategorieService.saveOptionCategoryDTO( optionCategorieDTO, categorie);
-		
+		Categorie categorie = categorieService.getCategorieById( optionCategorieDTO.getCategorie() );
+		OptionCategorie optionCategorie = new OptionCategorie( categorie, optionCategorieDTO.getNom(), optionCategorieDTO.getLibelle(), optionCategorieDTO.getIsNumerique(), optionCategorieDTO.getIsFree(), optionCategorieDTO.getIsBoolean() );
+		optionCategorie = optionCategorieService.createOptionCategory(optionCategorie);
 		if ( optionCategorie.getIsBoolean() ) {
 			ValeurOption valeurOption0 = new ValeurOption( "OUI", optionCategorie );
 			ValeurOption valeurOption1 = new ValeurOption( "NON", optionCategorie );
@@ -53,8 +61,7 @@ public class OptionCategorieController {
 			valeurOptionService.saveValeurOption( valeurOption0 );
 			valeurOptionService.saveValeurOption( valeurOption1 );
 		}
-		
-		return new ResponseEntity<>( "Option cree", HttpStatus.CREATED );
+		return optionCategorie;
 
 	}
 }

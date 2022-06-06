@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.docteurfrost.data.categorie.OptionCategorie;
 import com.docteurfrost.data.dto.ValeurOptionDTO;
+import com.docteurfrost.data.exception.ResourceNotFoundException;
 import com.docteurfrost.data.service.OptionCategorieService;
 import com.docteurfrost.data.service.ValeurOptionService;
 
@@ -35,9 +36,9 @@ public class ValeurOptionController {
 	
 	@PostMapping()
 	@ResponseBody
-	public ResponseEntity<String> saveValeurOption(@RequestBody ValeurOptionDTO valeurOptionDTO) {
+	public ResponseEntity<String> saveValeurOption(@RequestBody ValeurOptionDTO valeurOptionDTO) throws ResourceNotFoundException {
 		
-		OptionCategorie optionCategorie = optionCategorieService.getOptionCategorie( valeurOptionDTO.getOption() );
+		OptionCategorie optionCategorie = optionCategorieService.getOptionCategorieById( valeurOptionDTO.getOption() );
 		valeurOptionService.saveValeurOptionDTO( valeurOptionDTO, optionCategorie );
 		
 		return new ResponseEntity<>( "Valeur d'option ajoutee", HttpStatus.CREATED );
