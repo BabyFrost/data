@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -49,7 +51,7 @@ public class OptionCategorieController {
 	
 	@PostMapping()
 	@ResponseBody
-	public OptionCategorie createOptionCategoryDTO(@RequestBody OptionCategorieDTO optionCategorieDTO) throws ResourceConflictException, ResourceNotFoundException {
+	public ResponseEntity<OptionCategorieDTO> createOptionCategoryDTO(@RequestBody OptionCategorieDTO optionCategorieDTO) throws ResourceConflictException, ResourceNotFoundException {
 		
 		Categorie categorie = categorieService.getCategorieById( optionCategorieDTO.getCategorie() );
 		OptionCategorie optionCategorie = new OptionCategorie( categorie, optionCategorieDTO.getNom(), optionCategorieDTO.getLibelle(), optionCategorieDTO.getIsNumerique(), optionCategorieDTO.getIsFree(), optionCategorieDTO.getIsBoolean() );
@@ -61,7 +63,8 @@ public class OptionCategorieController {
 			valeurOptionService.saveValeurOption( valeurOption0 );
 			valeurOptionService.saveValeurOption( valeurOption1 );
 		}
-		return optionCategorie;
+		OptionCategorieDTO responseOptionCategorieDTO = new OptionCategorieDTO( optionCategorie );
+		return new ResponseEntity<>( responseOptionCategorieDTO, HttpStatus.CREATED );
 
 	}
 }

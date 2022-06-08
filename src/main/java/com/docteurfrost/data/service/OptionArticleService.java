@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,10 +35,27 @@ public class OptionArticleService {
 		return optionArticleRepository.save(optionArticle);
 	}
 	
+	public List<OptionArticle> saveAllOptionArticle( List<OptionArticle> optionsArticle ) {
+		return (List<OptionArticle>) optionArticleRepository.saveAll(optionsArticle);
+	}
+	
 	public OptionArticle createOptionArticle( OptionArticle optionArticle ) throws ResourceConflictException {
 		Optional<OptionArticle> optionArticleTmp = optionArticleRepository.findById( optionArticle.getId() );
 		if ( optionArticleTmp.isPresent() ) { throw new ResourceConflictException("Option Article existe deja"); }
 		return saveOptionArticle( optionArticle );
 	}
-
+	
+	@Transactional
+	public List<OptionArticle> createAllOptionArticle( List<OptionArticle> optionsArticle ) throws ResourceConflictException {
+		for(int i = 0; i < optionsArticle.size(); i++ ) {
+			createOptionArticle( optionsArticle.get(i) );
+		}
+		return optionsArticle;
+	}
+	
+	public void deleteOptionArticle( OptionArticle optionArticle ) throws ResourceNotFoundException {
+		getOptionArticleById( optionArticle.getId() );
+		optionArticleRepository.delete(optionArticle);
+	}
+	
 }

@@ -3,10 +3,10 @@ package com.docteurfrost.data.controller;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +30,9 @@ import com.docteurfrost.data.categorie.OptionCategorie;
 import com.docteurfrost.data.categorie.ValeurOption;
 import com.docteurfrost.data.conteneur.Conteneur;
 import com.docteurfrost.data.dto.ArticleDTO;
+import com.docteurfrost.data.exception.BadRequestException;
+import com.docteurfrost.data.exception.ResourceConflictException;
+import com.docteurfrost.data.exception.ResourceNotFoundException;
 import com.docteurfrost.data.file.FileStorageService;
 import com.docteurfrost.data.model.Marque;
 import com.docteurfrost.data.model.article.Article;
@@ -40,12 +43,12 @@ import com.docteurfrost.data.model.article.EnMagasin;
 import com.docteurfrost.data.model.article.EnVente;
 import com.docteurfrost.data.model.article.Reserve;
 import com.docteurfrost.data.model.article.Vendu;
-import com.docteurfrost.data.repository.ArticleRepository;
-import com.docteurfrost.data.repository.CategorieRepository;
-import com.docteurfrost.data.repository.ConteneurRepository;
-import com.docteurfrost.data.repository.MarqueRepository;
-import com.docteurfrost.data.repository.OptionArticleRepository;
-import com.docteurfrost.data.repository.OptionCategorieRepository;
+import com.docteurfrost.data.service.ArticleService;
+import com.docteurfrost.data.service.CategorieService;
+import com.docteurfrost.data.service.ConteneurService;
+import com.docteurfrost.data.service.MarqueService;
+import com.docteurfrost.data.service.OptionArticleService;
+import com.docteurfrost.data.service.OptionCategorieService;
 import com.docteurfrost.data.tools.DateStringConverter;
 import com.docteurfrost.data.tools.StringSearcher;
 
@@ -54,93 +57,59 @@ import com.docteurfrost.data.tools.StringSearcher;
 public class ArticleController {
 	
 	@Autowired
-	private ArticleRepository articleRepository;
+	private ArticleService articleService;
 	
 	@Autowired
-	private CategorieRepository categorieRepository;
+	private CategorieService categorieService;
 	
 	@Autowired
-	private ConteneurRepository conteneurRepository;
+	private ConteneurService conteneurService;
 	
 	@Autowired
-	private OptionCategorieRepository optionCategorieRepository;
+	private OptionCategorieService optionCategorieService;
 	
 	@Autowired
-	private OptionArticleRepository optionArticleRepository;
+	private OptionArticleService optionArticleService;
 	
 	@Autowired
-	private MarqueRepository marqueRepository;
+	private MarqueService marqueService;
 	
 	@Autowired
     private FileStorageService fileStorageService;
 	
 	@GetMapping()
 	@ResponseBody
-	public Iterable<ArticleDTO> getAllArticlesDTO( @RequestParam(required = false) String conteneur, @RequestParam(required = false) String categorie, @RequestParam(required = false) String status ) {
+	public List<ArticleDTO> getAllArticles( @RequestParam(required = false, name = "conteneur") String conteneurStr, @RequestParam(required = false, name = "categorie") String idCategorie, @RequestParam(required = false) String status ) throws ResourceNotFoundException, BadRequestException {
 		
-		if ( categorie == null && conteneur == null && status == null ) {
-			
-			System.out.println(" categorie == null && conteneur == null && status == null ");
-			
-			List<Article> articles = new ArrayList<>();
-			articleRepository.findAll().forEach(articles::add);
-			
-			List<ArticleDTO> articlesDTO = new ArrayList<>();
-			for (int i=0; i<articles.size(); i++) {
-				articlesDTO.add( new ArticleDTO( articles.get(i) ) );
+		int idConteneur = 0;
+		if ( conteneurStr != null ) {
+			if ( StringUtils.isNumeric(conteneurStr) ) {
+				idConteneur = Integer.valueOf(conteneurStr);
+			} else {
+				throw new BadRequestException("Renseignez un Conteneur valide");
 			}
+		}
+		
+		
+		List<Article> articles = new ArrayList<>();
+		
+		if ( idCategorie == null && idConteneur == 0 && status == null ) {
 			
-			return articlesDTO;
+			articles = articleService.getAllArticle();
 			
-		} else if ( categorie == null && status == null ) {
+		} else if ( idCategorie == null && status == null ) {
 			
-			System.out.println(" categorie == null && status == null ");
+			Conteneur conteneur = conteneurService.getConteneurById(idConteneur);
+			articles = articleService.getAllArticleByConteneur(conteneur);
 			
-			if ( !( conteneur.matches("[0-9]+") ) ) {
-				return null;
-			}
+		} else if ( idConteneur == 0 && status == null ) {
 			
-			Optional<Conteneur> conteneurTmp = conteneurRepository.findById( Integer.valueOf(conteneur) );
-			if ( conteneurTmp.isPresent() ) {
-				
-				List<Article> articles = new ArrayList<>();
-				articleRepository.findAllByConteneur( conteneurTmp.get() ).forEach( articles::add );
-				
-				List<ArticleDTO> articlesDTO = new ArrayList<>();
-				for (int i=0; i<articles.size(); i++) {
-					articlesDTO.add( new ArticleDTO( articles.get(i) ) );
-				}
-				
-				return articlesDTO;
-			}
-				
+			Categorie categorie = categorieService.getCategorieById(idCategorie);
+			articles = articleService.getAllArticleByCategorie( categorie );
 			
-			
-		} else if ( conteneur == null && status == null ) {
-			
-			System.out.println(" conteneur == null && status == null ");
-			
-			Optional<Categorie> categorieTmp = categorieRepository.findById( categorie );
-			if ( categorieTmp.isPresent() ) {
-				
-				List<Article> articles = new ArrayList<>();
-				articleRepository.findAllByCategorie( categorieTmp.get() ).forEach( articles::add );
-				
-				List<ArticleDTO> articlesDTO = new ArrayList<>();
-				for (int i=0; i<articles.size(); i++) {
-					articlesDTO.add( new ArticleDTO( articles.get(i) ) );
-				}
-				
-				return articlesDTO;
-			} 
-			
-		} else if ( categorie == null && conteneur == null ) {
-			
-			System.out.println(" categorie == null && conteneur == null");
+		} else if ( idCategorie == null && idConteneur == 0 ) {
 			
 			ArticleState state = null;
-			
-			System.out.println( status.toLowerCase() );
 			switch( status.toLowerCase() ) {
 				case "disparu":
 					state = new Disparu(null);
@@ -162,67 +131,31 @@ public class ArticleController {
 					break;
 			}
 			
-			System.out.println( state.toString() );
-			
-			List<Article> articles = new ArrayList<>();
-			articleRepository.findAllByState( state ).forEach(articles::add);
-			
-			List<ArticleDTO> articlesDTO = new ArrayList<>();
-			for (int i=0; i<articles.size(); i++) {
-				articlesDTO.add( new ArticleDTO( articles.get(i) ) );
-			}
-			
-			return articlesDTO;
+			articles = articleService.getAllArticleByState(state);
 			
 		} else {
-			
-			System.out.println(" ELSE ");
-			
-			Optional<Categorie> categorieTmp = categorieRepository.findById( categorie );
-			if ( categorieTmp.isPresent() ) {
-				
-				Optional<Conteneur> conteneurTmp = conteneurRepository.findById( Integer.valueOf(conteneur) );
-				if ( conteneurTmp.isPresent() ) {
-					
-					if ( !( conteneur.matches("[0-9]+") ) ) {
-						return null;
-					}
-					
-					List<Article> articles = new ArrayList<>();
-					articleRepository.findAllByCategorieAndConteneur( categorieTmp.get(), conteneurTmp.get() ).forEach( articles::add );
-					
-					List<ArticleDTO> articlesDTO = new ArrayList<>();
-					for (int i=0; i<articles.size(); i++) {
-						articlesDTO.add( new ArticleDTO( articles.get(i) ) );
-					}
-					
-					return articlesDTO;
-				}
-				
-			}
-			
+			Categorie categorie = categorieService.getCategorieById(idCategorie);
+			Conteneur conteneur = conteneurService.getConteneurById(idConteneur);	
+			articles = articleService.getAllArticleByCategorieAndConteneur(categorie, conteneur);
 		}
-		 
 		
-		return null;
+		List<ArticleDTO> articlesDTO = new ArrayList<>();
+		for (int i=0; i<articles.size(); i++) {
+			articlesDTO.add( new ArticleDTO( articles.get(i) ) );
+		}	
+		return articlesDTO;
 		
 	}
 	
 	@GetMapping("/{idArtcile}")
 	@ResponseBody 
-	public ArticleDTO getArticleSpecifique( @PathVariable("idArtcile") String idArticle ) {
-		Optional<Article> articleTmp = articleRepository.findById(idArticle);
-		if ( articleTmp.isPresent() ) {
-			return new ArticleDTO( articleTmp.get() );
-		} else {
-			return null;
-		} 
+	public ArticleDTO getArticleSpecifique( @PathVariable("idArtcile") String idArticle ) throws ResourceNotFoundException {
+		return new ArticleDTO( articleService.getArticleById(idArticle) );
 	}
 	
 	@PostMapping()
 //	public ResponseEntity<String> saveArticle( @RequestBody ArticleDTO articleDTO ) {
-	public ResponseEntity<String> saveArticle( @Valid @ModelAttribute ArticleDTO articleDTO ) throws ParseException {
-		System.out.println("Ca entre");
+	public ResponseEntity<String> saveArticle( @Valid @ModelAttribute ArticleDTO articleDTO ) throws ParseException, ResourceConflictException, BadRequestException, ResourceNotFoundException {
 		
 		String fileDownloadUri = null;
 		if ( articleDTO.getFile() != null ) {
@@ -235,68 +168,36 @@ public class ArticleController {
 	                .toUriString();
 		}
 		
-		System.out.println("Ca sort");
-		
-		System.out.println( " Received Save Article Request" );
-		
-		System.out.println("xxx");
-		System.out.println(articleDTO.getCategorie());
 		if ( articleDTO.getCategorie() == null ) {
-			return new ResponseEntity<>( " Renseignez une Categorie ", HttpStatus.BAD_REQUEST );
+			throw new BadRequestException("Renseignez une Categorie");
 		}
-		Optional<Categorie> categorieTmp = categorieRepository.findById( articleDTO.getCategorie() );
-		Categorie categorie;
-		if ( categorieTmp.isPresent() ) {
-			System.out.println("yyy");
-			categorie = categorieTmp.get();
-		} else {
-			System.out.println(articleDTO.getCategorie());
-			return new ResponseEntity<>( " Renseignez une categorie valide ", HttpStatus.BAD_REQUEST );
-		}
+		Categorie categorie = categorieService.getCategorieById( articleDTO.getCategorie() );
 		
-		System.out.println("AAA");
-		Optional<Conteneur> conteneurTmp = conteneurRepository.findById( articleDTO.getConteneur() );
-		Conteneur conteneur;
-		if ( conteneurTmp.isPresent() ) {
-			conteneur = conteneurTmp.get();
-		} else {
-			return new ResponseEntity<>( " Renseignez un conteneur valide ", HttpStatus.BAD_REQUEST );
-		}
+		Conteneur conteneur = conteneurService.getConteneurById( articleDTO.getConteneur() );
 		
-		System.out.println( articleDTO.getMarque() );
 		if ( articleDTO.getMarque() == null ) {
-			return new ResponseEntity<>( " Renseignez une Marque ", HttpStatus.BAD_REQUEST );
+			throw new BadRequestException("Renseignez une Marque");
 		}
-		Optional<Marque> marqueTmp = marqueRepository.findById( articleDTO.getMarque() );
-		Marque marque;
-		if ( marqueTmp.isPresent() ) {
-			marque = marqueTmp.get();
-		} else {
-			return new ResponseEntity<>( " Renseignez une marque valide ", HttpStatus.BAD_REQUEST );
-		}
+		Marque marque = marqueService.getMarqueById( articleDTO.getMarque() );
 		
 		System.out.println("BBB");
 		if ( articleDTO.getNom() == null  ) {
-			return new ResponseEntity<>( " Renseignez le nom de l'article ", HttpStatus.BAD_REQUEST );
+			throw new BadRequestException("Renseignez le nom de l'article");
 		}
 		
 		System.out.println("CCC");
 		if ( articleDTO.getPrixAchat() == 0  ) {
-			return new ResponseEntity<>( " Renseignez prix Achat", HttpStatus.BAD_REQUEST );
+			throw new BadRequestException("Renseignez prix Achat");
 		}
 		
 		System.out.println("DDD");
 		if ( articleDTO.getPrix() == 0  ) {
-			return new ResponseEntity<>( " Renseignez prix Achat", HttpStatus.BAD_REQUEST );
-		}
-		
-		if ( articleRepository.findById( articleDTO.getNom()+"_"+articleDTO.getConteneur() ).isPresent() ) {
-			return new ResponseEntity<>( "Cet article existe deja", HttpStatus.CONFLICT );
+			throw new BadRequestException("Renseignez prix de Vente");
 		}
 		
 		System.out.println( "Before Insert : "+DateStringConverter.stringToDate( articleDTO.getDateAchat() ) );
 		if ( articleDTO.getEtat() == null  ) {
-			return new ResponseEntity<>( " Renseignez etat de l'article ", HttpStatus.BAD_REQUEST );
+			throw new BadRequestException("Renseignez etat de l'article");
 		}
 		Article article = new Article(articleDTO.getNom(), articleDTO.getObservation(), null, categorie, conteneur, marque, articleDTO.getPrixAchat(), 0, 0, articleDTO.getPrix(), fileDownloadUri, DateStringConverter.stringToDate( articleDTO.getDateAchat() ), articleDTO.getEtat() );   
 		
@@ -320,41 +221,33 @@ public class ArticleController {
         	String valeur = options.substring( valueIndexes.get(i)+1, valueEndIndexes.get(i)).toUpperCase();      	
         	
         	System.out.println( option+"_"+article.getCategorie().getNom().toUpperCase() );
-        	Optional<OptionCategorie> optionCategorieTmp = optionCategorieRepository.findById( option+"_"+article.getCategorie().getNom().toUpperCase() );
-        	OptionCategorie optionCategorie;
-    		if ( optionCategorieTmp.isPresent() ) {
-    			optionCategorie = optionCategorieTmp.get();
-    			
-    			List<ValeurOption> objetValeursPossible = new ArrayList<>();
-    			optionCategorie.getValeurs().forEach(objetValeursPossible::add);
-    			
-    			List<String> valeursPossible = new ArrayList<>();
-    			for (int y=0; y<objetValeursPossible.size(); y++) {
-    				valeursPossible.add( objetValeursPossible.get(y).getValeur() );
+        	OptionCategorie optionCategorie = optionCategorieService.getOptionCategorieById( option+"_"+article.getCategorie().getNom().toUpperCase() );
+        	List<ValeurOption> objetValeursPossible = new ArrayList<>();
+			optionCategorie.getValeurs().forEach(objetValeursPossible::add);
+			
+			List<String> valeursPossible = new ArrayList<>();
+			for (int y=0; y<objetValeursPossible.size(); y++) {
+				valeursPossible.add( objetValeursPossible.get(y).getValeur() );
+			}
+			if ( optionCategorie.getIsFree() == false ) {
+				System.out.println("Size = "+valeursPossible.size() );
+				System.out.println("Val = "+valeursPossible.get(0) );
+				System.out.println("Val = "+valeursPossible.get(1) );
+				System.out.println("Celui ci est conditionee");
+				if ( !valeursPossible.contains(valeur) ) {
+					System.out.println(valeur);
+					System.out.println( !valeursPossible.contains(valeur) );
+    				return new ResponseEntity<>( "Valeur d'option invalide", HttpStatus.BAD_REQUEST );
     			}
-    			if ( optionCategorie.getIsFree() == false ) {
-    				System.out.println("Size = "+valeursPossible.size() );
-    				System.out.println("Val = "+valeursPossible.get(0) );
-    				System.out.println("Val = "+valeursPossible.get(1) );
-    				System.out.println("Celui ci est conditionee");
-    				if ( !valeursPossible.contains(valeur) ) {
-    					System.out.println(valeur);
-    					System.out.println( !valeursPossible.contains(valeur) );
-        				return new ResponseEntity<>( "Valeur d'option invalide", HttpStatus.BAD_REQUEST );
-        			}
-    			}
-    			
-    		} else {
-    			return new ResponseEntity<>( "Renseignez une Option valide", HttpStatus.BAD_REQUEST );
-    		}	
+			}
         	
         	OptionArticle optionArticle = new OptionArticle( article, optionCategorie, valeur);
         	listOptions.add(optionArticle);
         	
         }
         
-        articleRepository.save( article );
-        optionArticleRepository.saveAll(listOptions);
+        articleService.createArticle( article );
+        optionArticleService.createAllOptionArticle(listOptions);
         System.out.println( " Article saved " );
         
 		return new ResponseEntity<>( "Article cree", HttpStatus.CREATED );
@@ -362,61 +255,35 @@ public class ArticleController {
 	
 	@PutMapping()
 //	public ResponseEntity<String> updateArticle( @RequestBody ArticleDTO articleDTO ) throws ParseException {
-	public ResponseEntity<String> updateArticle( @ModelAttribute ArticleDTO articleDTO ) throws ParseException {
+	public ResponseEntity<String> updateArticle( @ModelAttribute ArticleDTO articleDTO ) throws ParseException, ResourceNotFoundException, ResourceConflictException, BadRequestException {
 		
-		System.out.println( " Received Update Request " );
-		
-		Optional<Article> articleTmp = articleRepository.findById( articleDTO.getId() );
-		Article article;
-		if ( articleTmp.isPresent() ) {
-			article = articleTmp.get();
-		} else {
-			return new ResponseEntity<>( " Renseignez un article existant ", HttpStatus.BAD_REQUEST );
-		}
+		Article article = articleService.getArticleById( articleDTO.getId() );
 		
 		System.out.println( " AAA " );
-		Optional<Categorie> categorieTmp = categorieRepository.findById( articleDTO.getCategorie() );
-		Categorie categorie;
-		if ( categorieTmp.isPresent() ) {
-			categorie = categorieTmp.get();
-		} else {
-			return new ResponseEntity<>( " Renseignez une categorie valide ", HttpStatus.BAD_REQUEST );
-		}
+		Categorie categorie = categorieService.getCategorieById( articleDTO.getCategorie() );
 		
 		System.out.println( " BBB " );
-		Optional<Conteneur> conteneurTmp = conteneurRepository.findById( articleDTO.getConteneur() );
-		Conteneur conteneur;
-		if ( conteneurTmp.isPresent() ) {
-			conteneur = conteneurTmp.get();
-		} else {
-			return new ResponseEntity<>( " Renseignez un conteneur valide ", HttpStatus.BAD_REQUEST );
-		}
+		Conteneur conteneur = conteneurService.getConteneurById( articleDTO.getConteneur() );
 		
 		System.out.println( " CCC " );
-		Optional<Marque> marqueTmp = marqueRepository.findById( articleDTO.getMarque() );
-		Marque marque;
-		if ( marqueTmp.isPresent() ) {
-			marque = marqueTmp.get();
-		} else {
-			return new ResponseEntity<>( " Renseignez une marque valide ", HttpStatus.BAD_REQUEST );
-		}
+		Marque marque = marqueService.getMarqueById( articleDTO.getMarque() );
 	
 		System.out.println( " DDD " );
 		List<OptionArticle> listOptions =  new ArrayList<>( article.getOptions() );
 		for ( int i = 0; i < listOptions.size(); i++ ) {
-			OptionArticle optionArticle = optionArticleRepository.findById( listOptions.get(i).getId() ).get();
-			optionArticleRepository.deleteById( optionArticle.getId() );
+//			OptionArticle optionArticle = optionArticleService.getOptionArticleById( listOptions.get(i).getId() );
+			optionArticleService.deleteOptionArticle( listOptions.get(i) );
 		}
 		article.setOptions(null);
 		
 		System.out.println("EEE");
 		if ( articleDTO.getPrixAchat() == 0  ) {
-			return new ResponseEntity<>( " Renseignez prix Achat", HttpStatus.BAD_REQUEST );
+			throw new BadRequestException("Renseignez prix Achat");
 		}
 		
 		System.out.println("FFF");
 		if ( articleDTO.getPrix() == 0  ) {
-			return new ResponseEntity<>( " Renseignez prix Achat", HttpStatus.BAD_REQUEST );
+			throw new BadRequestException("Renseignez prix Achat");
 		}
 		
 		
@@ -445,15 +312,9 @@ public class ArticleController {
         for (int i=0; i<keyIndexes.size(); i++) {
         	
         	String option = options.substring( keyIndexes.get(i)+1, keyEndIndexes.get(i));      	
-        	String valeur = options.substring( valueIndexes.get(i)+1, valueEndIndexes.get(i)).toUpperCase();      	
+        	String valeur = options.substring( valueIndexes.get(i)+1, valueEndIndexes.get(i)).toUpperCase();
         	
-        	Optional<OptionCategorie> optionCategorieTmp = optionCategorieRepository.findById( option+"_"+article.getCategorie().getNom() );
-        	OptionCategorie optionCategorie;
-    		if ( optionCategorieTmp.isPresent() ) {
-    			optionCategorie = optionCategorieTmp.get();
-    		} else {
-    			return new ResponseEntity<>( "Renseignez une Option valide" , HttpStatus.BAD_REQUEST );
-    		}	
+        	OptionCategorie optionCategorie = optionCategorieService.getOptionCategorieById( option+"_"+article.getCategorie().getNom() );
         	
         	OptionArticle optionArticle = new OptionArticle( article, optionCategorie, valeur);
         	listOptions.add(optionArticle);
@@ -472,83 +333,49 @@ public class ArticleController {
 	        article.setPhoto( fileDownloadUri );
 		}
         
-        articleRepository.save(article);
-        optionArticleRepository.saveAll(listOptions);
+        articleService.updateArticle(article);
+        optionArticleService.createAllOptionArticle(listOptions);
         System.out.println( " Article modified " );
         
 		return new ResponseEntity<>( "Article Modifie" , HttpStatus.CREATED );
 	}
 	
 	@DeleteMapping("/{idArticle}")
-	public ResponseEntity<String> deleteArticle( @PathVariable("idArticle") String idArticle ) {
-	
-		System.out.println( " Received Delete Request" );
-		
-		Optional<Article> articleTmp = articleRepository.findById( idArticle );
-		Article article;
-		if ( articleTmp.isPresent() ) {
-			article = articleTmp.get();
-		} else {
-			return new ResponseEntity<>( " Renseignez un article existant ", HttpStatus.BAD_REQUEST );
-		}
-		
-		articleRepository.deleteById( article.getNom()+"_"+article.getConteneur().getId() );
-		
-        System.out.println( " Deleted " );
-        
+	public ResponseEntity<String> deleteArticle( @PathVariable("idArticle") String idArticle ) throws ResourceNotFoundException {
+		articleService.deleteArticleById( idArticle );
 		return new ResponseEntity<>( "Article Supprimee", HttpStatus.OK );
 	}
 	
-	@PatchMapping("/mise_en_vente")
+	@PatchMapping("/status/mise_en_vente")
 	@ResponseBody
-	public ResponseEntity<String> miseEnVenteArticles( @RequestBody List<ArticleDTO> articlesDTO, @RequestParam String date ) throws ParseException {
+	public ResponseEntity<String> miseEnVenteArticles( @RequestBody List<ArticleDTO> articlesDTO, @RequestParam String date ) throws ParseException, ResourceNotFoundException, BadRequestException {
 //	public ResponseEntity<String> updateArticle( @ModelAttribute List<ArticleDTO> articlesDTO, @RequestParam String date ) throws ParseException {
 		
 		for (int i = 0; i<articlesDTO.size(); i++) {
 			
-			Article article;
-			Optional<Article> articleTmp = articleRepository.findById( articlesDTO.get(i).getId() );  
-			if ( articleTmp.isPresent() ) {
+			Article article = articleService.getArticleById( articlesDTO.get(i).getId() );
+			if ( article.getDateMiseEnVente() == null ) {
 				
-				article = articleTmp.get();
-				if ( article.getDateMiseEnVente() == null ) {
-					
-					article.setDateMiseEnVente( DateStringConverter.stringToDate( date ) );
-					
-					if ( article.getState() instanceof DansConteneur ) {
-						
-						return new ResponseEntity<>( "Article encore dans le conteneur "+article.getId(), HttpStatus.BAD_REQUEST );
-						
-					} else if ( !( article.getState() instanceof EnMagasin ) ) {
-						
-						return new ResponseEntity<>( "l'article n'est plus en Magasin", HttpStatus.BAD_REQUEST );
-						
-					}
-					
-					if ( article.getDateMiseEnVente().before( article.getDateSaisie() ) ) {
-						return new ResponseEntity<>( "Date < Date Depart", HttpStatus.BAD_REQUEST );
-					}
-					
-					article.getState().deballer();
-					articleRepository.save( article );
-//					return new ResponseEntity<>( "Status Modifie", HttpStatus.OK );
-				} else {
-					return new ResponseEntity<>( "Article deja Mis En Vente", HttpStatus.ALREADY_REPORTED );
+				article.setDateMiseEnVente( DateStringConverter.stringToDate( date ) );
+				
+				if ( article.getState() instanceof DansConteneur ) {
+					throw new BadRequestException("Article "+article.getId()+" encore dans le conteneur");
+				} else if ( !( article.getState() instanceof EnMagasin ) ) {
+					throw new BadRequestException("l'article n'est plus en Magasin");
+				}
+				if ( article.getDateMiseEnVente().before( article.getDateSaisie() ) ) {
+					throw new BadRequestException("Date < Date Depart");
 				}
 				
+				article.getState().deballer();
+				articleService.updateArticle( article );
 			} else {
-				return new ResponseEntity<>( "Article inexistant", HttpStatus.CONFLICT );
+				throw new BadRequestException("Article deja Mis En Vente");
 			}
 			
 		}
 		
 		return new ResponseEntity<>( "Tous les Status Modifie", HttpStatus.OK );
-	}
-	
-	@PostMapping("/validate/validateArticle")
-//	ResponseEntity<String> validateBody(@Valid @RequestBody Car car) {
-	ResponseEntity<String> validateBody(@Valid @ModelAttribute ArticleDTO articleDTO) {
-		return ResponseEntity.ok("valid");
 	}
 	 
 }

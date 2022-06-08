@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,14 +40,16 @@ public class CategorieController {
 	
 	@GetMapping("/{nomCategorie}")
 	@ResponseBody
-	public CategorieDTO findCategorieDTO( @PathVariable("nomCategorie") String nomCategorie ) throws ResourceNotFoundException {	
-		return new CategorieDTO( categorieService.getCategorieById(nomCategorie) ) ;	
+	public ResponseEntity<CategorieDTO> findCategorieDTO( @PathVariable("nomCategorie") String nomCategorie ) throws ResourceNotFoundException {
+		CategorieDTO responseCategorieDTO = new CategorieDTO( categorieService.getCategorieById(nomCategorie) );
+		return new ResponseEntity<>( responseCategorieDTO, HttpStatus.OK );
 	}
 	
 	@PostMapping()
 	@ResponseBody
-	public Categorie createCategorieDTO(@RequestBody CategorieDTO categorieDTO) throws ResourceConflictException {	
+	public ResponseEntity<CategorieDTO> createCategorieDTO(@RequestBody CategorieDTO categorieDTO) throws ResourceConflictException {	
 		Categorie categorie = new Categorie( categorieDTO.getNom(), categorieDTO.getLibelle() );
-		return categorieService.createCategorie( categorie );
+		CategorieDTO responseCategorieDTO = new CategorieDTO( categorieService.createCategorie( categorie ) );
+		return new ResponseEntity<>( responseCategorieDTO, HttpStatus.OK );
 	}
 }

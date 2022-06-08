@@ -53,14 +53,15 @@ public class ConteneurController {
 	
 	@PostMapping()
 	@ResponseBody
-	public ResponseEntity<Conteneur> saveConteneurDTO(@RequestBody ConteneurDTO conteneurDTO) throws ParseException, ResourceConflictException {	
+	public ResponseEntity<ConteneurDTO> saveConteneurDTO(@RequestBody ConteneurDTO conteneurDTO) throws ParseException, ResourceConflictException {	
 		Conteneur conteneur = new Conteneur( conteneurDTO.getId(), conteneurDTO.getNom(), conteneurDTO.getPays(), DateStringConverter.stringToDate( conteneurDTO.getDateDepart() ), DateStringConverter.stringToDate( conteneurDTO.getDateArrivee() ), DateStringConverter.stringToDate( conteneurDTO.getDateDechargement() ) );
-		return new ResponseEntity<>( conteneurService.createConteneur(conteneur), HttpStatus.CREATED );
+		ConteneurDTO responseConteneurDTO = new ConteneurDTO( conteneurService.createConteneur(conteneur) );
+		return new ResponseEntity<>( responseConteneurDTO, HttpStatus.CREATED );
 	}
 	
 	@PutMapping()
 	@ResponseBody
-	public ResponseEntity<Conteneur> modifyConteneurDTO(@RequestBody ConteneurDTO conteneurDTO) throws ParseException, ResourceNotFoundException {	
+	public ResponseEntity<ConteneurDTO> modifyConteneurDTO(@RequestBody ConteneurDTO conteneurDTO) throws ParseException, ResourceNotFoundException {	
 		Conteneur conteneur = conteneurService.getConteneurById( conteneurDTO.getId() );
 		conteneur.setNom( conteneurDTO.getNom() );
 		conteneur.setPays( conteneurDTO.getPays() );
@@ -73,25 +74,32 @@ public class ConteneurController {
 		if ( conteneur.getDateDechargement() != null ) {
 			conteneur.setDateDechargement( DateStringConverter.stringToDate( conteneurDTO.getDateDechargement() ) );
 		}
-		return new ResponseEntity<>( conteneurService.saveConteneur(conteneur), HttpStatus.OK );
+		ConteneurDTO responseConteneurDTO = new ConteneurDTO( conteneurService.saveConteneur(conteneur) );
+		return new ResponseEntity<>( responseConteneurDTO, HttpStatus.OK );
 	}
 	
 	@PatchMapping("/{idConteneur}/depart")
 	@ResponseBody
-	public ResponseEntity<Conteneur> miseEnRouteConteneur( @PathVariable("idConteneur") int idConteneur, @RequestParam String date ) throws ParseException, ResourceNotFoundException, BadRequestException {	
-		return new ResponseEntity<>( conteneurService.miseEnRouteConteneur(idConteneur, date), HttpStatus.OK );
+	public ResponseEntity<ConteneurDTO> miseEnRouteConteneur( @PathVariable("idConteneur") int idConteneur, @RequestParam String date ) throws ParseException, ResourceNotFoundException, BadRequestException {	
+		Conteneur conteneur = conteneurService.getConteneurById(idConteneur);
+		ConteneurDTO responseConteneurDTO = new ConteneurDTO( conteneurService.miseEnRouteConteneur(conteneur, date) );
+		return new ResponseEntity<>( responseConteneurDTO , HttpStatus.OK );
 	}
 	
 	@PatchMapping("/{idConteneur}/arrive")
 	@ResponseBody
-	public ResponseEntity<Conteneur> arriveConteneur( @PathVariable("idConteneur") int idConteneur, @RequestParam String date ) throws ParseException, ResourceNotFoundException, BadRequestException {
-		return new ResponseEntity<>( conteneurService.arriveConteneur(idConteneur, date), HttpStatus.OK );
+	public ResponseEntity<ConteneurDTO> arriveConteneur( @PathVariable("idConteneur") int idConteneur, @RequestParam String date ) throws ParseException, ResourceNotFoundException, BadRequestException {
+		Conteneur conteneur = conteneurService.getConteneurById(idConteneur);
+		ConteneurDTO responseConteneurDTO = new ConteneurDTO( conteneurService.arriveConteneur(conteneur, date) );
+		return new ResponseEntity<>( responseConteneurDTO, HttpStatus.OK );
 	}
 	
 	@PatchMapping("/{idConteneur}/dechargement")
 	@ResponseBody
-	public ResponseEntity<Conteneur> dechargementConteneur( @PathVariable("idConteneur") int idConteneur, @RequestParam String date ) throws ParseException, ResourceNotFoundException, BadRequestException {
-		return new ResponseEntity<>( conteneurService.dechargementConteneur(idConteneur, date), HttpStatus.OK );
+	public ResponseEntity<ConteneurDTO> dechargementConteneur( @PathVariable("idConteneur") int idConteneur, @RequestParam String date ) throws ParseException, ResourceNotFoundException, BadRequestException {
+		Conteneur conteneur = conteneurService.getConteneurById(idConteneur);
+		ConteneurDTO responseConteneurDTO = new ConteneurDTO( conteneurService.dechargementConteneur(conteneur, date) );
+		return new ResponseEntity<>( responseConteneurDTO, HttpStatus.OK );
 	}
 	
 }

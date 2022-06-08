@@ -66,7 +66,7 @@ public class RetourController {
 	@PostMapping()
 	@ResponseBody
 	@Transactional
-	public ResponseEntity<Retour> vendre(@RequestBody RetourDTO retourDTO) throws ResourceNotFoundException, BadRequestException, ResourceConflictException {
+	public ResponseEntity<RetourDTO> vendre(@RequestBody RetourDTO retourDTO) throws ResourceNotFoundException, BadRequestException, ResourceConflictException {
 		
 		Utilisateur vendeur = utilisateurService.getUtilisateurById( retourDTO.getVendeur().getId() );	
 		Vente vente = venteService.getVenteById( retourDTO.getVente().getId() );
@@ -78,9 +78,9 @@ public class RetourController {
 		Retour retour = new Retour ( retourDTO.getLibelle(), vendeur, vente );
 		article.retourner();
 		articleService.saveArticle( article );
-		retour = retourService.createRetour(retour);
 		
-		return new ResponseEntity<>( retour, HttpStatus.OK );
+		RetourDTO responseRetourDTO = new RetourDTO( retourService.createRetour(retour) );
+		return new ResponseEntity<>( responseRetourDTO, HttpStatus.OK );
 	}
 
 }

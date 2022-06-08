@@ -3,7 +3,6 @@ package com.docteurfrost.data.controller;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,66 +12,64 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.docteurfrost.data.dto.ArticleDTO;
 import com.docteurfrost.data.dto.PanierDTO;
 import com.docteurfrost.data.dto.VenteDTO;
+import com.docteurfrost.data.exception.BadRequestException;
+import com.docteurfrost.data.exception.ResourceConflictException;
+import com.docteurfrost.data.exception.ResourceNotFoundException;
 import com.docteurfrost.data.model.Client;
 import com.docteurfrost.data.model.Panier;
 import com.docteurfrost.data.model.Utilisateur;
 import com.docteurfrost.data.model.Vente;
 import com.docteurfrost.data.model.article.Article;
 import com.docteurfrost.data.model.article.EnVente;
-import com.docteurfrost.data.repository.ArticleRepository;
-import com.docteurfrost.data.repository.ClientRepository;
-import com.docteurfrost.data.repository.PanierRepository;
-import com.docteurfrost.data.repository.UtilisateurRepository;
-import com.docteurfrost.data.repository.VenteRepository;
+import com.docteurfrost.data.service.ArticleService;
+import com.docteurfrost.data.service.ClientService;
+import com.docteurfrost.data.service.PanierService;
+import com.docteurfrost.data.service.UtilisateurService;
+import com.docteurfrost.data.service.VenteService;
 
 @RequestMapping("/ventes")
 @RestController
 public class VenteController {
 	
 	@Autowired
-	private VenteRepository venteRepository;
+	private VenteService venteService;
 	
 	@Autowired
-	private PanierRepository panierRepository;
+	private PanierService panierService;
 	
 	@Autowired
-	private ArticleRepository articleRepository;
+	private ArticleService articleService;
 	
 	@Autowired
-	private ClientRepository clientRepository;
+	private ClientService clientService;
 	
 	@Autowired
-	private UtilisateurRepository utilisateurRepository;
+	private UtilisateurService utilisateurService;
+	
+	@GetMapping("/{idVente}")
+	@ResponseBody
+	public VenteDTO getVenteById( @PathVariable("idArtcile") int idArticle ) throws ResourceNotFoundException {
+		return new VenteDTO( venteService.getVenteById( idArticle ) );
+	}
 	
 	@GetMapping()
 	@ResponseBody
-	public Iterable<VenteDTO> getAllVentesDTO( ) {
+	public List<VenteDTO> getAllVentes( @RequestParam(required = false) String idArticle ) throws ResourceNotFoundException {
 		
-		System.out.println( "Get Ventes" );
-		
-		List<Vente> ventes = new ArrayList<>();
-		venteRepository.findAll().forEach(ventes::add);
-		
-		List<VenteDTO> ventesDTO = new ArrayList<>();
-		for (int i=0; i<ventes.size(); i++) {
-			ventesDTO.add( new VenteDTO( ventes.get(i) ) );
+		List<Vente> ventes = new ArrayList<>();	
+		if ( idArticle != null ) {
+			ventes = venteService.getAllVente();
+		} else {
+			Article article = articleService.getArticleById(idArticle);
+			ventes = venteService.getAllVenteByArticle(article);
 		}
-		
-		return ventesDTO;
-	}
-	
-	@GetMapping("/{idArticle}")
-	@ResponseBody
-	public Iterable<VenteDTO> getAllVentesArticleDTO( @PathVariable("idArtcile") String idArticle ) {
-		
-		List<Vente> ventes = new ArrayList<>();
-		venteRepository.findAll().forEach(ventes::add);
 		
 		List<VenteDTO> ventesDTO = new ArrayList<>();
 		for (int i=0; i<ventes.size(); i++) {
@@ -84,7 +81,7 @@ public class VenteController {
 	
 	@PostMapping()
 	@ResponseBody
-	public ResponseEntity<String> vendre(@RequestBody PanierDTO panierDTO) {
+	public ResponseEntity<PanierDTO> vendre(@RequestBody PanierDTO panierDTO) throws ResourceNotFoundException, BadRequestException, ResourceConflictException {
 		
 		Panier panier = new Panier( new Date() );
 		
@@ -97,37 +94,13 @@ public class VenteController {
 		for ( int i = 0; i < articlesDTO.size(); i++) {
 			ArticleDTO articleDTO = articlesDTO.get(i);
 			
-			Client client;
-			Optional<Client> clientTmp = clientRepository.findById( panierDTO.getClient().getTelephone() );
-			if ( clientTmp.isPresent() ) {
-				client = clientTmp.get();
-			} else {
-				return new ResponseEntity<>( "Ce client n'existe pas ", HttpStatus.BAD_REQUEST );
-			}
-			
-			System.out.println("sfsdgsdg");
-			Utilisateur vendeur;
-			Optional<Utilisateur> vendeurTmp = utilisateurRepository.findById( panierDTO.getVendeur().getId() );
-			if ( vendeurTmp.isPresent() ) {
-				vendeur = vendeurTmp.get();
-			} else {
-				return new ResponseEntity<>( "Ce Vendeur n'existe pas ", HttpStatus.BAD_REQUEST );
-			}
-			
+			Client client = clientService.getClientById( panierDTO.getClient().getTelephone() );
+			Utilisateur vendeur = utilisateurService.getUtilisateurById( panierDTO.getVendeur().getId() );
 			
 			System.out.println("AAAAA");
-			Article article;
-			
-			Optional<Article> articleTmp = articleRepository.findById( articleDTO.getId() );
-			if ( articleTmp.isPresent() ) {
-				article = articleTmp.get();
-				
-				if ( !(article.getState() instanceof EnVente) ) {
-					return new ResponseEntity<>( "Cette article n'est pas a vendre ", HttpStatus.BAD_REQUEST );
-				}
-				
-			} else {
-				return new ResponseEntity<>( "Renseignez un article valide ", HttpStatus.BAD_REQUEST );
+			Article article = articleService.getArticleById( articleDTO.getId() );
+			if ( !(article.getState() instanceof EnVente) ) {
+				throw new BadRequestException("Cette article n'est pas a vendre");
 			}
 
 			System.out.println("BBBB");
@@ -144,12 +117,13 @@ public class VenteController {
 		
 		panier.setNombreArticles(nombreArticles);
 		panier.setMontantTotal(montantTotal);
-		panierRepository.save(panier);
+		panier = panierService.createPanier(panier);
 		
-		articleRepository.saveAll(articles);
-		venteRepository.saveAll(ventes);
+		articleService.updateAllArticle(articles);
+		venteService.createAllVente(ventes);
 		
-		return new ResponseEntity<>( "Article Vendu", HttpStatus.OK );
+		PanierDTO responsePanierDTO = new PanierDTO( panier );
+		return new ResponseEntity<>( responsePanierDTO, HttpStatus.OK );
 	}
 
 }

@@ -7,6 +7,8 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -49,9 +51,10 @@ public class ClientController {
 	}
 
 	@PostMapping()
-	public Client saveClientDTO( @Valid @RequestBody ClientDTO clientDTO ) throws ResourceConflictException, ParseException {
+	public ResponseEntity<ClientDTO> saveClientDTO( @Valid @RequestBody ClientDTO clientDTO ) throws ResourceConflictException, ParseException {
 		Client client = new Client( clientDTO.getNom(), clientDTO.getPrenom(), DateStringConverter.stringToDate( clientDTO.getDateDeNaissance() ), clientDTO.getNumeroCNI(), clientDTO.getEmail(), clientDTO.getTelephone(), clientDTO.getSexe() );
-		return clientService.createClient(client);
+		ClientDTO responseClientDTO = new ClientDTO( clientService.createClient(client) );
+		return new ResponseEntity<>( responseClientDTO, HttpStatus.OK );
 	}
 	
 }

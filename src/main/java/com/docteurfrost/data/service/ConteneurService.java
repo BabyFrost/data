@@ -43,9 +43,8 @@ public class ConteneurService {
 		return saveConteneur( conteneur );
 	}
 	
-	public Conteneur miseEnRouteConteneur( int idConteneur, String date ) throws ParseException, ResourceNotFoundException, BadRequestException {
+	public Conteneur miseEnRouteConteneur( Conteneur conteneur, String date ) throws ParseException, ResourceNotFoundException, BadRequestException {
 		
-		Conteneur conteneur = getConteneurById(idConteneur);
 		if ( conteneur.getDateDepart() == null ) {
 			conteneur.setDateDepart( DateStringConverter.stringToDate( date ) );
 			conteneur.getState().depart();
@@ -56,8 +55,7 @@ public class ConteneurService {
 		}
 	}
 	
-	public Conteneur arriveConteneur( int idConteneur, String date ) throws ParseException, ResourceNotFoundException, BadRequestException {	
-		Conteneur conteneur = getConteneurById(idConteneur);
+	public Conteneur arriveConteneur( Conteneur conteneur, String date ) throws ParseException, ResourceNotFoundException, BadRequestException {
 		if ( conteneur.getDateArrivee() == null ) {
 			conteneur.setDateArrivee( DateStringConverter.stringToDate( date ) );	
 			if ( !( conteneur.getState() instanceof EnRoute ) ) {
@@ -73,8 +71,8 @@ public class ConteneurService {
 		}
 	}
 	
-	public Conteneur dechargementConteneur( int idConteneur, String date ) throws ParseException, ResourceNotFoundException, BadRequestException {
-		Conteneur conteneur = getConteneurById(idConteneur); 
+	public Conteneur dechargementConteneur( Conteneur conteneur, String date ) throws ParseException, ResourceNotFoundException, BadRequestException {
+		
 		if ( conteneur.getDateDechargement() == null ) {
 			conteneur.setDateDechargement( DateStringConverter.stringToDate( date ) );
 			if ( !( conteneur.getState() instanceof Arrive ) ) {
