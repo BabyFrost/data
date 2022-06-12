@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -61,15 +60,10 @@ public class VenteController {
 	
 	@GetMapping()
 	@ResponseBody
-	public List<VenteDTO> getAllVentes( @RequestParam(required = false) String idArticle ) throws ResourceNotFoundException {
+	public List<VenteDTO> getAllVentes(  ) throws ResourceNotFoundException {
 		
 		List<Vente> ventes = new ArrayList<>();	
-		if ( idArticle != null ) {
-			ventes = venteService.getAllVente();
-		} else {
-			Article article = articleService.getArticleById(idArticle);
-			ventes = venteService.getAllVenteByArticle(article);
-		}
+		ventes = venteService.getAllVente();
 		
 		List<VenteDTO> ventesDTO = new ArrayList<>();
 		for (int i=0; i<ventes.size(); i++) {
