@@ -54,8 +54,8 @@ public class VenteController {
 	
 	@GetMapping("/{idVente}")
 	@ResponseBody
-	public VenteDTO getVenteById( @PathVariable("idArtcile") int idArticle ) throws ResourceNotFoundException {
-		return new VenteDTO( venteService.getVenteById( idArticle ) );
+	public VenteDTO getVenteById( @PathVariable("idVente") int idVente ) throws ResourceNotFoundException {
+		return new VenteDTO( venteService.getVenteById( idVente ) );
 	}
 	
 	@GetMapping()
@@ -91,13 +91,11 @@ public class VenteController {
 			Client client = clientService.getClientById( panierDTO.getClient().getTelephone() );
 			Utilisateur vendeur = utilisateurService.getUtilisateurById( panierDTO.getVendeur().getId() );
 			
-			System.out.println("AAAAA");
 			Article article = articleService.getArticleById( articleDTO.getId() );
 			if ( !(article.getState() instanceof EnVente) ) {
 				throw new BadRequestException("Cette article n'est pas a vendre");
 			}
 
-			System.out.println("BBBB");
 			Vente vente = new Vente ( "Libelle", client, article, vendeur, panier );
 			article.vendre();
 			
@@ -111,13 +109,14 @@ public class VenteController {
 		
 		panier.setNombreArticles(nombreArticles);
 		panier.setMontantTotal(montantTotal);
+		panier.setVentes( ventes );
 		panier = panierService.createPanier(panier);
 		
 		articleService.updateAllArticle(articles);
-		venteService.createAllVente(ventes);
-		
-		PanierDTO responsePanierDTO = new PanierDTO( panier );
-		return new ResponseEntity<>( responsePanierDTO, HttpStatus.OK );
+//		venteService.createAllVente(ventes);
+//		panier = panierService.getPanierById( panier.getId() );	
+//		PanierDTO responsePanierDTO = new PanierDTO( panier );
+		return new ResponseEntity<>( new PanierDTO( panier ), HttpStatus.OK );
 	}
 
 }

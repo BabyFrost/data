@@ -45,9 +45,11 @@ public class VenteService {
 		return (List<Vente>) venteRepository.saveAll(ventes);
 	}
 	
-	public Vente createVente( Vente vente ) throws ResourceConflictException {		
+	public Vente createVente( Vente vente ) throws ResourceConflictException {
+		System.out.println( "Dans Create Vente" );
 		Optional<Vente> venteTmp = venteRepository.findById( vente.getId() );
-		if ( venteTmp.isPresent() ) { throw new ResourceConflictException("Client existe deja"); }	
+		if ( venteTmp.isPresent() ) { throw new ResourceConflictException("Vente existe deja"); }
+		System.out.println( "Sauvegarde Vente" );
 		return saveVente( vente );
 	}
 	
@@ -58,7 +60,12 @@ public class VenteService {
 	
 	@Transactional
 	public List<Vente> createAllVente( List<Vente> ventes ) throws ResourceConflictException {
+		System.out.println("Create All Ventes");
+		System.out.println( ventes.size() );
 		for(int i = 0; i < ventes.size(); i++ ) {
+			System.out.println( i );
+			System.out.println( ventes.get(i).getArticle().getId() );
+			System.out.println( ventes.get(i).getId() );
 			createVente( ventes.get(i) );
 		}
 		return ventes;

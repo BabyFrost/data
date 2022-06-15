@@ -24,8 +24,7 @@ public class PanierDTO {
 		this.dateCreation = panier.getDateCreation();
 		
 		ArticleDTO articleDTO;
-		List<Vente> ventes = new ArrayList<>();
-		ventes =  new ArrayList<>( panier.getVentes() );
+		List<Vente> ventes =  panier.getVentes();
 		
 		this.client = new ClientDTO( ventes.get(0).getClient() );
 		this.vendeur = new VendeurDTO( ventes.get(0).getVendeur() );

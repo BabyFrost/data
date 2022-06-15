@@ -1,8 +1,8 @@
 package com.docteurfrost.data.model;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -26,9 +26,9 @@ public class Panier {
 	@Column(name="ID")
 	private int id;
 	
-	@OneToMany(mappedBy = "panier", cascade=CascadeType.REMOVE)
+	@OneToMany(mappedBy = "panier", cascade=CascadeType.ALL)
 	@JsonManagedReference(value="panier_vente")
-	private Collection<Vente> ventes = new ArrayList<>();
+	private List<Vente> ventes = new ArrayList<>();
 	
 	@Column(name="DATE_CREATION")
 	@Temporal(TemporalType.TIMESTAMP)
@@ -50,11 +50,11 @@ public class Panier {
 		return id;
 	}
 
-	public Collection<Vente> getVentes() {
+	public List<Vente> getVentes() {
 		return ventes;
 	}
 
-	public void setVentes(Collection<Vente> ventes) {
+	public void setVentes(List<Vente> ventes) {
 		this.ventes = ventes;
 	}
 

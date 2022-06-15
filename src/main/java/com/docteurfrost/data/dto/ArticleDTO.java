@@ -60,7 +60,7 @@ public class ArticleDTO {
 		this.photo = article.getPhoto();
 		this.dateAchat = DateStringConverter.dateToString( article.getDateAchat() );
 		this.dateSaisie = DateStringConverter.dateToString( article.getDateSaisie() ) ;
-		this.dateMiseEnVente = DateStringConverter.dateToString( article.getDateSaisie() );
+		this.dateMiseEnVente = DateStringConverter.dateToString( article.getDateMiseEnVente() );
 		this.etat = article.getEtat();
 		
 		options = new StringBuilder();

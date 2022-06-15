@@ -356,7 +356,10 @@ public class ArticleController {
 			Article article = articleService.getArticleById( articlesDTO.get(i).getId() );
 			if ( article.getDateMiseEnVente() == null ) {
 				
+				System.out.println(" String Date Mise en Vente : "+date);
 				article.setDateMiseEnVente( DateStringConverter.stringToDate( date ) );
+				System.out.println( article.getDateMiseEnVente() );
+				System.out.println(" Date Mise en Vente : "+date);
 				
 				if ( article.getState() instanceof DansConteneur ) {
 					throw new BadRequestException("Article "+article.getId()+" encore dans le conteneur");
@@ -368,6 +371,7 @@ public class ArticleController {
 				}
 				
 				article.getState().deballer();
+				System.out.println( article.getDateMiseEnVente() );
 				articleService.updateArticle( article );
 			} else {
 				throw new BadRequestException("Article deja Mis En Vente");
