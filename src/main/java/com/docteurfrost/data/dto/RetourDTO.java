@@ -1,14 +1,16 @@
 package com.docteurfrost.data.dto;
 
+import java.text.ParseException;
 import java.util.Date;
 
 import com.docteurfrost.data.model.Retour;
+import com.docteurfrost.data.tools.DateStringConverter;
 
 public class RetourDTO {
 	
 	private int id;
 	private String libelle;
-	private Date date;
+	private String date;
 	private ClientDTO client;
 	private ArticleDTO article;
 	private VendeurDTO vendeur;
@@ -19,7 +21,7 @@ public class RetourDTO {
 	public RetourDTO( Retour retour ) {
 		this.id = retour.getId();
 		this.libelle = retour.getLibelle();
-		this.date = retour.getDate();
+		this.date = DateStringConverter.dateToString( retour.getDate() );
 		this.client = new ClientDTO( retour.getVente().getClient() );
 		this.article = new ArticleDTO( retour.getVente().getArticle() );
 		this.vendeur = new VendeurDTO( retour.getVendeur() );
@@ -42,12 +44,12 @@ public class RetourDTO {
 		this.libelle = libelle;
 	}
 
-	public Date getDate() {
-		return date;
+	public Date getDate() throws ParseException {
+		return DateStringConverter.stringToDate( this.date );
 	}
 
 	public void setDate(Date date) {
-		this.date = date;
+		this.date = DateStringConverter.dateToString( date );
 	}
 
 	public ClientDTO getClient() {

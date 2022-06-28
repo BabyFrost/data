@@ -9,10 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.docteurfrost.data.categorie.Categorie;
 import com.docteurfrost.data.dto.CategorieDTO;
 import com.docteurfrost.data.exception.ResourceConflictException;
 import com.docteurfrost.data.exception.ResourceNotFoundException;
+import com.docteurfrost.data.model.categorie.Categorie;
 import com.docteurfrost.data.repository.CategorieRepository;
 
 @Service

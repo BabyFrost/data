@@ -22,15 +22,9 @@ public class PanierService {
 		return panierRepository.findById(id).orElseThrow( () -> new ResourceNotFoundException("No such Panier !") );
 	}
 	
-	public List<Panier> getAllPanier( int id ) throws ResourceNotFoundException {
-		
+	public List<Panier> getAllPanier( ) throws ResourceNotFoundException {	
 		List<Panier> paniers = new ArrayList<>();	
-		if ( id != 0 ) {
-			paniers.add( getPanierById( id ) ) ;
-		} else {
-			panierRepository.findAll().forEach(paniers::add);
-		}
-		
+		panierRepository.findAll().forEach(paniers::add);	
 		return paniers;
 	}
 	

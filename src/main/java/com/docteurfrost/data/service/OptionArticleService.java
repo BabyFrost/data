@@ -9,10 +9,10 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.docteurfrost.data.categorie.IdOptionArticle;
-import com.docteurfrost.data.categorie.OptionArticle;
 import com.docteurfrost.data.exception.ResourceConflictException;
 import com.docteurfrost.data.exception.ResourceNotFoundException;
+import com.docteurfrost.data.model.categorie.IdOptionArticle;
+import com.docteurfrost.data.model.categorie.OptionArticle;
 import com.docteurfrost.data.repository.OptionArticleRepository;
 
 @Service

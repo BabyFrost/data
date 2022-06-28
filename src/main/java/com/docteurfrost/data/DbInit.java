@@ -11,11 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import com.docteurfrost.data.categorie.Categorie;
-import com.docteurfrost.data.categorie.OptionArticle;
-import com.docteurfrost.data.categorie.OptionCategorie;
-import com.docteurfrost.data.categorie.ValeurOption;
-import com.docteurfrost.data.conteneur.Conteneur;
+import com.docteurfrost.data.model.Avance;
 import com.docteurfrost.data.model.Client;
 import com.docteurfrost.data.model.Marque;
 import com.docteurfrost.data.model.Panier;
@@ -23,7 +19,14 @@ import com.docteurfrost.data.model.Retour;
 import com.docteurfrost.data.model.Utilisateur;
 import com.docteurfrost.data.model.Vente;
 import com.docteurfrost.data.model.article.Article;
+import com.docteurfrost.data.model.categorie.Categorie;
+import com.docteurfrost.data.model.categorie.OptionArticle;
+import com.docteurfrost.data.model.categorie.OptionCategorie;
+import com.docteurfrost.data.model.categorie.ValeurOption;
+import com.docteurfrost.data.model.conteneur.Conteneur;
+import com.docteurfrost.data.model.reservation.Reservation;
 import com.docteurfrost.data.repository.ArticleRepository;
+import com.docteurfrost.data.repository.AvanceRepository;
 import com.docteurfrost.data.repository.CategorieRepository;
 import com.docteurfrost.data.repository.ClientRepository;
 import com.docteurfrost.data.repository.ConteneurRepository;
@@ -31,6 +34,7 @@ import com.docteurfrost.data.repository.MarqueRepository;
 import com.docteurfrost.data.repository.OptionArticleRepository;
 import com.docteurfrost.data.repository.OptionCategorieRepository;
 import com.docteurfrost.data.repository.PanierRepository;
+import com.docteurfrost.data.repository.ReservationRepository;
 import com.docteurfrost.data.repository.RetourRepository;
 import com.docteurfrost.data.repository.UtilisateurRepository;
 import com.docteurfrost.data.repository.ValeurOptionRepository;
@@ -76,6 +80,12 @@ public class DbInit {
 	@Autowired
 	private ValeurOptionRepository valeurOptionRepository;
 	
+	@Autowired
+	private ReservationRepository reservationRepository;
+	
+	@Autowired
+	private AvanceRepository avanceRepository;
+	
 	@PostConstruct
     private void postConstruct() {
 		
@@ -97,6 +107,8 @@ public class DbInit {
         articleRepository.save(article);
         
         Article article2 = new Article("TV2", "Tv propre 100 neuve", null, categorie, conteneur, marque, 80000, 0, 0, 200000, null, new Date(), "BON" );
+        article2.decharger();
+        article2.deballer();
         articleRepository.save(article2);
         
         Article article3 = new Article("TV3", "Tv", null, categorie, conteneur, marque, 42000, 0, 0, 70000, null, new Date(), "BON" );
@@ -175,6 +187,15 @@ public class DbInit {
 		article.vendre();
 		articleRepository.save( article );
 		venteRepository.save(vente);
+		
+		Reservation reservation = new Reservation( "Reservation "+article2.getNom(), client, article, utilisateur, 10000 );
+		article2.avancer();
+		articleRepository.save( article2 );
+		reservationRepository.save(reservation);
+		
+		Avance avance = new Avance( reservation, utilisateur, 10000 );
+		avanceRepository.save( avance );
+		
 		
 		Retour retour = new Retour ( "La TV s'eteint toute seule", utilisateur, vente );
 		article.retourner();

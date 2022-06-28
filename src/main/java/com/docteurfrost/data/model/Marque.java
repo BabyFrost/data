@@ -13,8 +13,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.docteurfrost.data.categorie.Categorie;
 import com.docteurfrost.data.model.article.Article;
+import com.docteurfrost.data.model.categorie.Categorie;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity

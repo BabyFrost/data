@@ -24,16 +24,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.docteurfrost.data.categorie.Categorie;
-import com.docteurfrost.data.categorie.OptionArticle;
-import com.docteurfrost.data.categorie.OptionCategorie;
-import com.docteurfrost.data.categorie.ValeurOption;
-import com.docteurfrost.data.conteneur.Conteneur;
 import com.docteurfrost.data.dto.ArticleDTO;
 import com.docteurfrost.data.exception.BadRequestException;
 import com.docteurfrost.data.exception.ResourceConflictException;
 import com.docteurfrost.data.exception.ResourceNotFoundException;
-import com.docteurfrost.data.file.FileStorageService;
 import com.docteurfrost.data.model.Marque;
 import com.docteurfrost.data.model.article.Article;
 import com.docteurfrost.data.model.article.ArticleState;
@@ -43,9 +37,15 @@ import com.docteurfrost.data.model.article.EnMagasin;
 import com.docteurfrost.data.model.article.EnVente;
 import com.docteurfrost.data.model.article.Reserve;
 import com.docteurfrost.data.model.article.Vendu;
+import com.docteurfrost.data.model.categorie.Categorie;
+import com.docteurfrost.data.model.categorie.OptionArticle;
+import com.docteurfrost.data.model.categorie.OptionCategorie;
+import com.docteurfrost.data.model.categorie.ValeurOption;
+import com.docteurfrost.data.model.conteneur.Conteneur;
 import com.docteurfrost.data.service.ArticleService;
 import com.docteurfrost.data.service.CategorieService;
 import com.docteurfrost.data.service.ConteneurService;
+import com.docteurfrost.data.service.FileStorageService;
 import com.docteurfrost.data.service.MarqueService;
 import com.docteurfrost.data.service.OptionArticleService;
 import com.docteurfrost.data.service.OptionCategorieService;
@@ -89,7 +89,6 @@ public class ArticleController {
 				throw new BadRequestException("Renseignez un Conteneur valide");
 			}
 		}
-		
 		
 		List<Article> articles = new ArrayList<>();
 		
@@ -155,7 +154,7 @@ public class ArticleController {
 	
 	@PostMapping()
 //	public ResponseEntity<String> saveArticle( @RequestBody ArticleDTO articleDTO ) {
-	public ResponseEntity<String> saveArticle( @Valid @ModelAttribute ArticleDTO articleDTO ) throws ParseException, ResourceConflictException, BadRequestException, ResourceNotFoundException {
+	public ResponseEntity<ArticleDTO> saveArticle( @Valid @ModelAttribute ArticleDTO articleDTO ) throws ParseException, ResourceConflictException, BadRequestException, ResourceNotFoundException {
 		
 		String fileDownloadUri = null;
 		if ( articleDTO.getFile() != null ) {
@@ -168,37 +167,9 @@ public class ArticleController {
 	                .toUriString();
 		}
 		
-		if ( articleDTO.getCategorie() == null ) {
-			throw new BadRequestException("Renseignez une Categorie");
-		}
 		Categorie categorie = categorieService.getCategorieById( articleDTO.getCategorie() );
-		
 		Conteneur conteneur = conteneurService.getConteneurById( articleDTO.getConteneur() );
-		
-		if ( articleDTO.getMarque() == null ) {
-			throw new BadRequestException("Renseignez une Marque");
-		}
 		Marque marque = marqueService.getMarqueById( articleDTO.getMarque() );
-		
-		System.out.println("BBB");
-		if ( articleDTO.getNom() == null  ) {
-			throw new BadRequestException("Renseignez le nom de l'article");
-		}
-		
-		System.out.println("CCC");
-		if ( articleDTO.getPrixAchat() == 0  ) {
-			throw new BadRequestException("Renseignez prix Achat");
-		}
-		
-		System.out.println("DDD");
-		if ( articleDTO.getPrix() == 0  ) {
-			throw new BadRequestException("Renseignez prix de Vente");
-		}
-		
-		System.out.println( "Before Insert : "+DateStringConverter.stringToDate( articleDTO.getDateAchat() ) );
-		if ( articleDTO.getEtat() == null  ) {
-			throw new BadRequestException("Renseignez etat de l'article");
-		}
 		Article article = new Article(articleDTO.getNom(), articleDTO.getObservation(), null, categorie, conteneur, marque, articleDTO.getPrixAchat(), 0, 0, articleDTO.getPrix(), fileDownloadUri, DateStringConverter.stringToDate( articleDTO.getDateAchat() ), articleDTO.getEtat() );   
 		
         String options = articleDTO.getOptions();
@@ -237,7 +208,7 @@ public class ArticleController {
 				if ( !valeursPossible.contains(valeur) ) {
 					System.out.println(valeur);
 					System.out.println( !valeursPossible.contains(valeur) );
-    				return new ResponseEntity<>( "Valeur d'option invalide", HttpStatus.BAD_REQUEST );
+					throw new BadRequestException( "Valeur d'option invalide" );
     			}
 			}
         	
@@ -248,44 +219,32 @@ public class ArticleController {
         
         articleService.createArticle( article );
         optionArticleService.createAllOptionArticle(listOptions);
-        System.out.println( " Article saved " );
         
-		return new ResponseEntity<>( "Article cree", HttpStatus.CREATED );
+		return new ResponseEntity<>( new ArticleDTO( articleService.getArticleById( article.getId() ) ), HttpStatus.CREATED );
 	}
 	
 	@PutMapping()
 //	public ResponseEntity<String> updateArticle( @RequestBody ArticleDTO articleDTO ) throws ParseException {
-	public ResponseEntity<String> updateArticle( @ModelAttribute ArticleDTO articleDTO ) throws ParseException, ResourceNotFoundException, ResourceConflictException, BadRequestException {
+	public ResponseEntity<ArticleDTO> updateArticle( @Valid @ModelAttribute ArticleDTO articleDTO ) throws ParseException, ResourceNotFoundException, ResourceConflictException, BadRequestException {
 		
 		Article article = articleService.getArticleById( articleDTO.getId() );
-		
-		System.out.println( " AAA " );
 		Categorie categorie = categorieService.getCategorieById( articleDTO.getCategorie() );
-		
-		System.out.println( " BBB " );
 		Conteneur conteneur = conteneurService.getConteneurById( articleDTO.getConteneur() );
-		
-		System.out.println( " CCC " );
 		Marque marque = marqueService.getMarqueById( articleDTO.getMarque() );
-	
-		System.out.println( " DDD " );
+		
 		List<OptionArticle> listOptions =  new ArrayList<>( article.getOptions() );
 		for ( int i = 0; i < listOptions.size(); i++ ) {
-//			OptionArticle optionArticle = optionArticleService.getOptionArticleById( listOptions.get(i).getId() );
 			optionArticleService.deleteOptionArticle( listOptions.get(i) );
 		}
 		article.setOptions(null);
 		
-		System.out.println("EEE");
 		if ( articleDTO.getPrixAchat() == 0  ) {
 			throw new BadRequestException("Renseignez prix Achat");
 		}
 		
-		System.out.println("FFF");
 		if ( articleDTO.getPrix() == 0  ) {
 			throw new BadRequestException("Renseignez prix Achat");
 		}
-		
 		
 		article.setObservation( articleDTO.getObservation() );
 		article.setNumeroDeSerie( articleDTO.getNumeroDeSerie() );
@@ -307,7 +266,6 @@ public class ArticleController {
         List<Integer> valueIndexes = searcher.indexesOf( ":", options);
         List<Integer> valueEndIndexes = searcher.indexesOf( "}", options);
         
-        System.out.println( " EEE " );
         listOptions = new ArrayList<>();
         for (int i=0; i<keyIndexes.size(); i++) {
         	
@@ -321,7 +279,6 @@ public class ArticleController {
         	
         }
         
-        System.out.println( " FFF " );
         if ( articleDTO.getFile() != null ) {
 			String fileName = fileStorageService.storeFile( articleDTO.getFile(), articleDTO.getNom());
 
@@ -335,9 +292,8 @@ public class ArticleController {
         
         articleService.updateArticle(article);
         optionArticleService.createAllOptionArticle(listOptions);
-        System.out.println( " Article modified " );
         
-		return new ResponseEntity<>( "Article Modifie" , HttpStatus.CREATED );
+		return new ResponseEntity<>( new ArticleDTO( articleService.getArticleById(article.getId()) ), HttpStatus.CREATED );
 	}
 	
 	@DeleteMapping("/{idArticle}")
@@ -348,7 +304,7 @@ public class ArticleController {
 	
 	@PatchMapping("/status/mise_en_vente")
 	@ResponseBody
-	public ResponseEntity<String> miseEnVenteArticles( @RequestBody List<ArticleDTO> articlesDTO, @RequestParam String date ) throws ParseException, ResourceNotFoundException, BadRequestException {
+	public ResponseEntity<String> miseEnVenteArticles( @Valid @RequestBody List<ArticleDTO> articlesDTO, @RequestParam String date ) throws ParseException, ResourceNotFoundException, BadRequestException {
 //	public ResponseEntity<String> updateArticle( @ModelAttribute List<ArticleDTO> articlesDTO, @RequestParam String date ) throws ParseException {
 		
 		for (int i = 0; i<articlesDTO.size(); i++) {
@@ -356,10 +312,7 @@ public class ArticleController {
 			Article article = articleService.getArticleById( articlesDTO.get(i).getId() );
 			if ( article.getDateMiseEnVente() == null ) {
 				
-				System.out.println(" String Date Mise en Vente : "+date);
 				article.setDateMiseEnVente( DateStringConverter.stringToDate( date ) );
-				System.out.println( article.getDateMiseEnVente() );
-				System.out.println(" Date Mise en Vente : "+date);
 				
 				if ( article.getState() instanceof DansConteneur ) {
 					throw new BadRequestException("Article "+article.getId()+" encore dans le conteneur");
@@ -371,7 +324,6 @@ public class ArticleController {
 				}
 				
 				article.getState().deballer();
-				System.out.println( article.getDateMiseEnVente() );
 				articleService.updateArticle( article );
 			} else {
 				throw new BadRequestException("Article deja Mis En Vente");

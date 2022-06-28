@@ -1,5 +1,6 @@
 package com.docteurfrost.data.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -24,11 +25,15 @@ public class Vente extends Operation {
 	@JsonBackReference(value="retour_vente")
 	private Retour retour;
 	
+	@Column(name="IS_RETOURNE")
+	private boolean isRetourne;
+	
 	public Vente () { }
 	
 	public Vente ( String libelle, Client client, Article article, Utilisateur utilisateur, Panier panier ) {
 		super( libelle, client, article, utilisateur);
 		this.panier = panier;
+		this.isRetourne = false;
 	}
 
 	public Panier getPanier() {
@@ -41,6 +46,14 @@ public class Vente extends Operation {
 
 	public void setRetour(Retour retour) {
 		this.retour = retour;
+	}
+
+	public boolean isRetourne() {
+		return isRetourne;
+	}
+
+	public void setRetourne(boolean isRetourne) {
+		this.isRetourne = isRetourne;
 	}
 
 }

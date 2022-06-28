@@ -18,11 +18,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.docteurfrost.data.conteneur.Conteneur;
 import com.docteurfrost.data.dto.ConteneurDTO;
 import com.docteurfrost.data.exception.BadRequestException;
 import com.docteurfrost.data.exception.ResourceConflictException;
 import com.docteurfrost.data.exception.ResourceNotFoundException;
+import com.docteurfrost.data.model.conteneur.Conteneur;
 import com.docteurfrost.data.service.ConteneurService;
 import com.docteurfrost.data.tools.DateStringConverter;
 

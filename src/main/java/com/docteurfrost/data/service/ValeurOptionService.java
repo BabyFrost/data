@@ -8,9 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.docteurfrost.data.categorie.OptionCategorie;
-import com.docteurfrost.data.categorie.ValeurOption;
 import com.docteurfrost.data.dto.ValeurOptionDTO;
+import com.docteurfrost.data.model.categorie.OptionCategorie;
+import com.docteurfrost.data.model.categorie.ValeurOption;
 import com.docteurfrost.data.repository.ValeurOptionRepository;
 
 @Service

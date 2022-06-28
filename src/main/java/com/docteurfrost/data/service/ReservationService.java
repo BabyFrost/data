@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.docteurfrost.data.exception.ResourceConflictException;
 import com.docteurfrost.data.exception.ResourceNotFoundException;
-import com.docteurfrost.data.model.Reservation;
+import com.docteurfrost.data.model.reservation.Reservation;
 import com.docteurfrost.data.repository.ReservationRepository;
 
 @Service

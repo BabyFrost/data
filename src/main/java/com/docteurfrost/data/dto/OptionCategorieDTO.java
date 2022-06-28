@@ -3,8 +3,9 @@ package com.docteurfrost.data.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.docteurfrost.data.categorie.OptionCategorie;
-import com.docteurfrost.data.categorie.ValeurOption;
+import com.docteurfrost.data.dto.interne.ValeurOptionInterneDTO;
+import com.docteurfrost.data.model.categorie.OptionCategorie;
+import com.docteurfrost.data.model.categorie.ValeurOption;
 
 public class OptionCategorieDTO {
 
@@ -15,7 +16,7 @@ public class OptionCategorieDTO {
 	private Boolean isNumerique;
 	private Boolean isFree;
 	private Boolean isBoolean;
-	private List<ValeurOptionShortDTO> valeurs;
+	private List<ValeurOptionInterneDTO> valeurs;
 	
 	public OptionCategorieDTO() { 
 		
@@ -41,11 +42,11 @@ public class OptionCategorieDTO {
 		 */
 		
 		valeurs = new ArrayList<>();
-		ValeurOptionShortDTO valeurOptionDTO;
+		ValeurOptionInterneDTO valeurOptionDTO;
 		List<ValeurOption> valeurOption;
 		valeurOption =  new ArrayList<>( optionCategorie.getValeurs() );
 		for ( int i=0; i < valeurOption.size(); i++ ) {
-			valeurOptionDTO = new ValeurOptionShortDTO( valeurOption.get(i) );
+			valeurOptionDTO = new ValeurOptionInterneDTO( valeurOption.get(i) );
 			valeurs.add(valeurOptionDTO);
 		}
 		
@@ -104,11 +105,11 @@ public class OptionCategorieDTO {
 		this.isBoolean = isBoolean;
 	}
 
-	public List<ValeurOptionShortDTO> getValeurs() {
+	public List<ValeurOptionInterneDTO> getValeurs() {
 		return valeurs;
 	}
 
-	public void setValeurs(List<ValeurOptionShortDTO> valeurs) {
+	public void setValeurs(List<ValeurOptionInterneDTO> valeurs) {
 		this.valeurs = valeurs;
 	}
 	

@@ -1,6 +1,6 @@
 package com.docteurfrost.data.dto;
 
-import com.docteurfrost.data.categorie.OptionArticle;
+import com.docteurfrost.data.model.categorie.OptionArticle;
 
 
 public class OptionArticleDTO {

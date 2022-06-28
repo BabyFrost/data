@@ -9,12 +9,12 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.docteurfrost.data.categorie.Categorie;
-import com.docteurfrost.data.conteneur.Conteneur;
 import com.docteurfrost.data.exception.ResourceConflictException;
 import com.docteurfrost.data.exception.ResourceNotFoundException;
 import com.docteurfrost.data.model.article.Article;
 import com.docteurfrost.data.model.article.ArticleState;
+import com.docteurfrost.data.model.categorie.Categorie;
+import com.docteurfrost.data.model.conteneur.Conteneur;
 import com.docteurfrost.data.repository.ArticleRepository;
 
 @Service

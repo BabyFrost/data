@@ -18,13 +18,15 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
-import com.docteurfrost.data.categorie.Categorie;
-import com.docteurfrost.data.categorie.OptionArticle;
-import com.docteurfrost.data.conteneur.Conteneur;
-import com.docteurfrost.data.conteneur.Decharge;
 import com.docteurfrost.data.model.Marque;
 import com.docteurfrost.data.model.Operation;
+import com.docteurfrost.data.model.categorie.Categorie;
+import com.docteurfrost.data.model.categorie.OptionArticle;
+import com.docteurfrost.data.model.conteneur.Conteneur;
+import com.docteurfrost.data.model.conteneur.Decharge;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -36,6 +38,8 @@ public class Article {
 	@Column(name="ID")
 	private String id;
 	
+	@NotNull
+	@NotBlank
 	@Column(name="NOM")
 	private String nom;
 	
@@ -45,16 +49,19 @@ public class Article {
 	@Column(name="NUMERO_DE_SERIE")
 	private String numeroDeSerie;
 	
+	@NotNull
 	@ManyToOne
 	@JsonBackReference(value="article_categorie")
 	@JoinColumn(name="CATEGORIE")
 	private Categorie categorie;
 	
+	@NotNull
 	@ManyToOne
 	@JsonBackReference(value="conteneur_article")
 	@JoinColumn(name="CONTENEUR")
 	private Conteneur conteneur;
 	
+	@NotNull
 	@ManyToOne
 	@JsonBackReference(value="marque_article")
 	@JoinColumn(name="MARQUE")
@@ -75,6 +82,7 @@ public class Article {
 	@Column(name="PHOTO")
 	private String photo;
 	
+	@NotNull
 	@Column(name="ETAT")
 	private String etat;
 	

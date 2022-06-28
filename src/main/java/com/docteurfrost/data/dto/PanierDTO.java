@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
+import com.docteurfrost.data.dto.interne.ArticleInterneDTO;
+import com.docteurfrost.data.dto.interne.ClientInterneDTO;
+import com.docteurfrost.data.dto.interne.VendeurInterneDTO;
 import com.docteurfrost.data.model.Panier;
 import com.docteurfrost.data.model.Vente;
 
@@ -11,9 +16,10 @@ public class PanierDTO {
 	
 	private int id;
 	private Date dateCreation;
-	private ClientDTO client;
-	private VendeurDTO vendeur;
-	private List<ArticleDTO> articles = new ArrayList<>();
+	private ClientInterneDTO client;
+	private VendeurInterneDTO vendeur;
+	@NotNull
+	private List<ArticleInterneDTO> articles = new ArrayList<>();
 	private int nombreArticles;
 	private int montantTotal;
 	
@@ -23,15 +29,15 @@ public class PanierDTO {
 		this.id = panier.getId();
 		this.dateCreation = panier.getDateCreation();
 		
-		ArticleDTO articleDTO;
+		ArticleInterneDTO articleDTO;
 		List<Vente> ventes =  panier.getVentes();
 		
-		this.client = new ClientDTO( ventes.get(0).getClient() );
-		this.vendeur = new VendeurDTO( ventes.get(0).getVendeur() );
+		this.client = new ClientInterneDTO( ventes.get(0).getClient() );
+		this.vendeur = new VendeurInterneDTO( ventes.get(0).getVendeur() );
 		
 		this.montantTotal = 0;
 		for ( int i=0; i < ventes.size(); i++ ) {
-			articleDTO = new ArticleDTO( ventes.get(i).getArticle() );
+			articleDTO = new ArticleInterneDTO( ventes.get(i).getArticle() );
 			this.montantTotal += articleDTO.getPrix();
 			articles.add(articleDTO);
 		}
@@ -51,28 +57,28 @@ public class PanierDTO {
 		this.dateCreation = dateCreation;
 	}
 
-	public List<ArticleDTO> getArticles() {
-		return articles;
-	}
-
-	public void setArticles(List<ArticleDTO> articles) {
-		this.articles = articles;
-	}
-
-	public ClientDTO getClient() {
+	public ClientInterneDTO getClient() {
 		return client;
 	}
 
-	public void setClient(ClientDTO client) {
+	public void setClient(ClientInterneDTO client) {
 		this.client = client;
 	}
 
-	public VendeurDTO getVendeur() {
+	public VendeurInterneDTO getVendeur() {
 		return vendeur;
 	}
 
-	public void setVendeur(VendeurDTO vendeur) {
+	public void setVendeur(VendeurInterneDTO vendeur) {
 		this.vendeur = vendeur;
+	}
+
+	public List<ArticleInterneDTO> getArticles() {
+		return articles;
+	}
+
+	public void setArticles(List<ArticleInterneDTO> articles) {
+		this.articles = articles;
 	}
 
 	public int getNombreArticles() {

@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.docteurfrost.data.categorie.OptionCategorie;
 import com.docteurfrost.data.dto.ValeurOptionDTO;
 import com.docteurfrost.data.exception.ResourceNotFoundException;
+import com.docteurfrost.data.model.categorie.OptionCategorie;
 import com.docteurfrost.data.service.OptionCategorieService;
 import com.docteurfrost.data.service.ValeurOptionService;
 

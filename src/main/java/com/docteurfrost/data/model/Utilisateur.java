@@ -3,6 +3,7 @@ package com.docteurfrost.data.model;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -10,12 +11,15 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Pattern;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
@@ -46,8 +50,8 @@ public class Utilisateur {
 	@Column(name="TELEPHONE")
 	private int telephone;
 	
-	@Column(name="LOGIN")
-	private String login;
+	@Column(name="USERNAME")
+	private String username;
 	
 	@Column(name="MOT_DE_PASSE")
 	private String password;
@@ -56,21 +60,30 @@ public class Utilisateur {
 	@Column(name="SEXE")
 	private String sexe;
 	
-	@OneToMany(mappedBy = "vendeur", cascade=CascadeType.REMOVE)
+	@OneToMany(mappedBy = "vendeur", cascade=CascadeType.ALL)
 	@JsonManagedReference(value="operations_utilisateur")
 	private Collection<Operation> operations = new ArrayList<>();
+	
+	@ManyToOne
+	@JsonBackReference(value="utilisateur_role")
+	@JoinColumn(name="ROLE")
+	private Role role;
+	
+	@OneToMany(mappedBy = "vendeur", cascade=CascadeType.ALL)
+	@JsonManagedReference(value="avance_vendeur")
+	private List<Avance> avances = new ArrayList<>();
 	
 	public Utilisateur() { }
 
 	public Utilisateur( String nom, String prenom, Date dateDeNaissance, int numeroCNI, String email,
-			int telephone, String login, String password, String sexe) {
+			int telephone, String username, String password, String sexe) {
 		this.nom = nom;
 		this.prenom = prenom;
 		this.dateDeNaissance = dateDeNaissance;
 		this.numeroCNI = numeroCNI;
 		this.email = email;
 		this.telephone = telephone;
-		this.login = login;
+		this.username = username;
 		this.password = password;
 		this.sexe = sexe;
 	}
@@ -127,12 +140,12 @@ public class Utilisateur {
 		this.telephone = telephone;
 	}
 
-	public String getLogin() {
-		return login;
+	public String getUsername() {
+		return username;
 	}
 
-	public void setLogin(String login) {
-		this.login = login;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	public String getPassword() {

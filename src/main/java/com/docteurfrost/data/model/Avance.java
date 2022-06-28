@@ -13,6 +13,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.docteurfrost.data.model.reservation.Reservation;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
@@ -29,12 +30,28 @@ public class Avance {
 	@JoinColumn(name="RESERVATION")
 	private Reservation reservation;
 	
+	@ManyToOne
+	@JsonBackReference(value="avance_vendeur")
+	@JoinColumn(name="VENDEUR")
+	private Utilisateur vendeur;
+	
 	@Column(name="MONTANT")
 	private int montant;
 	
 	@Column(name="DATE")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date date;
+	
+	public Avance() {
+		this.date = new Date(); 
+	}
+	
+	public Avance( Reservation reservation, Utilisateur vendeur, int montant ) {
+		this.reservation = reservation;
+		this.vendeur = vendeur;
+		this.montant = montant;
+		this.date = new Date();
+	}
 
 	public int getId() {
 		return id;
@@ -62,6 +79,14 @@ public class Avance {
 
 	public void setDate(Date date) {
 		this.date = date;
+	}
+
+	public Utilisateur getVendeur() {
+		return vendeur;
+	}
+
+	public void setVendeur(Utilisateur vendeur) {
+		this.vendeur = vendeur;
 	}
 
 }

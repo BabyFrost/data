@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.docteurfrost.data.dto.ArticleDTO;
 import com.docteurfrost.data.dto.PanierDTO;
 import com.docteurfrost.data.dto.VenteDTO;
+import com.docteurfrost.data.dto.interne.ArticleInterneDTO;
 import com.docteurfrost.data.exception.BadRequestException;
 import com.docteurfrost.data.exception.ResourceConflictException;
 import com.docteurfrost.data.exception.ResourceNotFoundException;
@@ -75,7 +77,7 @@ public class VenteController {
 	
 	@PostMapping()
 	@ResponseBody
-	public ResponseEntity<PanierDTO> vendre(@RequestBody PanierDTO panierDTO) throws ResourceNotFoundException, BadRequestException, ResourceConflictException {
+	public ResponseEntity<PanierDTO> vendre( @Valid @RequestBody PanierDTO panierDTO) throws ResourceNotFoundException, BadRequestException, ResourceConflictException {
 		
 		Panier panier = new Panier( new Date() );
 		
@@ -84,9 +86,9 @@ public class VenteController {
 		List<Article> articles = new ArrayList<>();
 		List<Vente> ventes = new ArrayList<>();
 		
-		List<ArticleDTO> articlesDTO = panierDTO.getArticles();
+		List<ArticleInterneDTO> articlesDTO = panierDTO.getArticles();
 		for ( int i = 0; i < articlesDTO.size(); i++) {
-			ArticleDTO articleDTO = articlesDTO.get(i);
+			ArticleInterneDTO articleDTO = articlesDTO.get(i);
 			
 			Client client = clientService.getClientById( panierDTO.getClient().getTelephone() );
 			Utilisateur vendeur = utilisateurService.getUtilisateurById( panierDTO.getVendeur().getId() );

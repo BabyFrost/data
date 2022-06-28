@@ -1,6 +1,7 @@
 package com.docteurfrost.data.dto;
 
 import java.util.Date;
+
 import com.docteurfrost.data.model.Vente;
 
 public class VenteDTO {
@@ -12,6 +13,7 @@ public class VenteDTO {
 	private ClientDTO client;
 	private ArticleDTO article;
 	private VendeurDTO vendeur;
+	private boolean isRetourne;
 	
 	public VenteDTO() { }
 
@@ -23,6 +25,7 @@ public class VenteDTO {
 		this.client = new ClientDTO( vente.getClient() );
 		this.article = new ArticleDTO( vente.getArticle() );
 		this.vendeur = new VendeurDTO ( vente.getVendeur() );
+		this.isRetourne = vente.isRetourne();
 	}
 
 	public int getPanier() {
@@ -75,6 +78,14 @@ public class VenteDTO {
 
 	public void setVendeur(VendeurDTO vendeur) {
 		this.vendeur = vendeur;
+	}
+
+	public boolean isRetourne() {
+		return isRetourne;
+	}
+
+	public void setRetourne(boolean isRetourne) {
+		this.isRetourne = isRetourne;
 	}
 
 }

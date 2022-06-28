@@ -76,8 +76,12 @@ public class RetourController {
 		Article article = vente.getArticle();
 		
 		Retour retour = new Retour ( retourDTO.getLibelle(), vendeur, vente );
+		
 		article.retourner();
-		articleService.saveArticle( article );
+		articleService.updateArticle( article );
+		
+		vente.setRetourne(true);
+		venteService.updateVente(vente);
 		
 		RetourDTO responseRetourDTO = new RetourDTO( retourService.createRetour(retour) );
 		return new ResponseEntity<>( responseRetourDTO, HttpStatus.OK );

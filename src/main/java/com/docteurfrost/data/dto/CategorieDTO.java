@@ -3,15 +3,16 @@ package com.docteurfrost.data.dto;
 import java.util.List;
 import java.util.ArrayList;
 
-import com.docteurfrost.data.categorie.Categorie;
-import com.docteurfrost.data.categorie.OptionCategorie;
+import com.docteurfrost.data.dto.interne.OptionCategorieInterneDTO;
 import com.docteurfrost.data.model.Marque;
+import com.docteurfrost.data.model.categorie.Categorie;
+import com.docteurfrost.data.model.categorie.OptionCategorie;
 
 public class CategorieDTO {
 	
 	private String nom;
 	private String libelle;
-	private List<OptionCategorieShortDTO> options;
+	private List<OptionCategorieInterneDTO> options;
 	private List<MarqueDTO> marques;
 	
 	public CategorieDTO() { }
@@ -32,7 +33,7 @@ public class CategorieDTO {
 		List<OptionCategorie> optionsCategorie;
 		optionsCategorie =  new ArrayList<>( categorie.getOptions() );
 		for ( int i=0; i < optionsCategorie.size(); i++ ) {
-			options.add( new OptionCategorieShortDTO( optionsCategorie.get(i) ) );
+			options.add( new OptionCategorieInterneDTO( optionsCategorie.get(i) ) );
 		}
 		
 		marques = new ArrayList<>();
@@ -60,11 +61,11 @@ public class CategorieDTO {
 		this.libelle = libelle;
 	}
 
-	public List<OptionCategorieShortDTO> getOptions() {
+	public List<OptionCategorieInterneDTO> getOptions() {
 		return options;
 	}
 
-	public void setOptions(List<OptionCategorieShortDTO> options) {
+	public void setOptions(List<OptionCategorieInterneDTO> options) {
 		this.options = options;
 	}
 

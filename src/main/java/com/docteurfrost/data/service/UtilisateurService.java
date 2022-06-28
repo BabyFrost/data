@@ -22,6 +22,10 @@ public class UtilisateurService {
 		return utilisateurRepository.findById(id).orElseThrow( () -> new ResourceNotFoundException("No such User !") );
 	}
 	
+	public Utilisateur getUtilisateurByUsername( String username ) throws ResourceNotFoundException {	
+		return utilisateurRepository.findByUsername(username).orElseThrow( () -> new ResourceNotFoundException("No such User !") );
+	}
+	
 	public List<Utilisateur> getAllUtilisateur() throws ResourceNotFoundException {	
 		List<Utilisateur> utilisateurs = new ArrayList<>();	
 		utilisateurRepository.findAll().forEach(utilisateurs::add);	

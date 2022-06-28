@@ -7,9 +7,9 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.docteurfrost.data.categorie.OptionCategorie;
 import com.docteurfrost.data.exception.ResourceConflictException;
 import com.docteurfrost.data.exception.ResourceNotFoundException;
+import com.docteurfrost.data.model.categorie.OptionCategorie;
 import com.docteurfrost.data.repository.OptionCategorieRepository;
 
 @Service

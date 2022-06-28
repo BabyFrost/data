@@ -1,6 +1,6 @@
 package com.docteurfrost.data.dto;
 
-import com.docteurfrost.data.conteneur.Conteneur;
+import com.docteurfrost.data.model.conteneur.Conteneur;
 import com.docteurfrost.data.tools.DateStringConverter;
 
 public class ConteneurDTO {

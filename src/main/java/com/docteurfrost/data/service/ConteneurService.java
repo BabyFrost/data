@@ -8,12 +8,12 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.docteurfrost.data.conteneur.Arrive;
-import com.docteurfrost.data.conteneur.Conteneur;
-import com.docteurfrost.data.conteneur.EnRoute;
 import com.docteurfrost.data.exception.BadRequestException;
 import com.docteurfrost.data.exception.ResourceConflictException;
 import com.docteurfrost.data.exception.ResourceNotFoundException;
+import com.docteurfrost.data.model.conteneur.Arrive;
+import com.docteurfrost.data.model.conteneur.Conteneur;
+import com.docteurfrost.data.model.conteneur.EnRoute;
 import com.docteurfrost.data.repository.ConteneurRepository;
 import com.docteurfrost.data.tools.DateStringConverter;
 

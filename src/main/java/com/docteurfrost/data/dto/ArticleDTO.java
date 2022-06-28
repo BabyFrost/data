@@ -6,17 +6,21 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.docteurfrost.data.categorie.OptionArticle;
 import com.docteurfrost.data.model.article.Article;
+import com.docteurfrost.data.model.categorie.OptionArticle;
 import com.docteurfrost.data.tools.DateStringConverter; 
 
 public class ArticleDTO { 
 
+	
 	private String id;
 	
 	@NotNull
 	private String nom;
+	
+	@NotNull
 	private String observation;
+	
 	private String numeroDeSerie;
 	
 	@NotNull
@@ -27,11 +31,13 @@ public class ArticleDTO {
 	
 	@NotNull
 	private String marque;
+	
 	private int prixAchat;
 	private int prixLiquidation;
 	private int prixEstimatif;
 	private int prix;
 	private MultipartFile file;
+	
 	private String status;
 	private StringBuilder options;
 	private String photo;
