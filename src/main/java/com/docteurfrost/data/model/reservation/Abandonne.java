@@ -1,5 +1,7 @@
 package com.docteurfrost.data.model.reservation;
 
+import com.docteurfrost.data.exception.BadRequestException;
+
 public class Abandonne implements ReservationState {
 	
 	private Reservation reservation;
@@ -16,18 +18,23 @@ public class Abandonne implements ReservationState {
 	}
 	
 	@Override
-	public void avancer() {
+	public void avancer( int montant ) {
 		reservation.setLibelle("");
 	}
 	
 	@Override
 	public void completer() {
-		// TODO Auto-generated method stub
-		
+		throw new BadRequestException("Completion Impossible");
 	}
 	
 	public String toString() {
 		return this.getClass().getSimpleName();
+	}
+
+	@Override
+	public void rembourser() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

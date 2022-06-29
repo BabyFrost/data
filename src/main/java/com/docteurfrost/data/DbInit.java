@@ -188,8 +188,8 @@ public class DbInit {
 		articleRepository.save( article );
 		venteRepository.save(vente);
 		
-		Reservation reservation = new Reservation( "Reservation "+article2.getNom(), client, article, utilisateur, 10000 );
-		article2.avancer();
+		Reservation reservation = new Reservation( "Reservation "+article2.getNom(), client, article2, utilisateur, 10000 );
+		article2.reserver();
 		articleRepository.save( article2 );
 		reservationRepository.save(reservation);
 		

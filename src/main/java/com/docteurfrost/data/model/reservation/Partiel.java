@@ -12,22 +12,32 @@ public class Partiel implements ReservationState {
 	
 	@Override
 	public void abandonner() {
-		reservation.setLibelle("");	
+		reservation.setState( reservation.getAbandonne() );
 	}
 	
 	@Override
-	public void avancer() {
-		reservation.setLibelle("");
+	public void avancer( int montant ) {
+		System.out.println("Partiel : avancer");
+		reservation.setTotalAvances( reservation.getTotalAvances()+montant );
+		System.out.println("Partiel : TotalAvance = "+ reservation.getTotalAvances() );
 	}
 	
 	@Override
 	public void completer() {
-		// TODO Auto-generated method stub
+		reservation.getArticle().vendre();
+		reservation.setState( reservation.getComplet() );
 		
 	}
 	
 	public String toString() {
 		return this.getClass().getSimpleName();
+	}
+
+	@Override
+	public void rembourser() {
+		reservation.getArticle().rembourserReservation();
+		System.out.println("Partiel : Reservation state = "+reservation.getState().toString() );
+		reservation.setState( reservation.getRembourse() );
 	}
 
 }

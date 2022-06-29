@@ -28,11 +28,12 @@ public class Reservation extends Operation {
 	private List<Avance> avances = new ArrayList<>();
 
 	@Column(name="MONTANT_AVANCE")
-	private int montantAvance;
+	private int totalAvances;
 	
 	@Transient ReservationState abandonne;
 	@Transient ReservationState complet;
 	@Transient ReservationState partiel;
+	@Transient ReservationState rembourse;
 	
 	@Column(name="ETAT")
 	@Convert(converter = ReservationStateToStringConverter.class )
@@ -42,18 +43,20 @@ public class Reservation extends Operation {
 		abandonne = new Abandonne( this );
 		complet = new Complet( this );
 		partiel = new Partiel( this );
+		rembourse = new Rembourse( this );
 		
 		state = partiel;
 	}
 	
-	public Reservation ( String libelle, Client client, Article article, Utilisateur utilisateur, int montantAvance ) {
+	public Reservation ( String libelle, Client client, Article article, Utilisateur utilisateur, int totalAvances ) {
 		super( libelle, client, article, utilisateur);
 		
-		this.montantAvance = montantAvance;
+		this.totalAvances = totalAvances;
 		
 		abandonne = new Abandonne( this );
 		complet = new Complet( this );
 		partiel = new Partiel( this );
+		rembourse = new Rembourse( this );
 		
 		state = partiel;
 	}
@@ -71,6 +74,9 @@ public class Reservation extends Operation {
 			case "Partiel":
 				this.state = partiel;
 				break;
+			case "Rembourse":
+				this.state = rembourse;
+				break;
 		}
 		
 	}
@@ -83,12 +89,12 @@ public class Reservation extends Operation {
 		this.avances = avances;
 	}
 
-	public int getMontantAvance() {
-		return montantAvance;
+	public int getTotalAvances() {
+		return totalAvances;
 	}
 
-	public void setMontantAvance(int montantAvance) {
-		this.montantAvance = montantAvance;
+	public void setTotalAvances(int totalAvances) {
+		this.totalAvances = totalAvances;
 	}
 
 	public ReservationState getAbandonne() {
@@ -115,12 +121,48 @@ public class Reservation extends Operation {
 		this.partiel = partiel;
 	}
 
+	public ReservationState getRembourse() {
+		return rembourse;
+	}
+
+	public void setRembourse(ReservationState rembourse) {
+		this.rembourse = rembourse;
+	}
+
 	public ReservationState getState() {
 		return state;
 	}
 
 	public void setState(ReservationState state) {
 		this.state = state;
+	}
+	
+	public void abandonner() {
+		state.abandonner();
+	}
+	
+	public int avancer( int montant ) {
+		System.out.println("Inside Reservation.avancer");
+		int prixArticle = super.getArticle().getPrix();
+		if ( ( montant + this.totalAvances ) >= prixArticle  ) {
+			montant = prixArticle - totalAvances;
+			state.avancer( montant );
+			this.completer();
+		} else {
+			System.out.println("Reservation.Avancer : state.avancer");
+			System.out.println("Reservation.Avancer : state = "+this.state.toString() );
+			state.avancer( montant );
+		}
+		
+		return montant;
+	}
+	
+	public void completer() {
+		state.completer();
+	}
+	
+	public void rembourser() {
+		state.rembourser();
 	}
 	
 }

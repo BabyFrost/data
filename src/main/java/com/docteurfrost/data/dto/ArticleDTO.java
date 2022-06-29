@@ -198,16 +198,16 @@ public class ArticleDTO {
 	public String getDateSaisie() {
 		return dateSaisie;
 	}
-
-	public void setDateSaisie(String dateSaisie) {
+	
+	public void setDateSaisie( String dateSaisie) {
 		this.dateSaisie = dateSaisie;
 	}
 
 	public String getDateMiseEnVente() {
 		return dateMiseEnVente;
 	}
-
-	public void setDateMiseEnVente(String dateMiseEnVente) {
+	
+	public void setDateMiseEnVente( String dateMiseEnVente) {
 		this.dateMiseEnVente = dateMiseEnVente;
 	}
 

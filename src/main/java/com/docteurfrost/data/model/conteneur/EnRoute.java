@@ -1,5 +1,7 @@
 package com.docteurfrost.data.model.conteneur;
 
+import com.docteurfrost.data.exception.BadRequestException;
+
 public class EnRoute implements ConteneurState {
 	
 	private Conteneur conteneur;
@@ -12,7 +14,7 @@ public class EnRoute implements ConteneurState {
 
 	@Override
 	public void depart() {
-		
+		throw new BadRequestException("Depart Impossible");
 	}
 
 	@Override
@@ -22,7 +24,7 @@ public class EnRoute implements ConteneurState {
 
 	@Override
 	public void decharger() {
-		
+		throw new BadRequestException("Dechargement Impossible");
 	}
 	
 	public String toString() {

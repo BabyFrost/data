@@ -3,6 +3,7 @@ package com.docteurfrost.data.model.conteneur;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.docteurfrost.data.exception.BadRequestException;
 import com.docteurfrost.data.model.article.Article;
 
 public class Arrive implements ConteneurState {
@@ -17,14 +18,12 @@ public class Arrive implements ConteneurState {
 
 	@Override
 	public void depart() {
-		// TODO Auto-generated method stub
-		
+		throw new BadRequestException("Depart Impossible");
 	}
 
 	@Override
 	public void arrive() {
-		// TODO Auto-generated method stub
-		
+		throw new BadRequestException("Arrive Impossible");
 	}
 
 	@Override

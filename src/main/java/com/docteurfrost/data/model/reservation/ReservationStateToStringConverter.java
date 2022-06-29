@@ -21,6 +21,8 @@ public class ReservationStateToStringConverter implements AttributeConverter<Res
 				return new Complet(null);
 			case "Partiel":
 				return new Partiel(null);
+			case "Rembourse":
+				return new Rembourse(null);
 		}
 		
 		return null;

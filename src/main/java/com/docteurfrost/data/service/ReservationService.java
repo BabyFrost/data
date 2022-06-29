@@ -38,4 +38,9 @@ public class ReservationService {
 		return saveReservation( reservation );
 	}
 	
+	public Reservation updateReservation( Reservation reservation ) throws ResourceNotFoundException {
+		getReservationById( reservation.getId() );
+		return saveReservation( reservation );
+	}
+	
 }

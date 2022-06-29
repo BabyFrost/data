@@ -1,18 +1,20 @@
 package com.docteurfrost.data.dto;
 
-import java.util.Date;
-
+import com.docteurfrost.data.dto.interne.ArticleInterneDTO;
+import com.docteurfrost.data.dto.interne.ClientInterneDTO;
+import com.docteurfrost.data.dto.interne.VendeurInterneDTO;
 import com.docteurfrost.data.model.Vente;
+import com.docteurfrost.data.tools.DateStringConverter;
 
 public class VenteDTO {
 	
 	private int id;
 	private int panier;
 	private String libelle;
-	private Date date;
-	private ClientDTO client;
-	private ArticleDTO article;
-	private VendeurDTO vendeur;
+	private String date;
+	private ClientInterneDTO client;
+	private ArticleInterneDTO article;
+	private VendeurInterneDTO vendeur;
 	private boolean isRetourne;
 	
 	public VenteDTO() { }
@@ -21,10 +23,10 @@ public class VenteDTO {
 		this.id = vente.getId();
 		this.panier = vente.getPanier().getId();
 		this.libelle = vente.getLibelle();
-		this.date = vente.getDate();
-		this.client = new ClientDTO( vente.getClient() );
-		this.article = new ArticleDTO( vente.getArticle() );
-		this.vendeur = new VendeurDTO ( vente.getVendeur() );
+		this.date = DateStringConverter.dateToString( vente.getDate() );
+		this.client = new ClientInterneDTO( vente.getClient() );
+		this.article = new ArticleInterneDTO( vente.getArticle() );
+		this.vendeur = new VendeurInterneDTO ( vente.getVendeur() );
 		this.isRetourne = vente.isRetourne();
 	}
 
@@ -48,43 +50,43 @@ public class VenteDTO {
 		this.libelle = libelle;
 	}
 
-	public Date getDate() {
+	public String getDate() {
 		return date;
 	}
 
-	public void setDate(Date date) {
+	public void setDate(String date) {
 		this.date = date;
 	}
 
-	public ClientDTO getClient() {
+	public ClientInterneDTO getClient() {
 		return client;
 	}
 
-	public void setClient(ClientDTO client) {
+	public void setClient(ClientInterneDTO client) {
 		this.client = client;
 	}
 
-	public ArticleDTO getArticle() {
+	public ArticleInterneDTO getArticle() {
 		return article;
 	}
 
-	public void setArticle(ArticleDTO article) {
+	public void setArticle(ArticleInterneDTO article) {
 		this.article = article;
 	}
 
-	public VendeurDTO getVendeur() {
+	public VendeurInterneDTO getVendeur() {
 		return vendeur;
 	}
 
-	public void setVendeur(VendeurDTO vendeur) {
+	public void setVendeur(VendeurInterneDTO vendeur) {
 		this.vendeur = vendeur;
 	}
 
-	public boolean isRetourne() {
+	public boolean getisRetourne() {
 		return isRetourne;
 	}
 
-	public void setRetourne(boolean isRetourne) {
+	public void setisRetourne(boolean isRetourne) {
 		this.isRetourne = isRetourne;
 	}
 

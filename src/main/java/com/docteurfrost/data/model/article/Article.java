@@ -279,8 +279,8 @@ public class Article {
 		this.options = options;
 	}
 	
-	public void avancer() {
-		state.avancer();
+	public void reserver() {
+		state.reserver();
 	}
 	
 	public void deballer() {
@@ -297,6 +297,10 @@ public class Article {
 	
 	public void vendre() {
 		state.vendre();
+	}
+	
+	public void rembourserReservation() {
+		state.rembourserReservation();
 	}
 	
 	public ArticleState getState() {

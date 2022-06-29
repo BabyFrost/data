@@ -1,5 +1,7 @@
 package com.docteurfrost.data.model.article;
 
+import com.docteurfrost.data.exception.BadRequestException;
+
 public class DansConteneur implements ArticleState {
 	
 	private Article article;
@@ -10,26 +12,22 @@ public class DansConteneur implements ArticleState {
 
 	@Override
 	public void vendre() {
-		// TODO Auto-generated method stub
-		
+		throw new BadRequestException("Vente Impossible");
 	}
 
 	@Override
 	public void retourner() {
-		// TODO Auto-generated method stub
-		
+		throw new BadRequestException("Retour Impossible");
 	}
 
 	@Override
-	public void avancer() {
-		// TODO Auto-generated method stub
-		
+	public void reserver() {
+		throw new BadRequestException("Reservation Impossible");	
 	}
 
 	@Override
 	public void deballer() {
-		
-		
+		throw new BadRequestException("Deballage Impossible");
 	}
 	
 	public String toString() {
@@ -39,6 +37,11 @@ public class DansConteneur implements ArticleState {
 	@Override
 	public void decharger() {
 		article.setState( article.getEnMagasin() );	
+	}
+
+	@Override
+	public void rembourserReservation() {
+		throw new BadRequestException("Remboursement Impossible");
 	}
 
 }

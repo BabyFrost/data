@@ -3,6 +3,7 @@ package com.docteurfrost.data.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.docteurfrost.data.dto.AvanceDTO;
 import com.docteurfrost.data.exception.ResourceNotFoundException;
 import com.docteurfrost.data.model.Avance;
+import com.docteurfrost.data.model.Utilisateur;
+import com.docteurfrost.data.model.reservation.Reservation;
 import com.docteurfrost.data.service.AvanceService;
+import com.docteurfrost.data.service.ReservationService;
+import com.docteurfrost.data.service.UtilisateurService;
 
 @RequestMapping("/avances")
 @RestController
@@ -27,6 +32,12 @@ public class AvanceController {
 	
 	@Autowired
 	AvanceService avanceService;
+	
+	@Autowired
+	ReservationService reservationService;
+	
+	@Autowired
+	UtilisateurService utilisateurService;
 	
 	@GetMapping("/{idAvance}")
 	@ResponseBody
@@ -51,8 +62,18 @@ public class AvanceController {
 	
 	@PostMapping()
 	@ResponseBody
+	@Transactional
 	public ResponseEntity<AvanceDTO> getAvanceById( @Valid @RequestBody AvanceDTO avanceDTO ) throws ResourceNotFoundException {
-		AvanceDTO responseAvanceDTO = new AvanceDTO( avanceService.getAvanceById( 1 ) );
+
+		Reservation reservation = reservationService.getReservationById( avanceDTO.getReservation() );
+		Utilisateur vendeur = utilisateurService.getUtilisateurById( avanceDTO.getVendeur().getId() );
+		
+		int montantAvance = reservation.avancer( avanceDTO.getMontant() );
+		Avance avance = new Avance( reservation, vendeur, montantAvance );
+		
+		AvanceDTO responseAvanceDTO = new AvanceDTO( avanceService.createAvance( avance ) );
+		reservationService.updateReservation(reservation);
+		
 		return new ResponseEntity<>( responseAvanceDTO, HttpStatus.OK );
 	}
 

@@ -1,5 +1,7 @@
 package com.docteurfrost.data.model.conteneur;
 
+import com.docteurfrost.data.exception.BadRequestException;
+
 public class Decharge implements ConteneurState {
 	
 	@SuppressWarnings("unused")
@@ -13,19 +15,17 @@ public class Decharge implements ConteneurState {
 
 	@Override
 	public void depart() {
-		// TODO Auto-generated method stub
-		
+		throw new BadRequestException("Depart Impossible");
 	}
 
 	@Override
 	public void arrive() {
-		// TODO Auto-generated method stub
-		
+		throw new BadRequestException("Arrive Impossible");
 	}
 
 	@Override
 	public void decharger() {
-		
+		throw new BadRequestException("Dechargement Impossible");
 	}
 	
 	public String toString() {

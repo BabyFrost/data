@@ -1,5 +1,6 @@
 package com.docteurfrost.data.controller;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,6 +36,7 @@ import com.docteurfrost.data.service.ClientService;
 import com.docteurfrost.data.service.PanierService;
 import com.docteurfrost.data.service.UtilisateurService;
 import com.docteurfrost.data.service.VenteService;
+import com.docteurfrost.data.tools.DateStringConverter;
 
 @RequestMapping("/ventes")
 @RestController
@@ -62,10 +65,14 @@ public class VenteController {
 	
 	@GetMapping()
 	@ResponseBody
-	public List<VenteDTO> getAllVentes(  ) throws ResourceNotFoundException {
+	public List<VenteDTO> getAllVentes( @RequestParam(required = false, name = "dateDebut") String dateDebut, @RequestParam(required = false, name = "dateFin") String dateFin ) throws ResourceNotFoundException, ParseException {
 		
-		List<Vente> ventes = new ArrayList<>();	
-		ventes = venteService.getAllVente();
+		List<Vente> ventes = new ArrayList<>();
+		if ( dateDebut == null && dateFin == null) {
+			ventes = venteService.getAllVente();
+		} else {
+			ventes = venteService.getAllVenteByIntervalDate( DateStringConverter.stringToDate(dateDebut), DateStringConverter.stringToDate(dateFin) );
+		}
 		
 		List<VenteDTO> ventesDTO = new ArrayList<>();
 		for (int i=0; i<ventes.size(); i++) {

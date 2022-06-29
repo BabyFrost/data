@@ -1,5 +1,7 @@
 package com.docteurfrost.data.model.conteneur;
 
+import com.docteurfrost.data.exception.BadRequestException;
+
 public class Chargement implements ConteneurState {
 	
 	private Conteneur conteneur;
@@ -17,14 +19,12 @@ public class Chargement implements ConteneurState {
 
 	@Override
 	public void arrive() {
-		// TODO Auto-generated method stub
-		
+		throw new BadRequestException("Arrive Impossible");
 	}
 
 	@Override
 	public void decharger() {
-		// TODO Auto-generated method stub
-		
+		throw new BadRequestException("Dechargement Impossible");
 	}
 	
 	public String toString() {

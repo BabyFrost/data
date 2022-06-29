@@ -1,7 +1,6 @@
 package com.docteurfrost.data.dto;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
@@ -11,11 +10,12 @@ import com.docteurfrost.data.dto.interne.ClientInterneDTO;
 import com.docteurfrost.data.dto.interne.VendeurInterneDTO;
 import com.docteurfrost.data.model.Panier;
 import com.docteurfrost.data.model.Vente;
+import com.docteurfrost.data.tools.DateStringConverter;
 
 public class PanierDTO {
 	
 	private int id;
-	private Date dateCreation;
+	private String dateCreation;
 	private ClientInterneDTO client;
 	private VendeurInterneDTO vendeur;
 	@NotNull
@@ -27,7 +27,7 @@ public class PanierDTO {
 
 	public PanierDTO( Panier panier) {
 		this.id = panier.getId();
-		this.dateCreation = panier.getDateCreation();
+		this.dateCreation = DateStringConverter.dateToString( panier.getDateCreation() ) ;
 		
 		ArticleInterneDTO articleDTO;
 		List<Vente> ventes =  panier.getVentes();
@@ -49,11 +49,11 @@ public class PanierDTO {
 		return id;
 	}
 
-	public Date getDateCreation() {
+	public String getDateCreation() {
 		return dateCreation;
 	}
 
-	public void setDateCreation(Date dateCreation) {
+	public void setDateCreation(String dateCreation) {
 		this.dateCreation = dateCreation;
 	}
 

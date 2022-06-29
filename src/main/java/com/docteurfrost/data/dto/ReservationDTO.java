@@ -1,8 +1,6 @@
 package com.docteurfrost.data.dto;
 
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import com.docteurfrost.data.dto.interne.ArticleInterneDTO;
@@ -22,7 +20,7 @@ public class ReservationDTO {
 	private ArticleInterneDTO article;
 	private VendeurInterneDTO vendeur;
 	private List<AvanceInterneDTO> avances = new ArrayList<>();
-	private int montantAvance;
+	private int totalAvances;
 	private String status;
 	
 	public ReservationDTO() {}
@@ -43,8 +41,11 @@ public class ReservationDTO {
 			this.avances.add( avanceDTO );
 		}
 		
-		this.montantAvance = reservation.getMontantAvance();
+		this.totalAvances = reservation.getTotalAvances();
 		this.status = reservation.getState().toString();
+		
+		System.out.println( reservation.getDate() );
+		System.out.println( this.date );
 		
 		
 	}
@@ -65,12 +66,12 @@ public class ReservationDTO {
 		this.libelle = libelle;
 	}
 
-	public Date getDate() throws ParseException {
-		return DateStringConverter.stringToDate( this.date );
+	public String getDate() {
+		return date;
 	}
 
-	public void setDate(Date date) {
-		this.date = DateStringConverter.dateToString( date );
+	public void setDate(String date) {
+		this.date =  date;
 	}
 
 	public ClientInterneDTO getClient() {
@@ -105,12 +106,12 @@ public class ReservationDTO {
 		this.avances = avances;
 	}
 
-	public int getMontantAvance() {
-		return montantAvance;
+	public int getTotalAvances() {
+		return totalAvances;
 	}
 
-	public void setMontantAvance(int montantAvance) {
-		this.montantAvance = montantAvance;
+	public void setMontantAvance(int totalAvances) {
+		this.totalAvances = totalAvances;
 	}
 
 	public String getStatus() {
