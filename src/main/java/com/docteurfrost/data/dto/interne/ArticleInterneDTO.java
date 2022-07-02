@@ -11,6 +11,7 @@ public class ArticleInterneDTO {
 	@NotNull
 	private String marque;
 	private int prix;
+	private int prixAchat;
 	private String photo;
 
 	public ArticleInterneDTO() { }
@@ -18,6 +19,7 @@ public class ArticleInterneDTO {
 	public ArticleInterneDTO( Article article) {
 		this.id = article.getId();
 		this.prix = article.getPrix();
+		this.prixAchat = article.getPrixAchat();
 		this.marque = article.getMarque().getNom();
 		this.photo = article.getPhoto();
 	}
@@ -36,6 +38,14 @@ public class ArticleInterneDTO {
 
 	public void setPrix(int prix) {
 		this.prix = prix;
+	}
+
+	public int getPrixAchat() {
+		return prixAchat;
+	}
+
+	public void setPrixAchat(int prixAchat) {
+		this.prixAchat = prixAchat;
 	}
 
 	public String getMarque() {
