@@ -18,6 +18,9 @@ public class ArticleInterneDTO {
 	private int prixAchat;
 	private String photo;
 	private StringBuilder options;
+	private String numeroDeSerie;
+	private String categorie;
+	private String observation;
 
 	public ArticleInterneDTO() { }
 	
@@ -28,6 +31,9 @@ public class ArticleInterneDTO {
 		this.prixAchat = article.getPrixAchat();
 		this.marque = article.getMarque().getNom();
 		this.photo = article.getPhoto();
+		this.numeroDeSerie = article.getNumeroDeSerie();
+		this.categorie = article.getCategorie().getNom();
+		this.observation = article.getObservation();
 		
 		options = new StringBuilder();
 		ArrayList<OptionArticle> optionsArticle = new ArrayList<>( article.getOptions() );
@@ -105,6 +111,30 @@ public class ArticleInterneDTO {
 
 	public void setOptions(String options) {
 		this.options = new StringBuilder(options);
+	}
+
+	public String getNumeroDeSerie() {
+		return numeroDeSerie;
+	}
+
+	public void setNumeroDeSerie(String numeroDeSerie) {
+		this.numeroDeSerie = numeroDeSerie;
+	}
+	
+	public String getCategorie() {
+		return categorie;
+	}
+
+	public void setCategorie(String categorie) {
+		this.categorie = categorie;
+	}
+	
+	public String getObservation() {
+		return observation;
+	}
+	
+	public void setObservation(String observation) {
+		this.observation = observation;
 	}
 
 }

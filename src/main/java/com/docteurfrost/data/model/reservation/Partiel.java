@@ -17,14 +17,11 @@ public class Partiel implements ReservationState {
 	
 	@Override
 	public void avancer( int montant ) {
-		System.out.println("Partiel : avancer");
 		reservation.setTotalAvances( reservation.getTotalAvances()+montant );
-		System.out.println("Partiel : TotalAvance = "+ reservation.getTotalAvances() );
 	}
 	
 	@Override
 	public void completer() {
-		reservation.getArticle().vendre();
 		reservation.setState( reservation.getComplet() );
 		
 	}

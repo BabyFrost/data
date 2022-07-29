@@ -21,6 +21,7 @@ import com.docteurfrost.data.dto.AvanceDTO;
 import com.docteurfrost.data.exception.ResourceNotFoundException;
 import com.docteurfrost.data.model.Avance;
 import com.docteurfrost.data.model.Utilisateur;
+import com.docteurfrost.data.model.reservation.Complet;
 import com.docteurfrost.data.model.reservation.Reservation;
 import com.docteurfrost.data.service.AvanceService;
 import com.docteurfrost.data.service.ReservationService;
@@ -38,6 +39,9 @@ public class AvanceController {
 	
 	@Autowired
 	UtilisateurService utilisateurService;
+	
+	@Autowired
+	VenteController venteController;
 	
 	@GetMapping("/{idAvance}")
 	@ResponseBody
@@ -71,8 +75,12 @@ public class AvanceController {
 		int montantAvance = reservation.avancer( avanceDTO.getMontant() );
 		Avance avance = new Avance( reservation, vendeur, montantAvance );
 		
+		if ( reservation.getState() instanceof Complet ) {
+			venteController.completerReservation( reservation, vendeur );
+		}
+		
 		AvanceDTO responseAvanceDTO = new AvanceDTO( avanceService.createAvance( avance ) );
-		reservationService.updateReservation(reservation);
+		reservation = reservationService.updateReservation(reservation);
 		
 		return new ResponseEntity<>( responseAvanceDTO, HttpStatus.OK );
 	}

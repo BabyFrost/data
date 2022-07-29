@@ -31,6 +31,7 @@ import com.docteurfrost.data.model.Utilisateur;
 import com.docteurfrost.data.model.Vente;
 import com.docteurfrost.data.model.article.Article;
 import com.docteurfrost.data.model.article.EnVente;
+import com.docteurfrost.data.model.reservation.Reservation;
 import com.docteurfrost.data.service.ArticleService;
 import com.docteurfrost.data.service.ClientService;
 import com.docteurfrost.data.service.PanierService;
@@ -126,6 +127,28 @@ public class VenteController {
 //		panier = panierService.getPanierById( panier.getId() );	
 //		PanierDTO responsePanierDTO = new PanierDTO( panier );
 		return new ResponseEntity<>( new PanierDTO( panier ), HttpStatus.OK );
+	}
+	
+	public Panier completerReservation ( Reservation reservation, Utilisateur vendeur) {
+		
+		Panier panier = new Panier( new Date() );
+		
+		Article article = reservation.getArticle();
+		Client client = reservation.getClient();
+		List<Vente> ventes = new ArrayList<>();
+		
+		Vente vente = new Vente ( "Cette Reservation a ete completee", client, article, vendeur, panier );
+		
+		article.vendre();	
+		ventes.add(vente);
+		
+		panier.setNombreArticles(1);
+		panier.setMontantTotal( article.getPrix() );
+		panier.setVentes( ventes );
+		panier = panierService.createPanier(panier);
+		article = articleService.updateArticle(article);
+		
+		return panier;
 	}
 
 }

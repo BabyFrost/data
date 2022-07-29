@@ -142,15 +142,12 @@ public class Reservation extends Operation {
 	}
 	
 	public int avancer( int montant ) {
-		System.out.println("Inside Reservation.avancer");
 		int prixArticle = super.getArticle().getPrix();
 		if ( ( montant + this.totalAvances ) >= prixArticle  ) {
 			montant = prixArticle - totalAvances;
 			state.avancer( montant );
 			this.completer();
 		} else {
-			System.out.println("Reservation.Avancer : state.avancer");
-			System.out.println("Reservation.Avancer : state = "+this.state.toString() );
 			state.avancer( montant );
 		}
 		
