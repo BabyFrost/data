@@ -1,6 +1,7 @@
 package com.docteurfrost.data.service;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -39,8 +40,17 @@ public class VenteService {
 	}
 	
 	public List<Vente> getAllVenteByIntervalDate( Date dateDebut, Date dateFin ) throws ResourceNotFoundException {	
-		List<Vente> ventes = new ArrayList<>();	
-		venteRepository.findByDateBetween(dateDebut, dateFin).forEach(ventes::add);	
+		List<Vente> ventes = new ArrayList<>();
+		
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.HOUR_OF_DAY,23);
+		cal.set(Calendar.MINUTE,59);
+		cal.set(Calendar.SECOND,59);
+		cal.set(Calendar.MILLISECOND,59);
+		dateFin = cal.getTime();
+		
+		venteRepository.findByDateBetween(dateDebut, dateFin).forEach(ventes::add);		
+			
 		return ventes;
 	}
 	
